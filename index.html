@@ -684,7 +684,14 @@ function ownerPick(rows, owner){
   rows.forEach(function(r){var x=String(r['보호자']||'');if(others.indexOf(x)<0)others.push(x);});
   return {rows:rows, other:true, others:others};
 }
+function sortDesc(rows){
+  return rows.slice().sort(function(a,b){
+    var x=String(a['날짜']||'')+(String(a['시간']||'')), y=String(b['날짜']||'')+(String(b['시간']||''));
+    return x<y?1:(x>y?-1:0);
+  });
+}
 function renderLab(box,rows){
+  rows=sortDesc(rows);
   box.appendChild(el('div','mstat','🧪 검사 이력 '+rows.length+'건 · 최근 '+(rows[0]?fmtMD(rows[0]['날짜']):'-')));
   groupByDate(rows).forEach(function(g){
     var grp=el('div','mgrp');
@@ -704,6 +711,7 @@ function renderLab(box,rows){
   });
 }
 function renderCm(box,rows){
+  rows=sortDesc(rows);
   box.appendChild(el('div','mstat','✍️ 원장님 코멘트 '+rows.length+'건 · 최근 '+(rows[0]?fmtMD(rows[0]['날짜']):'-')));
   groupByDate(rows).forEach(function(g){
     var grp=el('div','mgrp');
@@ -716,6 +724,7 @@ function renderCm(box,rows){
   });
 }
 function renderRx(box,rows){
+  rows=sortDesc(rows);
   var sq=0;
   rows.forEach(function(x){ if(x['구분']==='처방약품 출고') sq++; });
   box.appendChild(el('div','mstat','💊 조제·처방약 '+rows.length+'건 (조제 내복약 '+(rows.length-sq)+' · 처방약품 출고 '+sq+') · 최근 '+(rows[0]?fmtMD(rows[0]['날짜']):'-')));
@@ -734,6 +743,7 @@ function renderRx(box,rows){
   });
 }
 function renderPay(box,rows){
+  rows=sortDesc(rows);
   var total=0; rows.forEach(function(x){total+=(Number(x['금액'])||0);});
   var recent=rows[0]?String(rows[0]['날짜']):'-';
   box.appendChild(el('div','mstat','💳 결제·구매 '+rows.length+'건 · 합계 '+moneyN(total)+'원(반품 차감) · 최근 '+fmtMD(recent)));
