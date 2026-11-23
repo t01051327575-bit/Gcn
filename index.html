@@ -110,6 +110,10 @@ input[type=date],input[type=text]{font:700 .9em 'Noto Sans KR';border:1.5px soli
 .dept{background:#F0FDFA;border:1px solid #99F6E4;border-radius:10px;padding:6px 9px;margin:6px 0;font-size:.92em;font-weight:700;color:#0F766E}
 .dept.chk{background:#FFFBEB;border-color:#FDE68A;color:#92400E}
 .dept.req{background:#FFF1E6;border:2px solid #F97316;border-left:6px solid #EA580C;color:#9A3412;font-weight:900;font-size:.97em;padding:8px 11px;box-shadow:0 1px 0 #FED7AA inset}
+.dept.prepay{background:#EFF6FF;border:2px solid #3B82F6;border-left:6px solid #1D4ED8;color:#1E3A8A;font-weight:900;font-size:.97em;padding:8px 11px}
+.rlinks{margin-top:6px}
+.rlink{display:inline-block;margin:4px 6px 0 0;padding:5px 11px;border:1.5px solid #BFDBFE;background:#EFF6FF;border-radius:999px;color:#1D4ED8;font-weight:900;font-size:.88em;text-decoration:none}
+.rlink:hover{background:#DBEAFE;border-color:#93C5FD}
 /* 5버튼 */
 .tools{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 .tools .btn{font-size:.85em;padding:5px 10px}
@@ -149,6 +153,8 @@ input[type=date],input[type=text]{font:700 .9em 'Noto Sans KR';border:1.5px soli
 .fchip.on b{color:#E2E8F0}
 .fchip.a{border-color:#FBCFE8;background:#FDF2F8;color:#9D174D}
 .fchip.a.on{background:#9D174D;border-color:#9D174D;color:#fff}
+.fchip.p{border-color:#BFDBFE;background:#EFF6FF;color:#1D4ED8}
+.fchip.p.on{background:#1D4ED8;border-color:#1D4ED8;color:#fff}
 .pcard{background:#fff;border:1px solid var(--line);border-left:4px solid var(--green2);border-radius:12px;padding:8px 10px;margin:8px 0}
 .pcard .pttl{font-weight:900;font-size:1em}
 /* 기타 */
@@ -214,7 +220,7 @@ input[type=date],input[type=text]{font:700 .9em 'Noto Sans KR';border:1.5px soli
 
   <div class="note">
     기호 안내: 비) 비대기 | X 미내원 | ▼ 선결제·보관 | ★ 필수 주의사항<br>
-    🛍️ <b>보호자 요청 (필수 준비)</b> = 보호자가 GHN 건강관리표·카톡으로 미리 요청한 물품으로, 원무과가 내원 전에 준비해야 합니다. (주황 박스) · 🏢 원무과 준비 = 차트상 원무과 준비 사항 (초록 박스)<br>
+    🛍️ <b>보호자 요청 (필수 준비)</b> = 보호자가 GHN 건강관리표·카톡으로 미리 요청한 물품으로, 원무과가 내원 전에 준비해야 합니다. (주황 박스) · 🏢 원무과 준비 = 차트상 원무과 준비 사항 (초록 박스) · 💳 <b>선결제·보관</b> = 진료내용의 ▼ 표시 항목을 모아 보여 줍니다. (파란 박스)<br>
     자료는 원무과·검사과에서 올린 내용을 그대로 모아 보여 줍니다. 비어 있는 칸은 '안 했다'가 아니라 '기록이 없다'는 뜻입니다.<br>🩺 검사지·✍️ 코멘트·💊 조제·💳 결제이력은 <b>GCN_실시간_데이터</b> 시트의 각 탭에서 아이별로 바로 불러옵니다.
   </div>
 </div>
@@ -309,6 +315,39 @@ function datesFor(){
 }
 function hasAP(r){return /A\+/.test(r['배지']||'')||(+r['자료건수']||0)>0;}
 function hasHok(r){return /A\s*혹/.test(r['배지']||'')||/혹/.test((r['진료내용']||'')+(r['검사·진료']||''));}
+/* ▼ = 선결제·보관 표시. ▼부터 다음 구분점(/ < · ■ , | 등)이나 괄호 끝까지 끌어내 추출한다. */
+function prepayItems(text){
+  var s=String(text||''), out=[], i=0;
+  while((i=s.indexOf('▼',i))>=0){
+    i++;
+    var buf='', depth=0, j=i;
+    for(; j<s.length; j++){
+      var ch=s.charAt(j);
+      if(ch==='\n') break;
+      if(ch==='(' || ch==='['){ depth++; buf+=ch; continue; }
+      if(ch===')' || ch===']'){ if(depth>0){ depth--; buf+=ch; continue; } break; }
+      if(depth===0 && '▼/|<·■▶→,'.indexOf(ch)>=0) break;
+      buf+=ch;
+    }
+    buf=buf.replace(/\s+$/,'').replace(/^[\s:·\-]+/,'');
+    if(buf && buf.length<=60) out.push(buf);
+    i=j+1;
+  }
+  var seen={}, res=[];
+  out.forEach(function(x){ if(!seen[x]){ seen[x]=1; res.push(x); } });
+  return res;
+}
+function prepayOf(r){ return prepayItems((r['진료내용']||'')+'\n'+(r['준비①']||'')); }
+function hasPrepay(r){ return prepayOf(r).length>0; }
+/* 자료링크(줄바꿈·공백·쉼표로 여러 개)에서 http(s) 주소만 뽑아낸다. */
+function urlsOf(text){
+  var s=String(text||''), out=[], m=s.split(/[\s,;]+/);
+  for(var i=0;i<m.length;i++){
+    var u=m[i].replace(/[)\]>]+$/,'');
+    if(/^https?:\/\//i.test(u) && out.indexOf(u)<0) out.push(u);
+  }
+  return out;
+}
 function rowsFor(dates){
   var out=S.data.filter(function(r){return dates.indexOf(String(r['날짜']).slice(0,10))>=0;});
   var kindF=(S.f==='확정'||S.f==='비대기'||S.f==='처방')?S.f:null;
@@ -323,6 +362,7 @@ function rowsFor(dates){
   }
   if(S.f==='A+ 자료') out=out.filter(hasAP);
   if(S.f==='A 혹') out=out.filter(hasHok);
+  if(S.f==='💳 선결제') out=out.filter(hasPrepay);
   if(S.q){
     var q=S.q.toLowerCase();
     out=out.filter(function(r){return ((r['아이']||'')+(r['보호자']||'')+(r['진료내용']||'')+(r['준비①']||'')+(r['안내②']||'')+(r['보호자요청']||'')).toLowerCase().indexOf(q)>=0;});
@@ -410,6 +450,10 @@ function cardEl(r){
   if(r['보호자요청']){
     var dq=el('div','dept req','🛍️ 보호자 요청 (필수 준비): '+esc(r['보호자요청'])); c.appendChild(dq);
   }
+  var pp=prepayOf(r);
+  if(pp.length){
+    c.appendChild(el('div','dept prepay','💳 선결제·보관: '+esc(pp.join(' · '))));
+  }
   if(r['원무과준비']){
     var d=el('div','dept','🏢 원무과 준비: '+esc(r['원무과준비'])); c.appendChild(d);
   }
@@ -421,7 +465,7 @@ function cardEl(r){
     ['① 준비물·선결제·처방', r['준비①']],
     ['② 보호자 확인·안내', r['안내②']],
     ['③ 미용·보호자 전달사항', r['미용③']],
-    ['🩺 검사결과지·임상 사진·혹 기록'+(r['자료건수']?' ('+r['자료건수']+'건)':''), (r['검사·진료']||'')+(r['자료링크']?'\n📄 '+r['자료링크']:'')]
+    ['🩺 검사결과지·임상 사진·혹 기록'+(r['자료건수']?' ('+r['자료건수']+'건)':''), (r['검사·진료']||'')]
   ];
   sections.forEach(function(secDef,i){
     var sec=el('div','sec');
@@ -429,8 +473,18 @@ function cardEl(r){
     b.appendChild(document.createTextNode(secDef[0]));
     var ar=el('span','ar','›'); b.appendChild(ar);
     var bd=el('div','bd');
+    var links=(i===3)?urlsOf(r['자료링크']):[];
     if(secDef[1]){ bd.textContent=secDef[1]; }
-    else { bd.appendChild(el('span','empty','자료 없음')); }
+    else if(!links.length){ bd.appendChild(el('span','empty','자료 없음')); }
+    if(links.length){
+      var lw=el('div','rlinks');
+      links.forEach(function(u){
+        var a=el('a','rlink',/pet-previsit-checklist/.test(u)?'📄 GHN 건강관리표 결과지':'📄 자료 열기');
+        a.href=u; a.target='_blank'; a.rel='noopener noreferrer';
+        lw.appendChild(a);
+      });
+      bd.appendChild(lw);
+    }
     sec.appendChild(b); sec.appendChild(bd);
     if(i===0) sec.classList.add('open');
     b.addEventListener('click',function(){sec.classList.toggle('open');});
@@ -468,10 +522,11 @@ function filterBar(dayAll, shown){
   var bar=el('div','fchips');
   function cntAP(){return dayAll.filter(hasAP).length;}
   function cntHok(){return dayAll.filter(hasHok).length;}
+  function cntPre(){return dayAll.filter(hasPrepay).length;}
   var conf=dayAll.filter(function(r){return r['구분']==='확정';}).length;
   var non=dayAll.filter(function(r){return r['구분']==='비대기';}).length;
   var rx=dayAll.filter(function(r){return r['구분']==='처방';}).length;
-  var defs=[['전체',dayAll.length,''],['확정',conf,''],['비대기',non,''],['처방',rx,''],['A+ 자료',cntAP(),'a'],['A 혹',cntHok(),'a']];
+  var defs=[['전체',dayAll.length,''],['확정',conf,''],['비대기',non,''],['처방',rx,''],['💳 선결제',cntPre(),'p'],['A+ 자료',cntAP(),'a'],['A 혹',cntHok(),'a']];
   defs.forEach(function(d){
     var f=(d[0]==='전체')?null:d[0];
     var on=(S.f===f);
