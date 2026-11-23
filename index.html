@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- GCN v1123-2255 | 보호자 요청(GHN) 필수 준비 박스 분리 · 원무과 뷰 포함 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -108,6 +109,7 @@ input[type=date],input[type=text]{font:700 .9em 'Noto Sans KR';border:1.5px soli
 .sec .empty{color:#94A3B8;font-weight:700}
 .dept{background:#F0FDFA;border:1px solid #99F6E4;border-radius:10px;padding:6px 9px;margin:6px 0;font-size:.92em;font-weight:700;color:#0F766E}
 .dept.chk{background:#FFFBEB;border-color:#FDE68A;color:#92400E}
+.dept.req{background:#FFF1E6;border:2px solid #F97316;border-left:6px solid #EA580C;color:#9A3412;font-weight:900;font-size:.97em;padding:8px 11px;box-shadow:0 1px 0 #FED7AA inset}
 /* 5버튼 */
 .tools{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 .tools .btn{font-size:.85em;padding:5px 10px}
@@ -212,6 +214,7 @@ input[type=date],input[type=text]{font:700 .9em 'Noto Sans KR';border:1.5px soli
 
   <div class="note">
     기호 안내: 비) 비대기 | X 미내원 | ▼ 선결제·보관 | ★ 필수 주의사항<br>
+    🛍️ <b>보호자 요청 (필수 준비)</b> = 보호자가 GHN 건강관리표·카톡으로 미리 요청한 물품으로, 원무과가 내원 전에 준비해야 합니다. (주황 박스) · 🏢 원무과 준비 = 차트상 원무과 준비 사항 (초록 박스)<br>
     자료는 원무과·검사과에서 올린 내용을 그대로 모아 보여 줍니다. 비어 있는 칸은 '안 했다'가 아니라 '기록이 없다'는 뜻입니다.<br>🩺 검사지·✍️ 코멘트·💊 조제·💳 결제이력은 <b>GCN_실시간_데이터</b> 시트의 각 탭에서 아이별로 바로 불러옵니다.
   </div>
 </div>
@@ -314,7 +317,7 @@ function rowsFor(dates){
     out=out.filter(function(r){return (r['구분']||'비대기')===kindF;});
   } else {
     if(S.view==='doc') out=out.filter(function(r){return r['구분']!=='처방';});
-    if(S.view==='desk') out=out.filter(function(r){return (r['원무과준비']||r['원무과확인']||r['준비①']);});
+    if(S.view==='desk') out=out.filter(function(r){return (r['원무과준비']||r['원무과확인']||r['보호자요청']||r['준비①']);});
     if(S.view==='rx') out=out.filter(function(r){return r['구분']==='처방'|| /약|조제/.test((r['준비①']||'')+(r['진료내용']||''));});
     if(S.view==='lab') out=out.filter(function(r){return (r['검사·진료']||r['검사']||r['진료']||/검사|수술|초음파|엑스레이|x-ray/.test(r['진료내용']||''));});
   }
@@ -322,7 +325,7 @@ function rowsFor(dates){
   if(S.f==='A 혹') out=out.filter(hasHok);
   if(S.q){
     var q=S.q.toLowerCase();
-    out=out.filter(function(r){return ((r['아이']||'')+(r['보호자']||'')+(r['진료내용']||'')+(r['준비①']||'')+(r['안내②']||'')).toLowerCase().indexOf(q)>=0;});
+    out=out.filter(function(r){return ((r['아이']||'')+(r['보호자']||'')+(r['진료내용']||'')+(r['준비①']||'')+(r['안내②']||'')+(r['보호자요청']||'')).toLowerCase().indexOf(q)>=0;});
   }
   out.sort(function(a,b){return tmin(a['시각'])-tmin(b['시각'])||String(a['아이']).localeCompare(String(b['아이']));});
   return out;
@@ -403,6 +406,9 @@ function cardEl(r){
   if(r['진료내용']){
     var memo=el('div','memo',r['진료내용']);
     c.appendChild(memo);
+  }
+  if(r['보호자요청']){
+    var dq=el('div','dept req','🛍️ 보호자 요청 (필수 준비): '+esc(r['보호자요청'])); c.appendChild(dq);
   }
   if(r['원무과준비']){
     var d=el('div','dept','🏢 원무과 준비: '+esc(r['원무과준비'])); c.appendChild(d);
@@ -526,7 +532,7 @@ function renderSearch(){
   panel.appendChild(el('div','mstat','🔍 “'+q+'” 검색 결과 · 날짜와 상관없이 예약·코멘트·검사지·조제·결제이력 전체에서 찾습니다'));
   var ql=q.toLowerCase();
   var hits=S.data.filter(function(r){
-    return ((r['아이']||'')+(r['보호자']||'')+(r['진료내용']||'')+(r['준비①']||'')+(r['안내②']||'')+(r['미용③']||'')).toLowerCase().indexOf(ql)>=0;
+    return ((r['아이']||'')+(r['보호자']||'')+(r['진료내용']||'')+(r['준비①']||'')+(r['안내②']||'')+(r['미용③']||'')+(r['보호자요청']||'')).toLowerCase().indexOf(ql)>=0;
   });
   hits.sort(function(a,b){return String(b['날짜']).localeCompare(String(a['날짜']))||tmin(a['시각'])-tmin(b['시각']);});
   panel.appendChild(el('div','inqsec','📅 예약·일정 '+hits.length+'건'));
