@@ -147,6 +147,8 @@ input[type=date],input[type=text]{font:700 .9em 'Noto Sans KR';border:1.5px soli
 .fchip.on b{color:#E2E8F0}
 .fchip.a{border-color:#FBCFE8;background:#FDF2F8;color:#9D174D}
 .fchip.a.on{background:#9D174D;border-color:#9D174D;color:#fff}
+.pcard{background:#fff;border:1px solid var(--line);border-left:4px solid var(--green2);border-radius:12px;padding:8px 10px;margin:8px 0}
+.pcard .pttl{font-weight:900;font-size:1em}
 /* 기타 */
 .note{color:var(--mut);font-size:.82em;font-weight:700;margin:14px 0 0;line-height:1.6}
 .err{background:#FEF2F2;border:1px solid #FECACA;color:#991B1B;border-radius:12px;padding:10px 12px;font-weight:700;margin:10px 0}
@@ -481,7 +483,104 @@ function filterBar(dayAll, shown){
   return bar;
 }
 
+/* ===== 전체 검색 (예약 전 날짜 + 코멘트·검사지·조제·결제이력) ===== */
+var SQ={};
+var SEARCH_TABS=['코멘트','검사지','조제','결제이력'];
+var TAB_ICON={'코멘트':'✍️ 코멘트','검사지':'🩺 검사지','조제':'💊 조제','결제이력':'💳 결제이력'};
+function parseGvizText(t){
+  var i=t.indexOf('{'), j=t.lastIndexOf('}');
+  if(i<0) throw new Error('시트 형식을 읽을 수 없습니다');
+  var j0=JSON.parse(t.slice(i,j+1));
+  if(j0.status && j0.status!=='ok') throw new Error('시트 조회 오류 ('+j0.status+')');
+  var rows=(j0.table&&j0.table.rows)||[];
+  var cols=((j0.table&&j0.table.cols)||[]).map(function(c){return (c.label||'').trim();});
+  return rows.map(function(r){
+    var o={};
+    (r.c||[]).forEach(function(cell,k){ o[cols[k]||('c'+k)] = cell?(cell.f!=null?cell.f:(cell.v!=null?cell.v:'')):''; });
+    return o;
+  });
+}
+function searchTab(tab,term){
+  var key=tab+'|'+term;
+  if(SQ[key]) return Promise.resolve(SQ[key]);
+  var t=String(term).replace(/'/g,' ').replace(/%/g,'').replace(/\\/g,'');
+  var q="select * where B like '%"+t+"%' or C like '%"+t+"%'";
+  var url='https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:json&headers=1&sheet='+encodeURIComponent(tab)+'&tq='+encodeURIComponent(q);
+  return fetch(url,{cache:'no-store'}).then(function(r){
+    if(!r.ok) throw new Error('시트 응답 '+r.status);
+    return r.text();
+  }).then(function(txt){ var rows=parseGvizText(txt); SQ[key]=rows; return rows; });
+}
+function markActive(){
+  document.querySelectorAll('[data-view]').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-view')===S.view);});
+  document.querySelectorAll('[data-day]').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-day')===S.day);});
+  document.querySelectorAll('[data-size]').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-size')===S.size);});
+}
+function renderSearch(){
+  var q=S.q, out=$('#out');
+  out.innerHTML='';
+  var panel=el('div');
+  panel.appendChild(el('div','mstat','🔍 “'+q+'” 검색 결과 · 날짜와 상관없이 예약·코멘트·검사지·조제·결제이력 전체에서 찾습니다'));
+  var ql=q.toLowerCase();
+  var hits=S.data.filter(function(r){
+    return ((r['아이']||'')+(r['보호자']||'')+(r['진료내용']||'')+(r['준비①']||'')+(r['안내②']||'')+(r['미용③']||'')).toLowerCase().indexOf(ql)>=0;
+  });
+  hits.sort(function(a,b){return String(b['날짜']).localeCompare(String(a['날짜']))||tmin(a['시각'])-tmin(b['시각']);});
+  panel.appendChild(el('div','inqsec','📅 예약·일정 '+hits.length+'건'));
+  if(!hits.length) panel.appendChild(el('div','memo','예약·일정에서 찾은 기록이 없습니다.'));
+  var lastDate=null;
+  hits.slice(0,20).forEach(function(r){
+    if(r['날짜']!==lastDate){ lastDate=r['날짜']; panel.appendChild(el('div','mdate',fmtMD(lastDate)+' · '+r['날짜'])); }
+    panel.appendChild(cardEl(r));
+  });
+  if(hits.length>20) panel.appendChild(el('div','memo','예약은 최근 20건만 표시했습니다. (전체 '+hits.length+'건)'));
+
+  var box=el('div'); panel.appendChild(box);
+  box.appendChild(el('div','loading','코멘트·검사지·조제·결제이력에서 찾는 중…'));
+  var token=q;
+  Promise.all(SEARCH_TABS.map(function(t){return searchTab(t,q).catch(function(){return null;});})).then(function(res){
+    if(S.q!==token) return;
+    box.innerHTML='';
+    var agg={}, order=[];
+    function add(name,owner,tab){
+      var k=name+'|'+(owner||'');
+      if(!agg[k]){agg[k]={name:name,owner:owner||'',c:{}};order.push(k);}
+      agg[k].c[tab]=(agg[k].c[tab]||0)+1;
+    }
+    var failed=false;
+    SEARCH_TABS.forEach(function(tab,i){
+      if(res[i]===null){ failed=true; return; }
+      (res[i]||[]).forEach(function(x){ if(x['아이']) add(x['아이'],x['보호자'],tab); });
+    });
+    hits.forEach(function(r){
+      var k=r['아이']+'|'+(r['보호자']||'');
+      if(!agg[k]){agg[k]={name:r['아이'],owner:r['보호자']||'',c:{}};order.push(k);}
+    });
+    panel.appendChild(el('div','inqsec','🗂 아이별 상세 기록 '+order.length+'명'+(failed?' (일부 탭 조회 실패)':'')));
+    if(!order.length) panel.appendChild(el('div','memo','코멘트·검사지·조제·결제이력에서 찾은 아이가 없습니다.'));
+    order.slice(0,40).forEach(function(k){
+      var a=agg[k];
+      var card=el('div','pcard');
+      var ttl=el('div','pttl',a.name+' ('+a.owner+')');
+      card.appendChild(ttl);
+      card.appendChild(el('div','memo',SEARCH_TABS.map(function(tab){return tab+' '+(a.c[tab]||0);}).join(' · ')));
+      var tools=el('div','tools');
+      var pr={'아이':a.name,'보호자':a.owner,'날짜':'','시각':'','구분':'검색'};
+      SEARCH_TABS.forEach(function(tab){
+        var b=el('button','btn b-gray',TAB_ICON[tab]); b.type='button';
+        b.addEventListener('click',function(){openModal(tab,pr);});
+        tools.appendChild(b);
+      });
+      card.appendChild(tools);
+      panel.appendChild(card);
+    });
+    if(order.length>40) panel.appendChild(el('div','memo','상세 기록은 40명까지만 표시했습니다. (전체 '+order.length+'명)'));
+  });
+  out.appendChild(panel);
+}
+
 function render(){
+  if(S.q){ renderSearch(); markActive(); return; }
   var out=$('#out'); out.innerHTML='';
   if(S.meta['버전']) $('#ver').textContent='GCN '+S.meta['버전'];
   else $('#ver').textContent='GCN';
@@ -521,10 +620,7 @@ function render(){
   if(!any && dates.length && (S.day==='week'||S.day==='next')){
     out.appendChild(el('div','loading','해당 기간에 표시할 예약이 없습니다.'));
   }
-  // 활성 버튼 표시
-  document.querySelectorAll('[data-view]').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-view')===S.view);});
-  document.querySelectorAll('[data-day]').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-day')===S.day);});
-  document.querySelectorAll('[data-size]').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-size')===S.size);});
+  markActive();
   $('#date').value=dates[0]||iso(TODAY);
 }
 
@@ -671,7 +767,7 @@ function openModal(kind,r){
   var title={ '일정':'🗓 일정', '검사지':'🩺 검사지', '코멘트':'✍️ 원장님 코멘트', '조제':'💊 조제', '결제이력':'💳 결제이력'}[kind];
   body.innerHTML='';
   body.appendChild(el('h3',null,title+' · '+r['아이']+' ('+r['보호자']+')'));
-  body.appendChild(el('div','sub',(r['날짜']||'')+' '+r['시각']+' · '+r['구분']));
+  body.appendChild(el('div','sub',(r['날짜']?r['날짜']+' ':'')+(r['시각']?r['시각']+' · ':'')+(r['구분']||'')));
   $('#mask').classList.add('show');
   if(kind==='일정'){
     var same=S.data.filter(function(x){return x['아이']===r['아이']&&x['보호자']===r['보호자'];})
@@ -734,7 +830,11 @@ document.querySelectorAll('[data-size]').forEach(function(b){
   });
 });
 $('#date').addEventListener('change',function(){S.date=this.value;S.day='all';render();});
-$('#q').addEventListener('input',function(){S.q=this.value.trim();render();});
+$('#q').addEventListener('input',function(){
+  var v=this.value.trim();
+  clearTimeout(window.__qT);
+  window.__qT=setTimeout(function(){S.q=v;render();},200);
+});
 $('#reset').addEventListener('click',function(){S.q='';$('#q').value='';S.view='doc';S.day='today';S.date=iso(TODAY);S.f=null;render();});
 $('#reload').addEventListener('click',load);
 $('#theme').addEventListener('click',function(){
