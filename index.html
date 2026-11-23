@@ -279,7 +279,7 @@ function datesFor(){
 }
 function rowsFor(dates){
   var out=S.data.filter(function(r){return dates.indexOf(String(r['날짜']).slice(0,10))>=0;});
-  if(S.view==='doc') out=out.filter(function(r){return r['구분']==='확정';});
+  if(S.view==='doc') out=out.filter(function(r){return r['구분']!=='처방';});
   if(S.view==='desk') out=out.filter(function(r){return (r['원무과준비']||r['원무과확인']||r['준비①']);});
   if(S.view==='rx') out=out.filter(function(r){return r['구분']==='처방'|| /약|조제/.test((r['준비①']||'')+(r['진료내용']||''));});
   if(S.view==='lab') out=out.filter(function(r){return (r['검사·진료']||r['검사']||r['진료']||/검사|수술|초음파|엑스레이|x-ray/.test(r['진료내용']||''));});
