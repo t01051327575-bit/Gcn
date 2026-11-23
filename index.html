@@ -304,6 +304,8 @@ function datesFor(){
   if(S.day==='next'){var b=[];for(var k=0;k<7;k++)b.push(iso(addDays(TODAY,7+k)));return b;}
   return [S.date];
 }
+function hasAP(r){return /A\+/.test(r['배지']||'')||(+r['자료건수']||0)>0;}
+function hasHok(r){return /A\s*혹/.test(r['배지']||'')||/혹/.test((r['진료내용']||'')+(r['검사·진료']||''));}
 function rowsFor(dates){
   var out=S.data.filter(function(r){return dates.indexOf(String(r['날짜']).slice(0,10))>=0;});
   var kindF=(S.f==='확정'||S.f==='비대기'||S.f==='처방')?S.f:null;
@@ -316,8 +318,8 @@ function rowsFor(dates){
     if(S.view==='rx') out=out.filter(function(r){return r['구분']==='처방'|| /약|조제/.test((r['준비①']||'')+(r['진료내용']||''));});
     if(S.view==='lab') out=out.filter(function(r){return (r['검사·진료']||r['검사']||r['진료']||/검사|수술|초음파|엑스레이|x-ray/.test(r['진료내용']||''));});
   }
-  if(S.f==='A+ 자료') out=out.filter(function(r){return /A\+/.test(r['배지']||'')||(+r['자료건수']||0)>0;});
-  if(S.f==='A 혹') out=out.filter(function(r){return /A\s*혹/.test(r['배지']||'')||/혹/.test((r['진료내용']||'')+(r['검사·진료']||''));});
+  if(S.f==='A+ 자료') out=out.filter(hasAP);
+  if(S.f==='A 혹') out=out.filter(hasHok);
   if(S.q){
     var q=S.q.toLowerCase();
     out=out.filter(function(r){return ((r['아이']||'')+(r['보호자']||'')+(r['진료내용']||'')+(r['준비①']||'')+(r['안내②']||'')).toLowerCase().indexOf(q)>=0;});
@@ -458,11 +460,12 @@ function cardEl(r){
 /* ===== 필터 바 (확정·비대기·처방·A+ 자료·A 혹) ===== */
 function filterBar(dayAll, shown){
   var bar=el('div','fchips');
-  function cnt(re){return dayAll.filter(function(r){return re.test(r['배지']||'');}).length;}
+  function cntAP(){return dayAll.filter(hasAP).length;}
+  function cntHok(){return dayAll.filter(hasHok).length;}
   var conf=dayAll.filter(function(r){return r['구분']==='확정';}).length;
   var non=dayAll.filter(function(r){return r['구분']==='비대기';}).length;
   var rx=dayAll.filter(function(r){return r['구분']==='처방';}).length;
-  var defs=[['전체',dayAll.length,''],['확정',conf,''],['비대기',non,''],['처방',rx,''],['A+ 자료',cnt(/A\+/),'a'],['A 혹',cnt(/A\s*혹/),'a']];
+  var defs=[['전체',dayAll.length,''],['확정',conf,''],['비대기',non,''],['처방',rx,''],['A+ 자료',cntAP(),'a'],['A 혹',cntHok(),'a']];
   defs.forEach(function(d){
     var f=(d[0]==='전체')?null:d[0];
     var on=(S.f===f);
