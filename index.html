@@ -123,6 +123,30 @@ input[type=date],input[type=text]{font:700 .9em 'Noto Sans KR';border:1.5px soli
 .modal .sub{color:var(--mut);font-weight:700;font-size:.86em;margin-bottom:10px}
 .modal .close{float:right;border:0;background:#F1F5F9;border-radius:999px;width:32px;height:32px;font-weight:900;cursor:pointer;color:#475569}
 .modal pre{white-space:pre-wrap;font-family:inherit;margin:0;font-size:.94em}
+/* 상세 모달 (코멘트·검사지·조제·결제이력) */
+.mstat{background:#F0FDFA;border:1px solid #99F6E4;color:#0F766E;border-radius:10px;padding:7px 10px;font-weight:900;font-size:.9em;margin:0 0 8px}
+.mwarn{background:#FFFBEB;border:1px solid #FDE68A;color:#92400E;border-radius:10px;padding:7px 10px;font-weight:800;font-size:.85em;margin:0 0 8px;line-height:1.5}
+.mgrp{margin:10px 0 0}
+.mdate{font-weight:900;color:#0f172a;font-size:.92em;border-bottom:1px solid var(--line);padding-bottom:3px;margin-bottom:4px}
+.mline{display:flex;gap:6px;align-items:baseline;padding:4px 0;font-size:.9em;border-bottom:1px dotted #E2E8F0;flex-wrap:wrap}
+.mline .mitem{flex:1 1 55%;word-break:break-all;min-width:120px}
+.mline .mqty{color:var(--mut);font-weight:800;white-space:nowrap;font-size:.86em;font-variant-numeric:tabular-nums}
+.mline .mamt{font-weight:900;white-space:nowrap;font-variant-numeric:tabular-nums}
+.mtag{font-size:.74em;font-weight:900;border-radius:999px;padding:0 6px;background:#F1F5F9;color:#334155;border:1px solid var(--line);white-space:nowrap}
+.msum{margin:2px 0 6px 0}
+.msum summary{cursor:pointer;font-weight:800;color:var(--green);font-size:.86em}
+.msum pre{background:#F8FAFC;border:1px solid var(--line);border-radius:8px;padding:8px;margin:4px 0 0;font-size:.9em}
+.mcmhead{font-weight:900;color:#0f172a;font-size:.9em;margin:2px 0 3px}
+.mcmp{white-space:pre-wrap;font-size:.92em;background:#F8FAFC;border:1px solid var(--line);border-radius:8px;padding:8px;margin:0 0 6px}
+.mtblink{display:inline-block;margin-top:12px;font-size:.85em;font-weight:800;color:var(--green)}
+.fchips{display:flex;gap:5px;flex-wrap:wrap;margin:0 0 6px;align-items:center}
+.fchip{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:4px 10px;font:800 .82em 'Noto Sans KR';color:#334155;cursor:pointer;white-space:nowrap}
+.fchip b{font-weight:900;margin-left:4px;color:var(--mut)}
+.fchip:hover{border-color:var(--green2)}
+.fchip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.fchip.on b{color:#E2E8F0}
+.fchip.a{border-color:#FBCFE8;background:#FDF2F8;color:#9D174D}
+.fchip.a.on{background:#9D174D;border-color:#9D174D;color:#fff}
 /* 기타 */
 .note{color:var(--mut);font-size:.82em;font-weight:700;margin:14px 0 0;line-height:1.6}
 .err{background:#FEF2F2;border:1px solid #FECACA;color:#991B1B;border-radius:12px;padding:10px 12px;font-weight:700;margin:10px 0}
@@ -186,7 +210,7 @@ input[type=date],input[type=text]{font:700 .9em 'Noto Sans KR';border:1.5px soli
 
   <div class="note">
     기호 안내: 비) 비대기 | X 미내원 | ▼ 선결제·보관 | ★ 필수 주의사항<br>
-    자료는 원무과·검사과에서 올린 내용을 그대로 모아 보여 줍니다. 비어 있는 칸은 '안 했다'가 아니라 '기록이 없다'는 뜻입니다.
+    자료는 원무과·검사과에서 올린 내용을 그대로 모아 보여 줍니다. 비어 있는 칸은 '안 했다'가 아니라 '기록이 없다'는 뜻입니다.<br>🩺 검사지·✍️ 코멘트·💊 조제·💳 결제이력은 <b>GCN_실시간_데이터</b> 시트의 각 탭에서 아이별로 바로 불러옵니다.
   </div>
 </div>
 
@@ -202,7 +226,8 @@ var TAB_INQ = '문의';
 var TAB_META = '설정';
 
 /* ================= 상태 ================= */
-var S = {data:null, inq:[], meta:{}, date:null, day:'today', view:'doc', q:'', size:'m'};
+var S = {data:null, inq:[], meta:{}, date:null, day:'today', view:'doc', q:'', size:'m', f:null};
+var PAT = {};
 var CK_KEY = 'gcn_desk_prep_v1';
 
 function $(s,r){return (r||document).querySelector(s);}
@@ -279,10 +304,18 @@ function datesFor(){
 }
 function rowsFor(dates){
   var out=S.data.filter(function(r){return dates.indexOf(String(r['날짜']).slice(0,10))>=0;});
-  if(S.view==='doc') out=out.filter(function(r){return r['구분']!=='처방';});
-  if(S.view==='desk') out=out.filter(function(r){return (r['원무과준비']||r['원무과확인']||r['준비①']);});
-  if(S.view==='rx') out=out.filter(function(r){return r['구분']==='처방'|| /약|조제/.test((r['준비①']||'')+(r['진료내용']||''));});
-  if(S.view==='lab') out=out.filter(function(r){return (r['검사·진료']||r['검사']||r['진료']||/검사|수술|초음파|엑스레이|x-ray/.test(r['진료내용']||''));});
+  var kindF=(S.f==='확정'||S.f==='비대기'||S.f==='처방')?S.f:null;
+  if(kindF){
+    /* 구분 필터를 눌렀을 때는 뷰 구분 제한보다 필터를 우선한다 */
+    out=out.filter(function(r){return (r['구분']||'비대기')===kindF;});
+  } else {
+    if(S.view==='doc') out=out.filter(function(r){return r['구분']!=='처방';});
+    if(S.view==='desk') out=out.filter(function(r){return (r['원무과준비']||r['원무과확인']||r['준비①']);});
+    if(S.view==='rx') out=out.filter(function(r){return r['구분']==='처방'|| /약|조제/.test((r['준비①']||'')+(r['진료내용']||''));});
+    if(S.view==='lab') out=out.filter(function(r){return (r['검사·진료']||r['검사']||r['진료']||/검사|수술|초음파|엑스레이|x-ray/.test(r['진료내용']||''));});
+  }
+  if(S.f==='A+ 자료') out=out.filter(function(r){return /A\+/.test(r['배지']||'')||(+r['자료건수']||0)>0;});
+  if(S.f==='A 혹') out=out.filter(function(r){return /A\s*혹/.test(r['배지']||'')||/혹/.test((r['진료내용']||'')+(r['검사·진료']||''));});
   if(S.q){
     var q=S.q.toLowerCase();
     out=out.filter(function(r){return ((r['아이']||'')+(r['보호자']||'')+(r['진료내용']||'')+(r['준비①']||'')+(r['안내②']||'')).toLowerCase().indexOf(q)>=0;});
@@ -302,6 +335,7 @@ function badgeEl(text){
 
 function inquiryBox(dateIso){
   if(dateIso!==iso(TODAY)) return null;
+  if(S.view!=='doc') return null;
   var list=S.inq.filter(function(r){return String(r['날짜']).slice(0,10)===dateIso;});
   var box=el('div','inqbox');
   var h=el('h3',null,'📞 오늘 답변할 보호자 문의 ('+list.length+'건 · 이름을 누르면 내용·근거 답변이 펼쳐져요)');
@@ -419,6 +453,34 @@ function cardEl(r){
   return c;
 }
 
+/* ===== 필터 바 (확정·비대기·처방·A+ 자료·A 혹) ===== */
+function filterBar(dayAll, shown){
+  var bar=el('div','fchips');
+  function cnt(re){return dayAll.filter(function(r){return re.test(r['배지']||'');}).length;}
+  var conf=dayAll.filter(function(r){return r['구분']==='확정';}).length;
+  var non=dayAll.filter(function(r){return r['구분']==='비대기';}).length;
+  var rx=dayAll.filter(function(r){return r['구분']==='처방';}).length;
+  var defs=[['전체',dayAll.length,''],['확정',conf,''],['비대기',non,''],['처방',rx,''],['A+ 자료',cnt(/A\+/),'a'],['A 혹',cnt(/A\s*혹/),'a']];
+  defs.forEach(function(d){
+    var f=(d[0]==='전체')?null:d[0];
+    var on=(S.f===f);
+    var b=el('button','fchip'+(d[2]?' '+d[2]:'')+(on?' on':''),d[0]);
+    b.type='button';
+    b.appendChild(el('b',null,String(d[1])));
+    b.addEventListener('click',function(){
+      S.f=(S.f===f)?null:f;
+      render();
+    });
+    bar.appendChild(b);
+  });
+  if(shown!=null){
+    var t=el('span','sum','지금 보기 '+shown+'건');
+    t.style.marginLeft='2px';
+    bar.appendChild(t);
+  }
+  return bar;
+}
+
 function render(){
   var out=$('#out'); out.innerHTML='';
   if(S.meta['버전']) $('#ver').textContent='GCN '+S.meta['버전'];
@@ -440,11 +502,6 @@ function render(){
     var h2=el('h2',null,(S.view==='doc'?'👨‍⚕️ 원장님 뷰 · ':(S.view==='desk'?'🏢 원무과 뷰 · ':(S.view==='lab'?'🔬 진료·검사과 뷰 · ':(S.view==='rx'?'💊 조제실 뷰 · ':'👁️ 전체 보기 · '))))+md(dd)+'('+wk(dd)+')');
     hd.appendChild(h2);
     var dayAll=S.data.filter(function(r){return r['날짜']===ds;});
-    var conf=dayAll.filter(function(r){return r['구분']==='확정';}).length;
-    var non=dayAll.filter(function(r){return r['구분']==='비대기';}).length;
-    var rx=dayAll.filter(function(r){return r['구분']==='처방';}).length;
-    var sum=el('span','sum','확정 '+conf+'건 · 비대기 '+non+'건'+(rx?' · 처방 '+rx+'건':'')+' · 지금 보기 '+rows.length+'건');
-    hd.appendChild(sum);
     if(S.day!=='week'&&S.day!=='next'){
       var nav=el('div','nav');
       var p=el('button','btn b-gray','‹ 이전 날'); p.addEventListener('click',function(){stepDay(-1);});
@@ -453,6 +510,7 @@ function render(){
       nav.appendChild(p);nav.appendChild(t);nav.appendChild(n); hd.appendChild(nav);
     }
     out.appendChild(hd);
+    out.appendChild(filterBar(dayAll, rows.length));
     if(!rows.length){
       out.appendChild(el('div','loading','이 날짜에 해당하는 예약이 없습니다.'));
       return;
@@ -477,29 +535,184 @@ function stepDay(n){
 function setDay(d){ S.day=d; if(d==='today')S.date=iso(TODAY); if(d==='tomorrow')S.date=iso(addDays(TODAY,1)); render(); }
 
 /* ================= 모달 ================= */
+var SHEET_URL='https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/edit';
+function fmtMD(ds){
+  var a=String(ds||'').split('-');
+  if(a.length<3) return String(ds||'');
+  var d=parseISO(ds);
+  return (+a[1])+'/'+(+a[2])+'('+wk(d)+')';
+}
+function moneyN(v){return (Number(v||0)).toLocaleString('ko-KR');}
+function groupByDate(rows){
+  var g={},order=[];
+  rows.forEach(function(x){
+    var d=String(x['날짜']||'').slice(0,10);
+    if(!g[d]){g[d]=[];order.push(d);}
+    g[d].push(x);
+  });
+  order.sort(function(a,b){return a<b?1:(a>b?-1:0);});
+  return order.map(function(d){return [d,g[d]];});
+}
+function patRows(tab,name){
+  var key=tab+'|'+name;
+  if(PAT[key]) return Promise.resolve(PAT[key]);
+  var q="select * where B = '"+String(name).replace(/'/g,' ').replace(/\\/g,'')+"'";
+  var url='https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:json&headers=1&sheet='+encodeURIComponent(tab)+'&tq='+encodeURIComponent(q);
+  return fetch(url,{cache:'no-store'}).then(function(r){
+    if(!r.ok) throw new Error('시트 응답 '+r.status);
+    return r.text();
+  }).then(function(t){
+    var i=t.indexOf('{'), j=t.lastIndexOf('}');
+    if(i<0) throw new Error('시트 형식을 읽을 수 없습니다');
+    var j0=JSON.parse(t.slice(i,j+1));
+    if(j0.status && j0.status!=='ok') throw new Error('시트 조회 오류 ('+j0.status+')');
+    var rows=(j0.table&&j0.table.rows)||[];
+    var cols=((j0.table&&j0.table.cols)||[]).map(function(c){return (c.label||'').trim();});
+    var out=rows.map(function(r){
+      var o={};
+      (r.c||[]).forEach(function(cell,k){ o[cols[k]||('c'+k)] = cell?(cell.f!=null?cell.f:(cell.v!=null?cell.v:'')):''; });
+      return o;
+    });
+    PAT[key]=out; return out;
+  });
+}
+function normOwn(s){return String(s||'').replace(/[\s|\[\]()]/g,'');}
+function ownerPick(rows, owner){
+  var o=normOwn(owner);
+  if(!rows.length||!o) return {rows:rows};
+  var exact=rows.filter(function(r){return normOwn(r['보호자'])===o;});
+  if(exact.length) return {rows:exact};
+  var part=rows.filter(function(r){var x=normOwn(r['보호자']);return x&&(x.indexOf(o)>=0||o.indexOf(x)>=0);});
+  if(part.length) return {rows:part};
+  var others=[];
+  rows.forEach(function(r){var x=String(r['보호자']||'');if(others.indexOf(x)<0)others.push(x);});
+  return {rows:rows, other:true, others:others};
+}
+function renderLab(box,rows){
+  box.appendChild(el('div','mstat','🧪 검사 이력 '+rows.length+'건 · 최근 '+(rows[0]?fmtMD(rows[0]['날짜']):'-')));
+  groupByDate(rows).forEach(function(g){
+    var grp=el('div','mgrp');
+    grp.appendChild(el('div','mdate',fmtMD(g[0])+' · '+g[1].length+'건'));
+    g[1].forEach(function(x){
+      var line=el('div','mline');
+      line.appendChild(el('span','mitem',x['검사명']));
+      grp.appendChild(line);
+      if(x['결과요약']){
+        var d=el('details','msum');
+        d.appendChild(el('summary',null,'🩺 판독·결과 요약 보기'));
+        d.appendChild(el('pre',null,x['결과요약']));
+        grp.appendChild(d);
+      }
+    });
+    box.appendChild(grp);
+  });
+}
+function renderCm(box,rows){
+  box.appendChild(el('div','mstat','✍️ 원장님 코멘트 '+rows.length+'건 · 최근 '+(rows[0]?fmtMD(rows[0]['날짜']):'-')));
+  groupByDate(rows).forEach(function(g){
+    var grp=el('div','mgrp');
+    grp.appendChild(el('div','mdate',fmtMD(g[0])));
+    g[1].forEach(function(x){
+      if(x['제목']) grp.appendChild(el('div','mcmhead',x['제목']));
+      grp.appendChild(el('div','mcmp',x['코멘트']));
+    });
+    box.appendChild(grp);
+  });
+}
+function renderRx(box,rows){
+  var sq=0;
+  rows.forEach(function(x){ if(x['구분']==='처방약품 출고') sq++; });
+  box.appendChild(el('div','mstat','💊 조제·처방약 '+rows.length+'건 (조제 내복약 '+(rows.length-sq)+' · 처방약품 출고 '+sq+') · 최근 '+(rows[0]?fmtMD(rows[0]['날짜']):'-')));
+  groupByDate(rows).forEach(function(g){
+    var grp=el('div','mgrp');
+    grp.appendChild(el('div','mdate',fmtMD(g[0])+' · '+g[1].length+'건'));
+    g[1].forEach(function(x){
+      var line=el('div','mline');
+      line.appendChild(el('span','mitem',x['약품']));
+      var q=String(x['일수·수량']||'');
+      line.appendChild(el('span','mqty',/^[0-9]+$/.test(q)?(x['구분']==='처방약품 출고'?q+'개':q+'일'):q));
+      line.appendChild(el('span','mtag',x['구분']==='처방약품 출고'?'출고':'조제'));
+      grp.appendChild(line);
+    });
+    box.appendChild(grp);
+  });
+}
+function renderPay(box,rows){
+  var total=0; rows.forEach(function(x){total+=(Number(x['금액'])||0);});
+  var recent=rows[0]?String(rows[0]['날짜']):'-';
+  box.appendChild(el('div','mstat','💳 결제·구매 '+rows.length+'건 · 합계 '+moneyN(total)+'원(반품 차감) · 최근 '+fmtMD(recent)));
+  var LIMIT=200;
+  var show=rows.slice(0,LIMIT);
+  var byM={},order=[];
+  show.forEach(function(x){
+    var m=String(x['날짜']||'').slice(0,7);
+    if(!byM[m]){byM[m]=[];order.push(m);}
+    byM[m].push(x);
+  });
+  order.forEach(function(m){
+    var grp=el('div','mgrp');
+    var sub=0; byM[m].forEach(function(x){sub+=(Number(x['금액'])||0);});
+    grp.appendChild(el('div','mdate',m.replace('-','년 ')+'월 · '+byM[m].length+'건 · '+moneyN(sub)+'원'));
+    byM[m].forEach(function(x){
+      var line=el('div','mline');
+      line.appendChild(el('span','mqty',fmtMD(x['날짜'])));
+      line.appendChild(el('span','mitem',x['품목']));
+      var q=Number(x['수량'])||0;
+      line.appendChild(el('span','mqty',q?q+'개':''));
+      line.appendChild(el('span','mamt',moneyN(Number(x['금액'])||0)+'원'));
+      grp.appendChild(line);
+    });
+    box.appendChild(grp);
+  });
+  if(rows.length>LIMIT) box.appendChild(el('div','mstat','최근 '+LIMIT+'건만 표시했습니다. 전체 '+rows.length+'건은 시트에서 보세요.'));
+}
 function openModal(kind,r){
   var body=$('#mbody');
   var title={ '일정':'🗓 일정', '검사지':'🩺 검사지', '코멘트':'✍️ 원장님 코멘트', '조제':'💊 조제', '결제이력':'💳 결제이력'}[kind];
   body.innerHTML='';
   body.appendChild(el('h3',null,title+' · '+r['아이']+' ('+r['보호자']+')'));
   body.appendChild(el('div','sub',(r['날짜']||'')+' '+r['시각']+' · '+r['구분']));
-  var pre=el('pre');
+  $('#mask').classList.add('show');
   if(kind==='일정'){
     var same=S.data.filter(function(x){return x['아이']===r['아이']&&x['보호자']===r['보호자'];})
-      .sort(function(a,b){return String(a['날짜']).localeCompare(String(b['날짜']));});
-    pre.textContent = same.length? same.map(function(x){return x['날짜']+' '+x['시각']+' ['+x['구분']+'] '+(x['진료내용']||'');}).join('\n')
-      : '이 아이의 예약 기록이 시트에 없습니다.';
-  } else if(kind==='검사지'){
-    pre.textContent = (r['검사·진료']||r['검사']||'') + (r['자료링크']?'\n📄 '+r['자료링크']:'') || '검사 자료가 아직 시트에 없습니다.';
-  } else if(kind==='코멘트'){
-    pre.textContent = (r['안내②']||'') || '원장님 코멘트가 아직 시트에 없습니다.';
-  } else if(kind==='조제'){
-    pre.textContent = (r['준비①']||'') || '조제·처방 내역이 아직 시트에 없습니다.';
-  } else {
-    pre.textContent = '결제이력은 인투펫 판매내역 연동 후 표시됩니다. (현재 시트에 없음)';
+      .sort(function(a,b){return String(b['날짜']).localeCompare(String(a['날짜']))||tmin(b['시각'])-tmin(a['시각']);});
+    if(!same.length){ body.appendChild(el('div','mstat','이 아이의 예약 기록이 시트에 없습니다.')); return; }
+    body.appendChild(el('div','mstat','🗓 예약·일정 '+same.length+'건'));
+    var grp=el('div','mgrp');
+    same.forEach(function(x){
+      var line=el('div','mline');
+      line.appendChild(el('span','mqty',fmtMD(x['날짜'])+' '+x['시각']));
+      line.appendChild(el('span','mitem',x['진료내용']||'(내용 없음)'));
+      line.appendChild(el('span','mtag',x['구분']||'비대기'));
+      grp.appendChild(line);
+    });
+    body.appendChild(grp);
+    return;
   }
-  body.appendChild(pre);
-  $('#mask').classList.add('show');
+  var box=el('div'); body.appendChild(box);
+  box.appendChild(el('div','loading','시트에서 '+kind+' 자료를 불러오는 중…'));
+  patRows(kind, r['아이']).then(function(all){
+    box.innerHTML='';
+    var pick=ownerPick(all, r['보호자']);
+    if(pick.other){
+      box.appendChild(el('div','mwarn','보호자 '+r['보호자']+' 이름으로는 기록이 없습니다. 같은 이름의 다른 보호자 기록 '+all.length+'건을 보여 줍니다 · 보호자: '+pick.others.join(', ')));
+    }
+    if(!pick.rows.length){
+      box.appendChild(el('div','mstat','이 아이의 '+kind+' 기록이 시트에 없습니다. (기록 없음 ≠ 안 함)'));
+    } else if(kind==='검사지'){ renderLab(box,pick.rows); }
+    else if(kind==='코멘트'){ renderCm(box,pick.rows); }
+    else if(kind==='조제'){ renderRx(box,pick.rows); }
+    else { renderPay(box,pick.rows); }
+    var a=el('a','mtblink','📄 시트에서 전체 보기 · GCN_실시간_데이터 '+kind+' 탭');
+    a.href=SHEET_URL; a.target='_blank'; a.rel='noreferrer';
+    box.appendChild(a);
+  }).catch(function(e){
+    box.innerHTML='';
+    box.appendChild(el('div','mwarn','시트에서 자료를 불러오지 못했습니다: '+e.message));
+    var a=el('a','mtblink','📄 시트에서 직접 보기');
+    a.href=SHEET_URL; a.target='_blank'; a.rel='noreferrer';
+    box.appendChild(a);
+  });
 }
 $('#mclose').addEventListener('click',function(){$('#mask').classList.remove('show');});
 $('#mask').addEventListener('click',function(e){if(e.target===$('#mask'))$('#mask').classList.remove('show');});
@@ -522,7 +735,7 @@ document.querySelectorAll('[data-size]').forEach(function(b){
 });
 $('#date').addEventListener('change',function(){S.date=this.value;S.day='all';render();});
 $('#q').addEventListener('input',function(){S.q=this.value.trim();render();});
-$('#reset').addEventListener('click',function(){S.q='';$('#q').value='';S.view='doc';S.day='today';S.date=iso(TODAY);render();});
+$('#reset').addEventListener('click',function(){S.q='';$('#q').value='';S.view='doc';S.day='today';S.date=iso(TODAY);S.f=null;render();});
 $('#reload').addEventListener('click',load);
 $('#theme').addEventListener('click',function(){
   document.body.classList.toggle('gmt');
