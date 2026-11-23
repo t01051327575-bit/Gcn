@@ -771,6 +771,7 @@ function renderPay(box,rows){
     box.appendChild(grp);
   });
   if(rows.length>LIMIT) box.appendChild(el('div','mstat','최근 '+LIMIT+'건만 표시했습니다. 전체 '+rows.length+'건은 시트에서 보세요.'));
+  box.appendChild(el('div','memo','※ 인투펫 판매(용품·처방약품·백신) 기준입니다. 금액 0원 출고(검사키트·진료비 포함 수납 등)는 결제이력에서 빼고 🩺 검사지·💊 조제에서 보여 줍니다.'));
 }
 function openModal(kind,r){
   var body=$('#mbody');
