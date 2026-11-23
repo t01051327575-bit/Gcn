@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- GCN v1123-2255 | 보호자 요청(GHN) 필수 준비 박스 분리 · 원무과 뷰 포함 -->
+<!-- GCN v1123-2305 | 보호자 요청(필수 준비) · 선결제(▼) · 결과지 링크 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -479,7 +479,7 @@ function cardEl(r){
     if(links.length){
       var lw=el('div','rlinks');
       links.forEach(function(u){
-        var a=el('a','rlink',/pet-previsit-checklist/.test(u)?'📄 GHN 건강관리표 결과지':'📄 자료 열기');
+        var a=el('a','rlink',/pet-previsit-checklist/.test(u)?'GHN 건강관리표 결과지 열기':'결과지·자료 열기');
         a.href=u; a.target='_blank'; a.rel='noopener noreferrer';
         lw.appendChild(a);
       });
