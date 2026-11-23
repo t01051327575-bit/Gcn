@@ -359,7 +359,7 @@ function cardEl(r){
 
   if(r['배지']){
     var bw=el('div','badges');
-    String(r['배지']).split(/[·|]/).forEach(function(t){var b=badgeEl(t); if(b) bw.appendChild(b);});
+    String(r['배지']).split('|').forEach(function(t){var b=badgeEl(t); if(b) bw.appendChild(b);});
     if(bw.childNodes.length) c.appendChild(bw);
   }
   if(r['진료내용']){
@@ -439,9 +439,11 @@ function render(){
     var hd=el('div','dayhead');
     var h2=el('h2',null,(S.view==='doc'?'👨‍⚕️ 원장님 뷰 · ':(S.view==='desk'?'🏢 원무과 뷰 · ':(S.view==='lab'?'🔬 진료·검사과 뷰 · ':(S.view==='rx'?'💊 조제실 뷰 · ':'👁️ 전체 보기 · '))))+md(dd)+'('+wk(dd)+')');
     hd.appendChild(h2);
-    var conf=rows.filter(function(r){return r['구분']==='확정';}).length;
-    var non=rows.filter(function(r){return r['구분']==='비대기';}).length;
-    var sum=el('span','sum','확정 '+conf+'건 · 비대기 '+non+'건 · 모두 '+rows.length+'건');
+    var dayAll=S.data.filter(function(r){return r['날짜']===ds;});
+    var conf=dayAll.filter(function(r){return r['구분']==='확정';}).length;
+    var non=dayAll.filter(function(r){return r['구분']==='비대기';}).length;
+    var rx=dayAll.filter(function(r){return r['구분']==='처방';}).length;
+    var sum=el('span','sum','확정 '+conf+'건 · 비대기 '+non+'건'+(rx?' · 처방 '+rx+'건':'')+' · 지금 보기 '+rows.length+'건');
     hd.appendChild(sum);
     if(S.day!=='week'&&S.day!=='next'){
       var nav=el('div','nav');
