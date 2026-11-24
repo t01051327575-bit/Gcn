@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- GCN v1124-0935 | 💬 보호자 문의·사전체크 바깥 노출 · 원무과 뷰 선결제-only 포함 · 보호자 요청(필수 준비) · 선결제(▼) · 결과지 링크 · 💡 권장·과거 안내 자동 표시 -->
+<!-- GCN v1124-0935 | 📋 보호자 사전체크·건강관리표 핵심 카드 상단 노출 · 원무과 뷰 선결제-only 포함 · 보호자 요청(필수 준비) · 선결제(▼) · 결과지 링크 · 💡 권장·과거 안내 자동 표시 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -111,7 +111,8 @@ input[type=date],input[type=text]{font:700 .9em 'Noto Sans KR';border:1.5px soli
 .dept.chk{background:#FFFBEB;border-color:#FDE68A;color:#92400E}
 .dept.req{background:#FFF1E6;border:2px solid #F97316;border-left:6px solid #EA580C;color:#9A3412;font-weight:900;font-size:.97em;padding:8px 11px;box-shadow:0 1px 0 #FED7AA inset}
 .dept.prepay{background:#EFF6FF;border:2px solid #3B82F6;border-left:6px solid #1D4ED8;color:#1E3A8A;font-weight:900;font-size:.97em;padding:8px 11px}
-.dept.inq{background:#F5F3FF;border:2px solid #C4B5FD;border-left:6px solid #7C3AED;color:#4C1D95;font-weight:900;font-size:.97em;padding:8px 11px;white-space:pre-wrap;word-break:keep-all}
+.dept.pre{background:#FEF3C7;border:2px solid #FBBF24;border-left:6px solid #D97706;color:#78350F;font-weight:900;font-size:.97em;padding:8px 11px;white-space:pre-wrap;word-break:keep-all;box-shadow:0 1px 0 #FDE68A inset}
+.dept.msg{background:#F5F3FF;border:2px solid #C4B5FD;border-left:6px solid #7C3AED;color:#4C1D95;font-weight:800;font-size:.94em;padding:7px 10px;white-space:pre-wrap;word-break:keep-all}
 .rlinks{margin-top:6px}
 .rlink{display:inline-block;margin:4px 6px 0 0;padding:5px 11px;border:1.5px solid #BFDBFE;background:#EFF6FF;border-radius:999px;color:#1D4ED8;font-weight:900;font-size:.88em;text-decoration:none}
 .rlink:hover{background:#DBEAFE;border-color:#93C5FD}
@@ -221,7 +222,7 @@ input[type=date],input[type=text]{font:700 .9em 'Noto Sans KR';border:1.5px soli
 
   <div class="note">
     기호 안내: 비) 비대기 | X 미내원 | ▼ 선결제·보관 | ★ 필수 주의사항<br>
-    🛍️ <b>보호자 요청 (필수 준비)</b> = 보호자가 GHN 건강관리표·카톡으로 미리 요청한 물품으로, 원무과가 내원 전에 준비해야 합니다. (주황 박스) · 🏢 원무과 준비 = 차트상 원무과 준비 사항 (초록 박스) · 💳 <b>선결제·보관</b> = 진료내용의 ▼ 표시 항목을 모아 보여 줍니다. (파란 박스) · 💬 <b>보호자 문의·사전체크</b> = ② 안내에 있는 보호자 사전체크·카톡 문의·진료신청 메모를 접지 않고 바로 보여 줍니다. (연보라 박스)<br>
+    🛍️ <b>보호자 요청 (필수 준비)</b> = 보호자가 GHN 건강관리표·카톡으로 미리 요청한 물품으로, 원무과가 내원 전에 준비해야 합니다. (주황 박스) · 🏢 원무과 준비 = 차트상 원무과 준비 사항 (초록 박스) · 💳 <b>선결제·보관</b> = 진료내용의 ▼ 표시 항목을 모아 보여 줍니다. (파란 박스) · 📋 <b>보호자 사전체크·건강관리표 핵심</b> = 보호자가 GHN 건강관리표로 남긴 사전체크(부위·증상·질문·원장님 확인 사항)를 ②를 펼치지 않아도 바로 보여 줍니다. (연주황 박스) · 💬 <b>보호자 문의·메모</b> = 카톡·진료신청으로 남긴 문의 (연보라 박스)<br>
     자료는 원무과·검사과에서 올린 내용을 그대로 모아 보여 줍니다. 비어 있는 칸은 '안 했다'가 아니라 '기록이 없다'는 뜻입니다.<br>🩺 검사지·✍️ 코멘트·💊 조제·💳 결제이력은 <b>GCN_실시간_데이터</b> 시트의 각 탭에서 아이별로 바로 불러옵니다.
   </div>
 </div>
@@ -357,7 +358,8 @@ function inqItems(text){
   });
   return out;
 }
-function inqText(r){ return inqItems(r['안내②']).join(' · '); }
+function inqPre(r){ return inqItems(r['안내②']).filter(function(x){return /^📋/.test(x);}); }
+function inqMsg(r){ return inqItems(r['안내②']).filter(function(x){return !/^📋/.test(x);}); }
 /* 💡 과거 권장·재검·참고 안내: 진료내용에서 보호자 확인·안내에 필요한 과거 메모(■필요/■필요시, 권:, *, ■경과/경과(), ●)를 뽑는다.
    ■정기(...) 전체 목록과 ▼(선결제)·◆(미용)·않/혹 항목은 뺀다. */
 var PG_KEEP=/^(■필요|■경과|●|\*+|경과\(|\d\)\s*권\s*:)/;
@@ -518,16 +520,20 @@ function cardEl(r){
     var memo=el('div','memo',r['진료내용']);
     c.appendChild(memo);
   }
+  /* 📋 보호자 사전체크·건강관리표 핵심: ② 아코디언을 펼치지 않아도 바로 읽히게 카드 상단에 강조 */
+  var iqPre=inqPre(r), iqMsg=inqMsg(r);
+  if(iqPre.length){
+    c.appendChild(el('div','dept pre','📋 보호자 사전체크·건강관리표 핵심: '+iqPre.join(' · ')));
+  }
+  if(iqMsg.length){
+    c.appendChild(el('div','dept msg','💬 보호자 문의·메모: '+iqMsg.join(' · ')));
+  }
   if(r['보호자요청']){
     var dq=el('div','dept req','🛍️ 보호자 요청 (필수 준비): '+esc(r['보호자요청'])); c.appendChild(dq);
   }
   var pp=prepayOf(r);
   if(pp.length){
     c.appendChild(el('div','dept prepay','💳 선결제·보관: '+esc(pp.join(' · '))));
-  }
-  var iq=inqText(r);
-  if(iq){
-    c.appendChild(el('div','dept inq','💬 보호자 문의·사전체크: '+iq));
   }
   if(r['원무과준비']){
     var d=el('div','dept','🏢 원무과 준비: '+esc(r['원무과준비'])); c.appendChild(d);
