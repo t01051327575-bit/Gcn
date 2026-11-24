@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- GCN v1124-0956 | 👨‍⚕️ 원장님 뷰에서 원무과 준비 항목(🛍️ 보호자 요청·🏢 원무과 준비·원무과 확인·□ 원무과 준비 체크) 숨김 · 🩺 ② 혹·이전 이상 · 📋 보호자 사전체크·건강관리표 핵심 -->
+<!-- GCN v1124-1005 | 📌 전달 메모에 예약담당자(구분) 표시 + 예약 메모 110자 자르지 않고 전체 표시 · 👨‍⚕️ 원장님 뷰에서 원무과 준비 항목 숨김 · 🩺 ② 혹·이전 이상 · 📋 보호자 사전체크·건강관리표 핵심 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -121,7 +121,7 @@ input[type=date],input[type=text]{font:700 .9em 'Noto Sans KR';border:1.5px soli
 .lumpcap{font-size:.86em;font-weight:800;color:#047857;margin-bottom:2px}
 .dept.next{background:#EEF2FF;border:2px solid #A5B4FC;border-left:6px solid #4F46E5;color:#312E81;font-weight:800;font-size:.93em;padding:7px 10px}
 .nextlab{font-weight:900;color:#3730A3}
-.nextmemo{margin-top:2px;font-weight:700;color:#4338CA}
+.nextmemo{margin-top:2px;font-weight:700;color:#4338CA;white-space:pre-line;word-break:keep-all}
 .hoklink{display:inline-block;border:1.5px solid #6EE7B7;background:#fff;border-radius:999px;padding:1px 8px;margin-left:2px;color:#047857;font-weight:900;font-size:.9em;text-decoration:none}
 .dept.msg{background:#F5F3FF;border:2px solid #C4B5FD;border-left:6px solid #7C3AED;color:#4C1D95;font-weight:800;font-size:.94em;padding:7px 10px;white-space:pre-wrap;word-break:keep-all}
 .rlinks{margin-top:6px}
@@ -233,7 +233,7 @@ input[type=date],input[type=text]{font:700 .9em 'Noto Sans KR';border:1.5px soli
 
   <div class="note">
     기호 안내: 비) 비대기 | X 미내원 | ▼ 선결제·보관 | ★ 필수 주의사항<br>
-    🛍️ <b>보호자 요청 (필수 준비)</b> = 보호자가 GHN 건강관리표·카톡으로 미리 요청한 물품으로, 원무과가 내원 전에 준비해야 합니다. (주황 박스) · 🏢 원무과 준비 = 차트상 원무과 준비 사항 (초록 박스) · 🏢 원무과 확인 = 원무과가 확인할 사항 (초록 점선 박스) — 🛍️ 보호자 요청·🏢 원무과 준비·🏢 원무과 확인 박스와 □ 원무과 준비 체크는 <b>원장님 뷰에서는 표시되지 않고</b>, 원무과 뷰·전체 보기 등에서만 나옵니다. · 💳 <b>선결제·보관</b> = 진료내용의 ▼ 표시 항목을 모아 보여 줍니다. (파란 박스) · 📋 <b>보호자 사전체크·건강관리표 핵심</b> = 보호자가 GHN 건강관리표로 남긴 사전체크(부위·증상·질문·원장님 확인 사항)를 ②를 펼치지 않아도 바로 보여 줍니다. (연주황 박스) · 💬 <b>보호자 문의·메모</b> = 카톡·진료신청으로 남긴 문의 (연보라 박스) · 🩺 <b>② 혹·이전 이상</b> = 🟣 기존 혹(혹 기록 부위·수술·차트 소견) / □ 신규(GHN 건강관리표로 새로 올린 혹·병변) / 🔴 이전 이상(지난 검사 이상·면역L·종양H) — 원장님 뷰·전체 보기에서만 표시됩니다. 🖼 혹 위치 표시도 = 보호자가 GHN으로 제출한 최신 병변 위치 그림입니다. 📌 <b>전달 메모</b> = 30일 안에 다음 예약이 있으면 오늘 같이 진행할지 확인하는 메모입니다. (남색 박스)<br>
+    🛍️ <b>보호자 요청 (필수 준비)</b> = 보호자가 GHN 건강관리표·카톡으로 미리 요청한 물품으로, 원무과가 내원 전에 준비해야 합니다. (주황 박스) · 🏢 원무과 준비 = 차트상 원무과 준비 사항 (초록 박스) · 🏢 원무과 확인 = 원무과가 확인할 사항 (초록 점선 박스) — 🛍️ 보호자 요청·🏢 원무과 준비·🏢 원무과 확인 박스와 □ 원무과 준비 체크는 <b>원장님 뷰에서는 표시되지 않고</b>, 원무과 뷰·전체 보기 등에서만 나옵니다. · 💳 <b>선결제·보관</b> = 진료내용의 ▼ 표시 항목을 모아 보여 줍니다. (파란 박스) · 📋 <b>보호자 사전체크·건강관리표 핵심</b> = 보호자가 GHN 건강관리표로 남긴 사전체크(부위·증상·질문·원장님 확인 사항)를 ②를 펼치지 않아도 바로 보여 줍니다. (연주황 박스) · 💬 <b>보호자 문의·메모</b> = 카톡·진료신청으로 남긴 문의 (연보라 박스) · 🩺 <b>② 혹·이전 이상</b> = 🟣 기존 혹(혹 기록 부위·수술·차트 소견) / □ 신규(GHN 건강관리표로 새로 올린 혹·병변) / 🔴 이전 이상(지난 검사 이상·면역L·종양H) — 원장님 뷰·전체 보기에서만 표시됩니다. 🖼 혹 위치 표시도 = 보호자가 GHN으로 제출한 최신 병변 위치 그림입니다. 📌 <b>전달 메모</b> = 30일 안에 다음 예약이 있으면 예약 일시·예약담당자(구분)와 함께 오늘 같이 진행할지 확인하는 메모입니다. 예약 메모는 잘리지 않고 전체가 그대로 나옵니다. (남색 박스)<br>
     자료는 원무과·검사과에서 올린 내용을 그대로 모아 보여 줍니다. 비어 있는 칸은 '안 했다'가 아니라 '기록이 없다'는 뜻입니다.<br>🩺 검사지·✍️ 코멘트·💊 조제·💳 결제이력은 <b>GCN_실시간_데이터</b> 시트의 각 탭에서 아이별로 바로 불러옵니다.
   </div>
 </div>
@@ -301,9 +301,9 @@ function load(){
   $('#out').innerHTML='<div class="loading">불러오는 중…</div>';
   $('#err').innerHTML='';
   Promise.all([fetchSheet(TAB_APPTS), fetchSheet(TAB_INQ), fetchSheet(TAB_META).catch(function(){return [];}),
-    fetch('lump.json?v=1124-0956',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};}),
-    fetch('lumps/index.json?v=1124-0956',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};}),
-    fetch('next.json?v=1124-0956',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};})])
+    fetch('lump.json?v=1124-1005',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};}),
+    fetch('lumps/index.json?v=1124-1005',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};}),
+    fetch('next.json?v=1124-1005',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};})])
   .then(function(res){
     S.data = res[0].filter(function(r){return r['아이']||r['날짜'];}).map(function(r){
       r['날짜']=String(r['날짜']||'').slice(0,10);
@@ -419,14 +419,26 @@ function lumpOf(r){ return LUMP[(r['아이']||'')+'|'+(r['보호자']||'')] || n
 function clipText(s,n){ s=String(s||'').replace(/\s+/g,' ').trim(); return s.length>n? s.slice(0,n-1)+'…' : s; }
 /* 📌 30일 안 다음 예약: same 아이·보호자의 앞으로의 예약(next.json 우선, 없으면 오늘 불러온 예약표) */
 function nzOwner(s){ return String(s||'').replace(/[\s\]]+/g,''); }
+/* 차트 이름 끝에 붙는 잡음('>' 'ㅣ' '|' 등)을 떼고 비교 — '나르ㅣ'·'보리>'도 '나르'·'보리' 카드와 이어짐 */
+function nzName(s){ return String(s||'').replace(/[\s\]>ㅣ|*^]+$/,''); }
+function nextList(nm,ow){
+  var k=nm+'|'+ow;
+  if(NEXT[k]) return NEXT[k];
+  var t=nzName(nm), out=[];
+  for(var kk in NEXT){
+    var p=kk.split('|');
+    if(nzName(p[0])===t && nzOwner(p[1])===ow) out=out.concat(NEXT[kk]);
+  }
+  return out;
+}
 function nextAppt(r){
   var base=parseISO(r['날짜']||'');
   if(isNaN(base.getTime())) return null;
   var lim=addDays(base,30), nm=r['아이']||'', ow=nzOwner(r['보호자']), best=null, bed=null;
-  (NEXT[nm+'|'+ow]||[]).forEach(function(a){
+  nextList(nm,ow).forEach(function(a){
     var d=parseISO(a[0]||'');
     if(isNaN(d.getTime()) || !(d>base) || d>lim) return;
-    var rec={date:a[0],time:a[1]||'',memo:a[2]||'',kind:a[3]||'visit'};
+    var rec={date:a[0],time:a[1]||'',memo:a[2]||'',kind:a[3]||'visit',doctor:a[4]||''};
     if(rec.kind==='visit'){ if(!best || d<parseISO(best.date)) best=rec; }
     else if(!bed || d<parseISO(bed.date)) bed=rec;
   });
@@ -679,8 +691,8 @@ function cardEl(r){
       nb.appendChild(el('b','nextlab','📌 전달 메모'));
       var nd=parseISO(na.date);
       var days=Math.round((nd-parseISO(r['날짜']))/(1000*60*60*24));
-      nb.appendChild(document.createTextNode(' 다음 예약 '+md(nd)+'('+wk(nd)+') '+na.time+'이 30일 안('+days+'일 뒤)에 있어요 — 오늘 같이 진행할지 원장님 확인 필요'));
-      if(na.memo) nb.appendChild(el('div','nextmemo','· '+clipText(na.memo,110)));
+      nb.appendChild(document.createTextNode(' 다음 예약 '+md(nd)+'('+wk(nd)+') '+na.time+(na.doctor?' ('+na.doctor+')':'')+'이 30일 안('+days+'일 뒤)에 있어요 — 오늘 같이 진행할지 원장님 확인 필요'));
+      if(na.memo) nb.appendChild(el('div','nextmemo','· '+na.memo));
       c.appendChild(nb);
     }
   }
