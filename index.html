@@ -378,6 +378,7 @@ function hokPrev(r){
   s.split(/[|·\/,;■●◆()\[\]]+/).forEach(function(t){
     t=t.replace(/^\s+|\s+$/g,'').replace(/^\d+/,'').trim();
     if(!t || t.length<2 || t.length>18 || !HOK_RE.test(t)) return;
+    if(/^혹[::]?$/.test(t)) return;
     if(seen[t]) return;
     seen[t]=1; out.push(t);
   });
@@ -409,7 +410,7 @@ function critItems(r){
   var s=String(r['진료내용']||'').replace(/\r/g,'');
   var out=[], seen={};
   function add(t){
-    t=String(t||'').replace(/^[\s■●◆()\[\]0-9.:;,\-]+/,'').replace(/[■●◆].*$/,'').replace(/\s+/g,' ').trim();
+    t=String(t||'').replace(/^[\s■●◆()\[\]0-9.:;,\-]+/,'').replace(/[■●◆].*$/,'').replace(/[\s)\]】]+$/,'').replace(/\s+/g,' ').trim();
     if(!t || t.length<2 || seen[t]) return;
     seen[t]=1; out.push(t);
   }
