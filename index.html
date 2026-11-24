@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- GCN v1124-1255 | 🗓 주간 = 08:00~19:00 × 월~일 타임테이블(구분별 색·배지·이전/다음 주), 월간 = 일~토 달력(이전/다음 달) + 월간 버튼 추가 · ✨ A+ 자료 = 오늘 새로 올라온 자료(당일 GHN·신규 접수) 기준으로 정리(과거 자료건수 제외) · 🟡 종이 표시도 그림 추가 · 🖼 혹 위치 그림 = 🟣 기존 혹 + □ 신규(GHN) + 🟡 종이 표시도(누르면 크게 열림) · 📌 전달 메모 예약담당자 · 🩺 ② 혹·이전 이상 · 📋 보호자 사전체크·건강관리표 핵심 -->
+<!-- GCN v1124-1236 | 🗓 주간 = 08:00~19:00 × 월~일 타임테이블(구분별 색·배지·이전/다음 주), 월간 = 일~토 달력(이전/다음 달) + 월간 버튼 추가 · ✨ A+ 자료 = 오늘 새로 올라온 자료(당일 GHN·신규 접수) 기준으로 정리(과거 자료건수 제외) · 🟡 종이 표시도 그림 추가 · 🖼 혹 위치 그림 = 🟣 기존 혹 + □ 신규(GHN) + 🟡 종이 표시도(누르면 크게 열림) · 📌 전달 메모 예약담당자 · 🩺 ② 혹·이전 이상 · 📋 보호자 사전체크·건강관리표 핵심 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -422,9 +422,9 @@ function load(){
   $('#out').innerHTML='<div class="loading">불러오는 중…</div>';
   $('#err').innerHTML='';
   Promise.all([fetchSheet(TAB_APPTS), fetchSheet(TAB_INQ), fetchSheet(TAB_META).catch(function(){return [];}),
-    fetch('lump.json?v=1124-1255',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};}),
-    fetch('lumps/index.json?v=1124-1255',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};}),
-    fetch('next.json?v=1124-1255',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};})])
+    fetch('lump.json?v=1124-1236',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};}),
+    fetch('lumps/index.json?v=1124-1236',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};}),
+    fetch('next.json?v=1124-1236',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};})])
   .then(function(res){
     S.data = res[0].filter(function(r){return r['아이']||r['날짜'];}).map(function(r){
       r['날짜']=String(r['날짜']||'').slice(0,10);
