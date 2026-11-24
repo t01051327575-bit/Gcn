@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- GCN v1124-1330 | 🗓 주간 = 08:00~19:00 × 월~일 타임테이블(구분별 색·배지·이전/다음 주), 월간 = 일~토 달력(이전/다음 달) + 월간 버튼 추가 · ✨ A+ 자료 = 오늘 새로 올라온 자료(당일 GHN·신규 접수) 기준으로 정리(과거 자료건수 제외) · 🟡 종이 표시도 그림 추가 · 🖼 혹 위치 그림 = 🟣 기존 혹 + □ 신규(GHN) + 🟡 종이 표시도(누르면 크게 열림) · 📌 전달 메모 = 1번 장봉환 원장님 탭만 '확정 예약'(초록), 나머지 탭은 '비대기'(주황) · 🩺 ② 혹·이전 이상 · 📋 보호자 사전체크·건강관리표 핵심 -->
+<!-- GCN v1124-1445 | 🔗 상단 바로가기 = 🩺 혹모음(GDN) · 📋 GHN 접수함(새 탭으로 열림) · 🗓 주간 = 08:00~19:00 × 월~일 타임테이블(구분별 색·배지·이전/다음 주), 월간 = 일~토 달력(이전/다음 달) + 월간 버튼 추가 · ✨ A+ 자료 = 오늘 새로 올라온 자료(당일 GHN·신규 접수) 기준으로 정리(과거 자료건수 제외) · 🟡 종이 표시도 그림 추가 · 🖼 혹 위치 그림 = 🟣 기존 혹 + □ 신규(GHN) + 🟡 종이 표시도(누르면 크게 열림) · 📌 전달 메모 = 1번 장봉환 원장님 탭만 '확정 예약'(초록), 나머지 탭은 '비대기'(주황) · 🩺 ② 혹·이전 이상 · 📋 보호자 사전체크·건강관리표 핵심 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -34,6 +34,14 @@ a{color:var(--green)}
 .btn.on{background:var(--green);border-color:var(--green);color:#fff}
 .btn.refresh{background:var(--green);border-color:var(--green);color:#fff}
 .btn.ghost{background:#fff}
+/* 상단 바로가기 (혹모음 GDN · GHN 접수함) */
+.lnk{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:6px 13px;text-decoration:none;white-space:nowrap;
+  font:800 .9em 'Noto Sans KR';border:1.5px solid;line-height:1.3}
+.lnk:hover{filter:brightness(.96)}
+.lnk .tag{font-size:.82em;font-weight:900;opacity:.7}
+.lnk.gdn{border-color:#C9B6F5;background:#F5F3FF;color:#4C1D95}
+.lnk.ghn{border-color:#8FD3C7;background:#EAF7F4;color:#0B5F57}
+.ctlnote{font-size:.78em;font-weight:700;color:var(--mut);margin-left:2px}
 .ver{font-size:.78em;color:var(--mut);font-weight:700}
 /* 헤더 */
 .hero{padding:10px 2px 4px}
@@ -339,6 +347,12 @@ td.ttslot.today{background:#FFFDF5}
   </div>
 
   <div class="ctl">
+    <div class="row">
+      <span class="lbl">🔗 바로가기</span>
+      <a class="lnk gdn" href="https://script.google.com/macros/s/AKfycbxELwfsnujCqxTf9aNg8W6tobbN0Jh1d5UBVDenvR07TI54w8dX7pP_ke-Etc6bAEuFkQ/exec?app=GDN" target="_blank" rel="noopener" title="GDN · 검사 결과 (혹·FMT·뚜아S) — 혹 기록·검사 결과 정리 앱">🩺 혹모음 <span class="tag">GDN</span></a>
+      <a class="lnk ghn" href="https://pet-previsit-checklist.t01051327575.chatgpt.site/staff" target="_blank" rel="noopener" title="GHN · 내원 전 건강관리표 직원 접수함 (보호자 제출·결과지 확인)">📋 GHN 접수함</a>
+      <span class="ctlnote">새 탭으로 열려요</span>
+    </div>
     <div class="row">
       <span class="lbl">📅 예약 날짜별 모아보기</span>
       <input type="date" id="date">
