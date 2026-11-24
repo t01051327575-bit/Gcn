@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- GCN v1124-1230 | ✨ A+ 자료 = 오늘 새로 올라온 자료(당일 GHN·신규 접수) 기준으로 정리(과거 자료건수 제외) · 🟡 종이 표시도 그림 추가 · 🖼 혹 위치 그림 = 🟣 기존 혹 + □ 신규(GHN) + 🟡 종이 표시도(누르면 크게 열림) · 📌 전달 메모 예약담당자 · 🩺 ② 혹·이전 이상 · 📋 보호자 사전체크·건강관리표 핵심 -->
+<!-- GCN v1124-1250 | 🗓 주간·월간 요약 뷰(7칸 요약·달력) + 월간 버튼 추가 · ✨ A+ 자료 = 오늘 새로 올라온 자료(당일 GHN·신규 접수) 기준으로 정리(과거 자료건수 제외) · 🟡 종이 표시도 그림 추가 · 🖼 혹 위치 그림 = 🟣 기존 혹 + □ 신규(GHN) + 🟡 종이 표시도(누르면 크게 열림) · 📌 전달 메모 예약담당자 · 🩺 ② 혹·이전 이상 · 📋 보호자 사전체크·건강관리표 핵심 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -188,6 +188,70 @@ input[type=date],input[type=text]{font:700 .9em 'Noto Sans KR';border:1.5px soli
   .wrap{padding:10px 8px 50px}
   .card{padding:9px 10px}
 }
+/* ===== 주간 요약 ===== */
+.sumhead{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:14px 0 8px}
+.sumhead h2{margin:0;font-size:1.18em;font-weight:900}
+.sumhead .sum{color:var(--mut);font-size:.86em;font-weight:700}
+.sumhead .switchbtn{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.wgrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
+@media(max-width:900px){.wgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:430px){.wgrid{grid-template-columns:1fr}}
+.wcard{background:#fff;border:1px solid var(--line);border-top:4px solid var(--green2);border-radius:12px;padding:8px 9px;
+  cursor:pointer;display:flex;flex-direction:column;gap:5px;min-height:140px;text-align:left;font-family:inherit;color:inherit}
+.wcard:hover{border-color:var(--green);box-shadow:0 2px 10px rgba(15,23,42,.08)}
+.wcard.today{border-top-color:var(--pink);background:#FFF9FB}
+.wcard.off{background:#F8FAFC;border-top-color:#CBD5E1;cursor:default}
+.wcard.off:hover{border-color:var(--line);box-shadow:none}
+.wcard .wd{display:flex;align-items:baseline;gap:5px;flex-wrap:wrap}
+.wcard .wd b{font-size:1.02em;font-weight:900;font-variant-numeric:tabular-nums}
+.wcard .wd .wk{font-size:.82em;font-weight:900;color:var(--mut)}
+.wcard .wd .cnt{margin-left:auto;font-size:.78em;font-weight:900;color:var(--green);background:#ECFDF5;border:1px solid #A7F3D0;border-radius:999px;padding:0 7px;white-space:nowrap}
+.wcard.off .wd .cnt{color:#64748B;background:#F1F5F9;border-color:var(--line)}
+.brk{display:flex;gap:4px;flex-wrap:wrap;font-size:.74em;font-weight:900}
+.brk span{border-radius:999px;padding:0 6px;border:1px solid var(--line);background:#F8FAFC;color:#334155;white-space:nowrap}
+.brk .c1{background:#ECFDF5;border-color:#6EE7B7;color:#065F46}
+.brk .c2{background:#FFFBEB;border-color:#FCD34D;color:#92400E}
+.brk .c3{background:#F5F3FF;border-color:#C4B5FD;color:#5B21B6}
+.tgrow{display:flex;gap:4px;flex-wrap:wrap;font-size:.72em;font-weight:900}
+.tgrow span{border-radius:999px;padding:0 6px;background:#F1F5F9;border:1px solid var(--line);color:#0F172A;white-space:nowrap}
+.wcard .names{font-size:.78em;font-weight:700;color:#334155;line-height:1.5;word-break:keep-all;flex:1}
+.wcard .names i{font-style:normal;color:var(--mut);font-weight:800;font-variant-numeric:tabular-nums;margin-right:2px}
+.wcard .offt{font-size:.82em;font-weight:900;color:#94A3B8;flex:1}
+.chartln{margin-top:auto;font-size:.74em;font-weight:800;color:#4338CA;background:#EEF2FF;border:1px solid #C7D2FE;border-radius:8px;padding:3px 6px;line-height:1.4}
+/* ===== 월간 달력 ===== */
+.mcal{border:1px solid var(--line);border-radius:14px;background:#fff;padding:8px;box-shadow:0 2px 8px rgba(15,23,42,.04)}
+.mtop{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:0 0 8px}
+.mtop .mtitle{font-weight:900;font-size:1.06em;margin:0 4px;min-width:112px;text-align:center}
+.mtop .sp{flex:1}
+.mdow{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-bottom:6px}
+.mdow div{text-align:center;font-size:.82em;font-weight:900;color:var(--mut)}
+.mdow div.sun{color:#DC2626}.mdow div.sat{color:#2563EB}
+.mgrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.mcell{border:1px solid var(--line);border-radius:10px;min-height:106px;padding:5px 6px;background:#fff;
+  display:flex;flex-direction:column;gap:3px;cursor:pointer;text-align:left;font-family:inherit;color:inherit;overflow:hidden}
+.mcell:hover{border-color:var(--green2);box-shadow:0 2px 8px rgba(15,23,42,.07)}
+.mcell.blank{background:transparent;border:0;cursor:default;box-shadow:none}
+.mcell.off{background:#F8FAFC;cursor:default}
+.mcell.off:hover{border-color:var(--line);box-shadow:none}
+.mcell.has{border-top:3px solid var(--green2)}
+.mcell.today{background:#FFF9FB;box-shadow:0 0 0 2px #FBCFE8 inset}
+.mcell .dnum{display:flex;align-items:baseline;gap:4px}
+.mcell .dnum b{font-size:1em;font-weight:900;font-variant-numeric:tabular-nums}
+.mcell.sun .dnum b{color:#DC2626}.mcell.sat .dnum b{color:#2563EB}
+.mcell .dnum .cnt{margin-left:auto;font-size:.72em;font-weight:900;color:var(--green);white-space:nowrap}
+.mcell .names{font-size:.68em;font-weight:700;color:#334155;line-height:1.4;word-break:keep-all}
+.mcell .names i{font-style:normal;color:var(--mut);font-weight:800}
+.mcell .offt{font-size:.68em;font-weight:800;color:#94A3B8}
+.mcell .chartln{font-size:.66em}
+.legend{color:var(--mut);font-size:.8em;font-weight:700;margin:8px 2px 0;line-height:1.6}
+@media(max-width:700px){
+  .mcal{padding:6px}
+  .mdow{display:none}
+  .mgrid{display:flex;flex-direction:column;gap:6px}
+  .mcell.blank,.mcell.off{display:none}
+  .mcell{min-height:0}
+  .mcell .names{font-size:.8em}
+}
 </style>
 </head>
 <body>
@@ -216,6 +280,7 @@ input[type=date],input[type=text]{font:700 .9em 'Noto Sans KR';border:1.5px soli
       <button class="btn b-green" data-day="today">오늘</button>
       <button class="btn b-green" data-day="tomorrow">내일</button>
       <button class="btn b-green" data-day="week">주간</button>
+      <button class="btn b-green" data-day="month">월간</button>
       <button class="btn b-purple" data-day="next">📅 차주 안내·금식</button>
     </div>
     <div class="row">
@@ -257,7 +322,7 @@ var TAB_INQ = '문의';
 var TAB_META = '설정';
 
 /* ================= 상태 ================= */
-var S = {data:null, inq:[], meta:{}, date:null, day:'today', view:'doc', q:'', size:'m', f:null};
+var S = {data:null, inq:[], meta:{}, date:null, day:'today', view:'doc', q:'', size:'m', f:null, month:null, detail:false};
 var PAT = {};
 var LUMP = {};   /* 혹 기록(부위·수술·세포검사) — 사이트 같은 위치의 lump.json */
 var LUMPIMG = {}; /* 혹 마킹 그림 파일명 — lumps/index.json */
@@ -308,9 +373,9 @@ function load(){
   $('#out').innerHTML='<div class="loading">불러오는 중…</div>';
   $('#err').innerHTML='';
   Promise.all([fetchSheet(TAB_APPTS), fetchSheet(TAB_INQ), fetchSheet(TAB_META).catch(function(){return [];}),
-    fetch('lump.json?v=1124-1230',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};}),
-    fetch('lumps/index.json?v=1124-1230',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};}),
-    fetch('next.json?v=1124-1230',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};})])
+    fetch('lump.json?v=1124-1250',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};}),
+    fetch('lumps/index.json?v=1124-1250',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};}),
+    fetch('next.json?v=1124-1250',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};})])
   .then(function(res){
     S.data = res[0].filter(function(r){return r['아이']||r['날짜'];}).map(function(r){
       r['날짜']=String(r['날짜']||'').slice(0,10);
@@ -340,7 +405,102 @@ function datesFor(){
   if(S.day==='tomorrow') return [iso(addDays(TODAY,1))];
   if(S.day==='week'){var a=[];for(var i=0;i<7;i++)a.push(iso(addDays(TODAY,i)));return a;}
   if(S.day==='next'){var b=[];for(var k=0;k<7;k++)b.push(iso(addDays(TODAY,7+k)));return b;}
+  if(S.day==='month'){var mr=monthRange(monthKey()),c=[];for(var q=1;q<=mr.days;q++)c.push(iso(new Date(mr.y,mr.m-1,q)));return c;}
   return [S.date];
+}
+/* ===== 주간·월간 요약 뷰 공통 도구 ===== */
+var CHART_CACHE=null;   /* next.json(차트 예약) → 날짜별 목록 */
+function mkOf(d){ d=d||TODAY; return d.getFullYear()+'-'+pad(d.getMonth()+1); }
+function monthKey(){ return S.month || mkOf(TODAY); }
+function monthRange(mk){
+  var a=String(mk||monthKey()).split('-'), y=+a[0], m=+a[1];
+  var first=new Date(y,m-1,1), last=new Date(y,m,0);
+  return {y:y,m:m,first:first,last:last,days:last.getDate(),lead:first.getDay()};
+}
+function shiftMonth(n){
+  var r=monthRange();
+  var d=new Date(r.y,r.m-1+n,1);
+  S.month=mkOf(d); S.day='month'; render();
+}
+/* 병원 진료일 = 월·화·수 (목~일 휴진) */
+function isClinicDay(ds){ var w=parseISO(ds).getDay(); return w===1||w===2||w===3; }
+function dayRows(ds){
+  return S.data.filter(function(r){return String(r['날짜']).slice(0,10)===ds;})
+    .sort(function(a,b){return tmin(a['시각'])-tmin(b['시각'])||String(a['아이']).localeCompare(String(b['아이']));});
+}
+function dayStats(rows){
+  var st={n:rows.length,c1:0,c2:0,c3:0,pre:0,ap:0,hok:0,fast:0,op:0};
+  rows.forEach(function(r){
+    var k=r['구분']||'비대기';
+    if(k==='확정') st.c1++; else if(k==='처방') st.c3++; else st.c2++;
+    if(hasPrepay(r)) st.pre++;
+    if(hasAP(r)) st.ap++;
+    if(hasHok(r)) st.hok++;
+    var tx=(r['진료내용']||'')+' '+(r['준비①']||'')+' '+(r['안내②']||'')+' '+(r['검사·진료']||'')+' '+(r['보호자요청']||'');
+    if(/금식/.test(tx)) st.fast++;
+    if(/수술|마취/.test(tx)) st.op++;
+  });
+  return st;
+}
+function chartByDate(){
+  if(CHART_CACHE) return CHART_CACHE;
+  var m={};
+  Object.keys(NEXT||{}).forEach(function(k){
+    var parts=String(k).split('|'), nm=parts[0]||'', ow=parts[1]||'';
+    (NEXT[k]||[]).forEach(function(e){
+      var ds=String(e[0]||'').slice(0,10); if(!ds) return;
+      var kind=e[3]||'visit';
+      var g=m[ds]||(m[ds]={list:[],names:[],visits:0});
+      g.list.push({time:e[1]||'',name:nm,owner:ow,memo:e[2]||'',doctor:e[4]||'',kind:kind});
+      if(kind!=='rx'){ g.visits++; if(g.names.indexOf(nm)<0) g.names.push(nm); }
+    });
+  });
+  Object.keys(m).forEach(function(d){
+    m[d].list.sort(function(a,b){return String(a.time).localeCompare(String(b.time));});
+  });
+  CHART_CACHE=m; return m;
+}
+function brkEl(st){
+  var d=el('div','brk');
+  [[st.c1,'확정','c1'],[st.c2,'비대기','c2'],[st.c3,'처방','c3']].forEach(function(x){
+    if(!x[0]) return;
+    d.appendChild(el('span',x[2],x[1]+' '+x[0]));
+  });
+  return d;
+}
+function tagRows(st){
+  var d=el('div','tgrow');
+  if(st.pre) d.appendChild(el('span',null,'💳 선결제 '+st.pre));
+  if(st.ap) d.appendChild(el('span',null,'A+ 자료 '+st.ap));
+  if(st.hok) d.appendChild(el('span',null,'A 혹 '+st.hok));
+  if(st.fast) d.appendChild(el('span',null,'🍚 금식 '+st.fast));
+  if(st.op) d.appendChild(el('span',null,'🔧 수술·마취 '+st.op));
+  return d.childNodes.length?d:null;
+}
+function openDate(ds){
+  S.date=ds; S.day='all'; S.detail=false; render();
+}
+function openChartDay(ds){
+  var g=chartByDate()[ds];
+  var b=$('#mbody'); b.innerHTML='';
+  var h=el('h3',null,'📌 '+fmtMD(ds)+' 차트 예약 '+g.list.length+'건');
+  b.appendChild(h);
+  b.appendChild(el('div','sub','차트(예약관리)에 잡혀 있는 예약입니다. 원무과 예약표와 따로 집계되니 이름·시각을 예약표와 대조해 확인해 주세요.'));
+  b.appendChild(el('div','mstat','👁 아이 기준 · 방문 '+(g.visits||0)+'건 · 처방수령 '+((g.list.length||0)-(g.visits||0))+'건'));
+  g.list.forEach(function(x){
+    var line=el('div','mline');
+    line.appendChild(el('span','mqty',x.time||'-'));
+    line.appendChild(el('span','mitem',x.name+(x.owner?' ('+x.owner+')':'')));
+    if(x.kind==='rx') line.appendChild(el('span','mtag','처방'));
+    if(x.doctor) line.appendChild(el('span','mtag',x.doctor));
+    b.appendChild(line);
+    if(x.memo){
+      var mm=el('div','memo',clipText(x.memo,120));
+      mm.style.margin='0 0 4px 4px'; mm.style.fontSize='.9em';
+      b.appendChild(mm);
+    }
+  });
+  $('#mask').classList.add('show');
 }
 /* A+ 자료 = 오늘(당일) 새로 올라온 자료가 있는 건만.
    ① 시트 배지에 A+ 자료가 있음(GHN 웹훅·원무과가 오늘 접수해 적은 표시 — 과거 자료로 붙은 배지는 시트에서 정리)
@@ -944,6 +1104,135 @@ function renderSearch(){
   out.appendChild(panel);
 }
 
+function renderWeekSummary(out){
+  var dates=datesFor();
+  var d0=parseISO(dates[0]), d1=parseISO(dates[dates.length-1]);
+  var total=0;
+  dates.forEach(function(ds){ total+=dayRows(ds).length; });
+  var head=el('div','sumhead');
+  head.appendChild(el('h2',null,'📅 주간 요약'));
+  head.appendChild(el('div','sum',md(d0)+'('+wk(d0)+') ~ '+md(d1)+'('+wk(d1)+') · 7일 예약 '+total+'건'));
+  var sw=el('div','switchbtn');
+  var b=el('button','btn b-gray','📋 날짜별 상세 카드로 펼치기'); b.type='button';
+  b.addEventListener('click',function(){S.detail=true;render();});
+  sw.appendChild(b); head.appendChild(sw);
+  out.appendChild(head);
+
+  var grid=el('div','wgrid'), chart=chartByDate(), todayIso=iso(TODAY);
+  dates.forEach(function(ds){
+    var rows=dayRows(ds), st=dayStats(rows), dd=parseISO(ds), cg=(ds>=todayIso? chart[ds] : null), has=rows.length>0;
+    var isToday=(ds===iso(TODAY));
+    var c=el('div','wcard'+(isToday?' today':'')+((!has&&!isClinicDay(ds))?' off':''));
+    var wd=el('div','wd');
+    wd.appendChild(el('b',null,(dd.getMonth()+1)+'/'+dd.getDate()));
+    wd.appendChild(el('span','wk',wk(dd)+'요일'+(isToday?' · 오늘':'')));
+    wd.appendChild(el('span','cnt',has? rows.length+'건' : (cg&&cg.visits? '📌 차트 '+cg.visits : '0건')));
+    c.appendChild(wd);
+    if(has){
+      c.appendChild(brkEl(st));
+      var tg=tagRows(st); if(tg) c.appendChild(tg);
+      var nm=el('div','names');
+      rows.slice(0,6).forEach(function(r,i){
+        if(i) nm.appendChild(document.createTextNode(' · '));
+        nm.appendChild(el('i',null,r['시각']));
+        nm.appendChild(document.createTextNode(r['아이']));
+      });
+      if(rows.length>6) nm.appendChild(document.createTextNode(' 외 '+(rows.length-6)));
+      c.appendChild(nm);
+      c.addEventListener('click',function(){openDate(ds);});
+    }else{
+      c.appendChild(el('div','offt',(cg&&cg.visits)?'예약표 미등록':(isClinicDay(ds)?'예약 없음':'휴진')));
+    }
+    if(cg&&cg.visits){
+      var ln=el('div','chartln','📌 차트 '+cg.visits+' · '+clipText(cg.names.slice(0,3).join(' · ')+(cg.names.length>3?' 외 '+(cg.names.length-3):''),42));
+      ln.style.cursor='pointer';
+      ln.addEventListener('click',function(ev){ev.stopPropagation();openChartDay(ds);});
+      c.appendChild(ln);
+    }
+    grid.appendChild(c);
+  });
+  out.appendChild(grid);
+  out.appendChild(el('div','legend','칸을 누르면 그 날 상세 카드가 열립니다. · 큰 숫자 = 원무과 예약표 건수 · 📌 차트 = 차트(예약관리)에 잡혀 있는 예약 건수(예약표와 별도 집계 · 누르면 목록) · 흐린 칸 = 휴진(진료는 월·화·수) 또는 예약 없음'));
+  markActive();
+}
+
+function renderMonthSummary(out){
+  var r=monthRange(), chart=chartByDate();
+  var head=el('div','sumhead');
+  head.appendChild(el('h2',null,'🗓 월간 요약'));
+  var days=0, total=0, cdays=0, todayIso=iso(TODAY);
+  for(var q=0;q<r.days;q++){
+    var ds=iso(new Date(r.y,r.m-1,q+1));
+    var n=dayRows(ds).length;
+    if(n){days++; total+=n;}
+    var cg=(ds>=todayIso? chart[ds] : null); if(cg&&cg.visits&&!n) cdays++;
+  }
+  head.appendChild(el('div','sum','예약 있는 날 '+days+'일 · 총 '+total+'건'+(cdays?' · 📌 차트만 있는 날 '+cdays+'일':'')));
+  var sw=el('div','switchbtn');
+  var tb=el('button','btn b-gray','오늘 달'); tb.type='button';
+  tb.addEventListener('click',function(){S.month=mkOf(TODAY);render();});
+  sw.appendChild(tb); head.appendChild(sw);
+  out.appendChild(head);
+
+  var cal=el('div','mcal');
+  var top=el('div','mtop');
+  var p=el('button','btn b-gray','‹ 이전 달'); p.type='button'; p.addEventListener('click',function(){shiftMonth(-1);});
+  var nx=el('button','btn b-gray','다음 달 ›'); nx.type='button'; nx.addEventListener('click',function(){shiftMonth(1);});
+  top.appendChild(p);
+  top.appendChild(el('div','mtitle',r.y+'년 '+r.m+'월'));
+  top.appendChild(nx);
+  cal.appendChild(top);
+
+  var dow=el('div','mdow');
+  ['일','월','화','수','목','금','토'].forEach(function(w,i){ dow.appendChild(el('div',i===0?'sun':(i===6?'sat':''),w)); });
+  cal.appendChild(dow);
+
+  var grid=el('div','mgrid');
+  for(var i=0;i<r.lead;i++) grid.appendChild(el('div','mcell blank'));
+  for(var d=1;d<=r.days;d++){
+    (function(d){
+      var dd=new Date(r.y,r.m-1,d), ds=iso(dd), w=dd.getDay();
+      var rows=dayRows(ds), st=dayStats(rows), cg=(ds>=todayIso? chart[ds] : null), has=rows.length>0;
+      var isToday=(ds===iso(TODAY));
+      var cls='mcell'+(w===0?' sun':(w===6?' sat':''))+(isToday?' today':'');
+      if(has) cls+=' has'; else if(!isClinicDay(ds)) cls+=' off';
+      var c=el('div',cls);
+      var dn=el('div','dnum');
+      dn.appendChild(el('b',null,String(d)));
+      if(has) dn.appendChild(el('span','cnt',rows.length+'건'));
+      c.appendChild(dn);
+      if(has){
+        c.appendChild(brkEl(st));
+        var tg=tagRows(st); if(tg) c.appendChild(tg);
+        var nm=el('div','names');
+        rows.slice(0,3).forEach(function(x,k){
+          if(k) nm.appendChild(document.createTextNode(' · '));
+          nm.appendChild(el('i',null,x['시각']+' '));
+          nm.appendChild(document.createTextNode(x['아이']));
+        });
+        if(rows.length>3) nm.appendChild(document.createTextNode(' 외 '+(rows.length-3)));
+        c.appendChild(nm);
+        c.addEventListener('click',function(){openDate(ds);});
+      }else if(cg&&cg.visits){
+        c.appendChild(el('div','offt','예약표 미등록'));
+      }else if(!isClinicDay(ds)){
+        c.appendChild(el('div','offt','휴진'));
+      }
+      if(cg&&cg.visits&&!has){
+        var ln=el('div','chartln','📌 차트 '+cg.visits+' · '+clipText(cg.names.slice(0,2).join(' · ')+(cg.names.length>2?' 외 '+(cg.names.length-2):''),34));
+        ln.style.cursor='pointer';
+        ln.addEventListener('click',function(ev){ev.stopPropagation();openChartDay(ds);});
+        c.appendChild(ln);
+      }
+      grid.appendChild(c);
+    })(d);
+  }
+  cal.appendChild(grid);
+  out.appendChild(cal);
+  out.appendChild(el('div','legend','날짜 칸을 누르면 그 날 상세 카드로 갑니다. · 큰 숫자 = 원무과 예약표 건수 · 📌 차트 = 차트(예약관리)에 잡혀 있는 예약 건수(예약표와 별도 집계 · 누르면 목록) · 흐린 칸 = 휴진(진료는 월·화·수) 또는 예약 없음 · 휴대폰에서는 예약 있는 날만 목록으로 보입니다.'));
+  markActive();
+}
+
 function render(){
   if(S.q){ renderSearch(); markActive(); return; }
   var out=$('#out'); out.innerHTML='';
@@ -951,7 +1240,19 @@ function render(){
   else $('#ver').textContent='GCN';
   if(S.meta['갱신']) $('#ver').textContent+=' · '+S.meta['갱신'];
 
+  if(S.day==='week' && !S.detail){ renderWeekSummary(out); return; }
+  if(S.day==='month'){ renderMonthSummary(out); return; }
+
   var dates=datesFor();
+  if(S.day==='week' && S.detail){
+    var wsum=el('div','sumhead');
+    wsum.appendChild(el('h2',null,'📅 주간 상세 카드'));
+    var back=el('button','btn b-gray','📊 주간 요약 뷰로 접기'); back.type='button';
+    back.style.marginLeft='auto';
+    back.addEventListener('click',function(){S.detail=false;render();});
+    wsum.appendChild(back);
+    out.appendChild(wsum);
+  }
   if(S.day==='today'||S.day==='tomorrow'||S.day==='all'){
     var d=dates[0];
     var box=inquiryBox(d);
@@ -993,7 +1294,13 @@ function stepDay(n){
   var base=S.date?parseISO(S.date):new Date(TODAY.getTime());
   S.date=iso(addDays(base,n)); S.day='all'; render();
 }
-function setDay(d){ S.day=d; if(d==='today')S.date=iso(TODAY); if(d==='tomorrow')S.date=iso(addDays(TODAY,1)); render(); }
+function setDay(d){
+  S.day=d; S.detail=false;
+  if(d==='today')S.date=iso(TODAY);
+  if(d==='tomorrow')S.date=iso(addDays(TODAY,1));
+  if(d==='month'&&!S.month)S.month=mkOf(S.date?parseISO(S.date):TODAY);
+  render();
+}
 
 /* ================= 모달 ================= */
 var SHEET_URL='https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/edit';
