@@ -1,6 +1,6 @@
 {
   "나무|김정화": {"old": "namu.png", "new": "namu_ghn.png"},
-  "정하늘|정은혜": {"new": "haneul_ghn.png"},
+  "정하늘|정은혜": {"paper": "haneul_paper_1124.jpg", "new": "haneul_ghn.png"},
   "릴리|이원정 박건주": {"new": "lily_ghn.png"},
   "리아|채희연": {"new": "ria_ghn.png"}
 }
