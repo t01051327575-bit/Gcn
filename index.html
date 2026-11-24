@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- GCN v1124-1445 | 🔗 상단 바로가기 = 🩺 혹모음(GDN) · 📋 GHN 접수함(새 탭으로 열림) · 🗓 주간 = 08:00~19:00 × 월~일 타임테이블(구분별 색·배지·이전/다음 주), 월간 = 일~토 달력(이전/다음 달) + 월간 버튼 추가 · ✨ A+ 자료 = 오늘 새로 올라온 자료(당일 GHN·신규 접수) 기준으로 정리(과거 자료건수 제외) · 🟡 종이 표시도 그림 추가 · 🖼 혹 위치 그림 = 🟣 기존 혹 + □ 신규(GHN) + 🟡 종이 표시도(누르면 크게 열림) · 📌 전달 메모 = 1번 장봉환 원장님 탭만 '확정 예약'(초록), 나머지 탭은 '비대기'(주황) · 🩺 ② 혹·이전 이상 · 📋 보호자 사전체크·건강관리표 핵심 -->
+<!-- GCN v1124-1455 | 🔗 상단 바로가기 = 🩺 혹모음(GDN) · 📋 GHN 접수함(새 탭으로 열림) · 🔎 주간·월간 한눈에 보기 = 구분 필터(전체·확정 예약·비대기·처방) + 타임테이블 블록에 예약 내용 1~2줄 + 월간 셀에 확정/비대기/처방 배지(next.json 예약 건도 확정으로 집계) · 🗓 주간 = 08:00~19:00 × 월~일 타임테이블(구분별 색·배지·이전/다음 주), 월간 = 일~토 달력(이전/다음 달) · ✨ A+ 자료 = 오늘 새로 올라온 자료(당일 GHN·신규 접수) 기준으로 정리 · 🟡 종이 표시도 그림 · 🖼 혹 위치 그림 = 🟣 기존 혹 + □ 신규(GHN) + 🟡 종이 표시도 · 📌 전달 메모 = 1번 장봉환 원장님 탭만 '확정 예약'(초록), 나머지 탭은 '비대기'(주황) · 🩺 ② 혹·이전 이상 · 📋 보호자 사전체크·건강관리표 핵심 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -310,6 +310,10 @@ td.ttslot.today{background:#FFFDF5}
 .ttb{display:block;width:100%;text-align:left;border:1.5px solid;border-radius:7px;padding:1px 3px;font:800 .72em/1.2 'Noto Sans KR';cursor:pointer;overflow:hidden;color:#0f172a}
 .ttb b{font-weight:900}
 .ttb .bo{display:block;font-weight:800;font-size:.82em;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ttb .bc{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-weight:700;font-size:.9em;line-height:1.22;margin-top:1px;word-break:keep-all;opacity:.95}
+.bkbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:8px 0 8px;padding:7px 10px;background:#fff;border:1.5px solid var(--line);border-radius:12px}
+.bkbar .lbl{font-size:.86em;font-weight:900;color:var(--mut);margin-right:2px}
+.bkbar .btn{font-size:.86em;padding:5px 11px}
 .ttb .bib{display:inline}
 .ttb .bi{display:inline-block;font-size:.84em;font-weight:900;border-radius:999px;padding:0 3px;margin-left:1px;background:#fff;border:1px solid rgba(15,23,42,.14);line-height:1.3;color:#334155;vertical-align:1px}
 .ttb.vet{background:#EFF6FF;border-color:#93C5FD;color:#1E3A8A}
@@ -405,7 +409,7 @@ var TAB_INQ = '문의';
 var TAB_META = '설정';
 
 /* ================= 상태 ================= */
-var S = {data:null, inq:[], meta:{}, date:null, day:'today', view:'doc', q:'', size:'m', f:null, month:null, weekStart:null, detail:false};
+var S = {data:null, inq:[], meta:{}, date:null, day:'today', view:'doc', q:'', size:'m', f:null, month:null, weekStart:null, detail:false, bk:''};
 var PAT = {};
 var LUMP = {};   /* 혹 기록(부위·수술·세포검사) — 사이트 같은 위치의 lump.json */
 var LUMPIMG = {}; /* 혹 마킹 그림 파일명 — lumps/index.json */
@@ -1282,7 +1286,7 @@ function wEntries(ds,chart){
       var k=nzName(x.name)+'|'+nzOwner(x.owner);
       if(have[k]) return;
       have[k]=1;
-      out.push({t:normTime(x.time),name:x.name,owner:x.owner||'',memo:x.memo||'',kind:x.kind,cat:wCatChart(x),chart:true});
+      out.push({t:normTime(x.time),name:x.name,owner:x.owner||'',memo:x.memo||'',kind:x.kind,doctor:x.doctor||'',cat:wCatChart(x),chart:true});
     });
   }
   out.sort(function(a,b){return tmin(a.t)-tmin(b.t)||String(a.name).localeCompare(String(b.name));});
@@ -1301,7 +1305,7 @@ function wCounts(list){
   });
   return st;
 }
-function wChips(st){
+function wChips(st,noChart){
   var d=el('div','ttchips');
   function add(t,c){ if(!t) return; d.appendChild(el('span','ttc'+(c?' '+c:''),t)); }
   add(st.pay?'💳'+st.pay:'','pay');
@@ -1309,15 +1313,29 @@ function wChips(st){
   add(st.hok?'A혹'+st.hok:'','ap');
   add(st.op?'🔧'+st.op:'','op');
   add(st.fast?'🍚'+st.fast:'','fast');
-  if(st.chart) add('차트'+st.chart,'');
+  if(st.chart && !noChart) add('차트'+st.chart,'');
   return d;
+}
+/* 예약 내용 요약 — '·' 구분 중복(진료내용과 준비①이 같은 처방을 두 번 적은 경우)을 한 번만 */
+function uniqSeg(s){
+  var parts=String(s||'').split('·'), seen={}, out=[];
+  parts.forEach(function(p){ p=p.replace(/\s+/g,' ').trim(); if(!p||seen[p]) return; seen[p]=1; out.push(p); });
+  return out.join(' · ');
 }
 var WCAT_LAB={vet:'진료',lab:'검사',surg:'수술',groom:'미용',non:'비대기',rx:'처방'};
 function wBlock(e,ds){
   var b=el('button','ttb '+e.cat+(e.chart?' ch':''));
   b.type='button';
-  var memo=e.row?(String(e.row['진료내용']||'')+' '+String(e.row['준비①']||'')).replace(/\s+/g,' ').trim():String(e.memo||'').replace(/\s+/g,' ').trim();
-  b.title=e.t+' '+e.name+' ('+(e.owner||'')+')'+(e.chart?' · 차트 예약(예약표 미등록)':' · '+(e.row['구분']||''))+(memo?'\n'+clipText(memo,160):'');
+  var memo;
+  if(e.row){
+    var c1=String(e.row['진료내용']||'').replace(/\s+/g,' ').trim();
+    var c2=String(e.row['준비①']||'').replace(/\s+/g,' ').trim();
+    memo=uniqSeg(c1+(c2?' · '+c2:''));
+    memo=memo.replace(/^비대기\s*·\s*/,'');   /* 구분은 배지로 보이니 앞의 '비대기 ·'는 뺀다 */
+  }else{
+    memo=uniqSeg(String(e.memo||''));
+  }
+  b.title=e.t+' '+e.name+' ('+(e.owner||'')+')'+(e.chart?' · 차트 예약(예약표 미등록)':' · '+(e.row['구분']||''))+(memo?'\n'+clipText(memo,200):'');
   var l1=el('b');
   l1.appendChild(document.createTextNode(e.t+' '+e.name+' '));
   var bib=el('span','bib');
@@ -1326,6 +1344,7 @@ function wBlock(e,ds){
   l1.appendChild(bib);
   b.appendChild(l1);
   b.appendChild(el('span','bo',(e.owner||'')+(e.chart?' · 차트':'')));
+  if(memo) b.appendChild(el('span','bc',clipText(memo,70)));   /* 예약 내용 1~2줄 요약 */
   b.addEventListener('click',function(){openDate(ds);});
   return b;
 }
@@ -1354,19 +1373,54 @@ function chartNote(ds){
   return b;
 }
 
+/* 🔎 주간·월간 보기 구분 필터 — 확정(1번 장봉환 원장님 탭) / 비대기 / 처방
+   next.json(차트 예약)의 cls '예약'도 시트와 같게 '확정'으로 묶는다 */
+function eCls(e){
+  var k='비대기';
+  if(e && e.row) k=(e.row['구분']||'비대기');
+  else if(e && e.chart) k=apptCls({kind:e.kind,doctor:e.doctor,cls:e.cls});
+  return k==='예약'?'확정':k;
+}
+function bkOk(e){ return !S.bk || eCls(e)===S.bk; }
+function bkFilter(list){ return S.bk? list.filter(bkOk) : list; }
+function bkCount(list){
+  var c={total:list.length,'확정':0,'비대기':0,'처방':0};
+  list.forEach(function(e){ var k=eCls(e); if(c[k]==null) c[k]=0; c[k]++; });
+  return c;
+}
+function bkBar(counts){
+  var d=el('div','bkbar');
+  d.appendChild(el('span','lbl','🔎 구분'));
+  [['','전체'],['확정','확정 예약'],['비대기','비대기'],['처방','처방']].forEach(function(x){
+    var n=(x[0]===''?counts.total:(counts[x[0]]||0));
+    var b=el('button','btn '+(S.bk===x[0]?'b-green on':'b-gray'), x[1]+(n?' '+n:''));
+    b.type='button';
+    b.addEventListener('click',function(){S.bk=x[0];render();});
+    d.appendChild(b);
+  });
+  if(S.bk){
+    var lab={'확정':'확정 예약','비대기':'비대기','처방':'처방'}[S.bk]||S.bk;
+    d.appendChild(el('span','lbl','— '+lab+'만 보는 중 (전체 '+counts.total+'건)'));
+  }
+  return d;
+}
 function renderWeekSummary(out){
-  var start=weekMonday(), days=[], chart=chartByDate(), per={}, total=0, chartN=0;
+  var start=weekMonday(), days=[], chart=chartByDate(), per={}, all={}, total=0, totalAll=0, chartN=0, wkAll=[];
   for(var i=0;i<7;i++){
     var ds=iso(addDays(start,i));
     days.push(ds);
-    per[ds]=wEntries(ds,chart);
+    all[ds]=wEntries(ds,chart);
+    per[ds]=bkFilter(all[ds]);
+    wkAll=wkAll.concat(all[ds]);
+    totalAll+=all[ds].length;
     total+=per[ds].length;
     per[ds].forEach(function(e){ if(e.chart) chartN++; });
   }
+  var wkCounts=bkCount(wkAll);
   var head=el('div','sumhead');
   head.appendChild(el('h2',null,'🗓 주간 한눈에 보기'));
   var dl=addDays(start,6);
-  head.appendChild(el('div','sum',md(start)+'('+wk(start)+') ~ '+md(dl)+'('+wk(dl)+') · 이 주 '+total+'건'+(chartN?' (그중 차트 '+chartN+')':'')+' ※ 진료는 월·화·수'));
+  head.appendChild(el('div','sum',md(start)+'('+wk(start)+') ~ '+md(dl)+'('+wk(dl)+') · '+(S.bk?'이 주 ':'이 주 ')+total+'건'+(S.bk?' (전체 '+totalAll+'건 중)':'')+(chartN?' (그중 차트 '+chartN+')':'')+' ※ 진료는 월·화·수'));
   var sw=el('div','switchbtn');
   function navBtn(t,fn){ var b=el('button','btn b-gray',t); b.type='button'; b.addEventListener('click',fn); sw.appendChild(b); }
   navBtn('‹ 이전 주',function(){S.weekStart=iso(addDays(start,-7));render();});
@@ -1375,6 +1429,7 @@ function renderWeekSummary(out){
   navBtn('📋 상세 카드로',function(){S.detail=true;render();});
   head.appendChild(sw);
   out.appendChild(head);
+  out.appendChild(bkBar(wkCounts));
 
   var wrap=el('div','ttwrap');
   var tb=el('table','tt');
@@ -1435,26 +1490,30 @@ function renderWeekSummary(out){
   var sp2=el('span'); var ic2=el('i'); ic2.style.borderStyle='dashed'; ic2.style.background='#fff';
   sp2.appendChild(ic2); sp2.appendChild(document.createTextNode('점선 = 차트 예약(예약표에 아직 없음)')); lg.appendChild(sp2);
   out.appendChild(lg);
-  out.appendChild(el('div','tttip','예약 블록이나 날짜 머리를 누르면 그 날짜의 상세 카드로 갑니다. · 빈 칸은 예약 없음/휴진(진료는 월·화·수)입니다. · 시간은 30분 칸으로 묶어 표시'));
+  out.appendChild(el('div','tttip','🔎 위 구분 버튼(전체·확정 예약·비대기·처방)을 누르면 그 구분만 추려서 보여 줍니다 — 확정 예약 = 1번 장봉환 원장님 탭, 비대기 = 나머지 탭(비대기·기타·미용 등). · 각 블록은 시간·이름·구분(+배지) / 보호자 / 예약 내용 1~2줄 순서로 보입니다(블록을 길게 누르면 전체 내용). · 블록이나 날짜 머리를 누르면 그 날짜의 상세 카드로 갑니다. · 빈 칸은 예약 없음/휴진(진료는 월·화·수)입니다. · 시간은 30분 칸으로 묶어 표시'));
   markActive();
 }
 
 function renderMonthSummary(out){
-  var r=monthRange(), chart=chartByDate(), per={}, days=0, total=0, chartTot=0;
+  var r=monthRange(), chart=chartByDate(), per={}, days=0, total=0, chartTot=0, all={}, mAll=[];
   for(var q=0;q<r.days;q++){
     var dsx=iso(new Date(r.y,r.m-1,q+1));
-    per[dsx]=wEntries(dsx,chart);
+    all[dsx]=wEntries(dsx,chart);
+    per[dsx]=bkFilter(all[dsx]);
+    mAll=mAll.concat(all[dsx]);
     if(per[dsx].length){ days++; total+=per[dsx].length; }
     per[dsx].forEach(function(e){ if(e.chart) chartTot++; });
   }
+  var mCounts=bkCount(mAll);
   var head=el('div','sumhead');
   head.appendChild(el('h2',null,'🗓 월간 한눈에 보기'));
-  head.appendChild(el('div','sum',r.y+'년 '+r.m+'월 · 예약 있는 날 '+days+'일 · 총 '+total+'건'+(chartTot?' (그중 차트 '+chartTot+')':'')+' ※ 진료는 월·화·수'));
+  head.appendChild(el('div','sum',r.y+'년 '+r.m+'월 · 예약 있는 날 '+days+'일 · '+(S.bk?'':'총 ')+total+'건'+(S.bk?' (전체 '+mCounts.total+'건 중)':'')+' · 확정 '+(mCounts['확정']||0)+' · 비대기 '+(mCounts['비대기']||0)+' · 처방 '+(mCounts['처방']||0)+' ※ 진료는 월·화·수'));
   var sw=el('div','switchbtn');
   var tb=el('button','btn b-gray','오늘 달'); tb.type='button';
   tb.addEventListener('click',function(){S.month=mkOf(TODAY);render();});
   sw.appendChild(tb); head.appendChild(sw);
   out.appendChild(head);
+  out.appendChild(bkBar(mCounts));
 
   var cal=el('div','mcal');
   var top=el('div','mtop');
@@ -1483,11 +1542,17 @@ function renderMonthSummary(out){
       if(list.length) dn.appendChild(el('span','cnt',list.length+'건'));
       c.appendChild(dn);
       if(list.length){
-        c.appendChild(wChips(st));
+        var cc={c1:0,c2:0,c3:0};
+        list.forEach(function(e){ var k=eCls(e); if(k==='확정') cc.c1++; else if(k==='처방') cc.c3++; else cc.c2++; });
+        c.appendChild(brkEl(cc));      /* 확정 N · 비대기 N · 처방 N */
+        c.appendChild(wChips(st,true));
         var nm=el('div','names');
         nm.appendChild(document.createTextNode(list.slice(0,3).map(function(e){return e.t+' '+e.name;}).join(' · ')+(list.length>3?' 외 '+(list.length-3):'')));
         c.appendChild(nm);
         c.addEventListener('click',function(){openDate(ds);});
+      }else if(all[ds] && all[ds].length){
+        c.appendChild(el('div','offt','—'));
+        c.disabled=true;
       }else if(!isClinicDay(ds)){
         c.appendChild(el('div','offt','휴진'));
         c.disabled=true;
@@ -1499,7 +1564,7 @@ function renderMonthSummary(out){
   }
   cal.appendChild(grid);
   out.appendChild(cal);
-  out.appendChild(el('div','legend','날짜 칸을 누르면 그 날 상세 카드로 갑니다. · 숫자 = 예약표(시트)+차트 예약을 합친 건수 · 차트N = 차트(예약관리)에만 있고 예약표에는 아직 없는 건 · 흐린 칸 = 휴진(진료는 월·화·수) 또는 예약 없음 · 휴대폰에서는 예약 있는 날만 목록으로 보입니다.'));
+  out.appendChild(el('div','legend','🔎 위 구분 버튼(전체·확정 예약·비대기·처방)을 누르면 그 구분만 추려서 보여 줍니다. · 날짜 칸을 누르면 그 날 상세 카드로 갑니다. · 숫자 = 예약표(시트)+차트 예약(next)을 합친 건수 · 확정 N = 1번 장봉환 원장님 탭, 비대기 N = 나머지 탭, 처방 N = 처방건 (예약표에 아직 안 올라온 next 건도 구분대로 집계) · 흐린 칸 = 휴진(진료는 월·화·수) 또는 예약 없음 · 휴대폰에서는 예약 있는 날만 목록으로 보입니다.'));
   markActive();
 }
 
