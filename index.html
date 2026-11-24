@@ -462,9 +462,9 @@ function load(){
   $('#out').innerHTML='<div class="loading">불러오는 중…</div>';
   $('#err').innerHTML='';
   Promise.all([fetchSheet(TAB_APPTS), fetchSheet(TAB_INQ), fetchSheet(TAB_META).catch(function(){return [];}),
-    fetch('lump.json?v=1124-1330',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};}),
-    fetch('lumps/index.json?v=1124-1330',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};}),
-    fetch('next.json?v=1124-1330',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};})])
+    fetch('lump.json?v=1124-1555',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};}),
+    fetch('lumps/index.json?v=1124-1555',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};}),
+    fetch('next.json?v=1124-1555',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};})])
   .then(function(res){
     var allRows = res[0].filter(function(r){return r['아이']||r['날짜'];}).map(function(r){
       r['날짜']=String(r['날짜']||'').slice(0,10);
