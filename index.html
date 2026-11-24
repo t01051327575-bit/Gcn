@@ -1305,7 +1305,7 @@ function renderWeekSummary(out){
   trh.appendChild(el('th','tcol','시간'));
   days.forEach(function(ds){
     var dd=parseISO(ds), list=per[ds], st=wCounts(list);
-    var th=el('th'+(ds===iso(TODAY)?' today':''));
+    var th=el('th',(ds===iso(TODAY)?'today':''));
     var btn=el('button','tth'); btn.type='button';
     var dv=el('div','ttd');
     dv.appendChild(document.createTextNode((dd.getMonth()+1)+'/'+dd.getDate()));
