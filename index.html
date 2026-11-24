@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- GCN v1124-1236 | 🗓 주간 = 08:00~19:00 × 월~일 타임테이블(구분별 색·배지·이전/다음 주), 월간 = 일~토 달력(이전/다음 달) + 월간 버튼 추가 · ✨ A+ 자료 = 오늘 새로 올라온 자료(당일 GHN·신규 접수) 기준으로 정리(과거 자료건수 제외) · 🟡 종이 표시도 그림 추가 · 🖼 혹 위치 그림 = 🟣 기존 혹 + □ 신규(GHN) + 🟡 종이 표시도(누르면 크게 열림) · 📌 전달 메모 예약담당자 · 🩺 ② 혹·이전 이상 · 📋 보호자 사전체크·건강관리표 핵심 -->
+<!-- GCN v1124-1330 | 🗓 주간 = 08:00~19:00 × 월~일 타임테이블(구분별 색·배지·이전/다음 주), 월간 = 일~토 달력(이전/다음 달) + 월간 버튼 추가 · ✨ A+ 자료 = 오늘 새로 올라온 자료(당일 GHN·신규 접수) 기준으로 정리(과거 자료건수 제외) · 🟡 종이 표시도 그림 추가 · 🖼 혹 위치 그림 = 🟣 기존 혹 + □ 신규(GHN) + 🟡 종이 표시도(누르면 크게 열림) · 📌 전달 메모 = 1번 장봉환 원장님 탭만 '확정 예약'(초록), 나머지 탭은 '비대기'(주황) · 🩺 ② 혹·이전 이상 · 📋 보호자 사전체크·건강관리표 핵심 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -129,6 +129,20 @@ input[type=date],input[type=text]{font:700 .9em 'Noto Sans KR';border:1.5px soli
 .dept.next{background:#EEF2FF;border:2px solid #A5B4FC;border-left:6px solid #4F46E5;color:#312E81;font-weight:800;font-size:.93em;padding:7px 10px}
 .nextlab{font-weight:900;color:#3730A3}
 .nextmemo{margin-top:2px;font-weight:700;color:#4338CA;white-space:pre-line;word-break:keep-all}
+/* 📌 전달 메모 — 확정 예약(1번 장봉환 원장님 탭)은 초록, 비대기는 주황, 처방은 보라 */
+.dept.next.nxok{background:#ECFDF5;border-color:#6EE7B7;border-left-color:#059669;color:#065F46}
+.dept.next.nxok .nextlab{color:#065F46}
+.dept.next.nxok .nextmemo{color:#047857}
+.dept.next.nxno{background:#FFF7ED;border-color:#FDBA74;border-left-color:#EA580C;color:#7C2D12}
+.dept.next.nxno .nextlab{color:#9A3412}
+.dept.next.nxno .nextmemo{color:#9A3412}
+.dept.next.nxrx{background:#F5F3FF;border-color:#C4B5FD;border-left-color:#7C3AED;color:#4C1D95}
+.dept.next.nxrx .nextlab{color:#5B21B6}
+.dept.next.nxrx .nextmemo{color:#5B21B6}
+.nxbadge{display:inline-block;margin-left:6px;padding:0 8px;border-radius:999px;font-size:.85em;font-weight:900;color:#fff;vertical-align:1px;white-space:nowrap}
+.nxbadge.ok{background:#059669}
+.nxbadge.no{background:#EA580C}
+.nxbadge.rx{background:#7C3AED}
 .hoklink{display:inline-block;border:1.5px solid #6EE7B7;background:#fff;border-radius:999px;padding:1px 8px;margin-left:2px;color:#047857;font-weight:900;font-size:.9em;text-decoration:none}
 .dept.msg{background:#F5F3FF;border:2px solid #C4B5FD;border-left:6px solid #7C3AED;color:#4C1D95;font-weight:800;font-size:.94em;padding:7px 10px;white-space:pre-wrap;word-break:keep-all}
 .rlinks{margin-top:6px}
@@ -356,7 +370,7 @@ td.ttslot.today{background:#FFFDF5}
 
   <div class="note">
     기호 안내: 비) 비대기 | X 미내원 | ▼ 선결제·보관 | ★ 필수 주의사항<br>
-    🛍️ <b>보호자 요청 (필수 준비)</b> = 보호자가 GHN 건강관리표·카톡으로 미리 요청한 물품으로, 원무과가 내원 전에 준비해야 합니다. (주황 박스) · 🏢 원무과 준비 = 차트상 원무과 준비 사항 (초록 박스) · 🏢 원무과 확인 = 원무과가 확인할 사항 (초록 점선 박스) — 🛍️ 보호자 요청·🏢 원무과 준비·🏢 원무과 확인 박스와 □ 원무과 준비 체크는 <b>원장님 뷰에서는 표시되지 않고</b>, 원무과 뷰·전체 보기 등에서만 나옵니다. · 💳 <b>선결제·보관</b> = 진료내용의 ▼ 표시 항목을 모아 보여 줍니다. (파란 박스) · 📋 <b>보호자 사전체크·건강관리표 핵심</b> = 보호자가 GHN 건강관리표로 남긴 사전체크(부위·증상·질문·원장님 확인 사항)를 ②를 펼치지 않아도 바로 보여 줍니다. (연주황 박스) · 💬 <b>보호자 문의·메모</b> = 카톡·진료신청으로 남긴 문의 (연보라 박스) · 🩺 <b>② 혹·이전 이상</b> = 🟣 기존 혹(혹 기록 부위·수술·차트 소견) / □ 신규(GHN 건강관리표로 새로 올린 혹·병변) / 🔴 이전 이상(지난 검사 이상·면역L·종양H) — 원장님 뷰·전체 보기에서만 표시됩니다. 🖼 혹 위치 그림 = 🟣 기존 혹 기록 그림, □ 보호자가 이번에 GHN 건강관리표로 체크한 혹·병변 위치 그림, 🟡 보호자가 종이에 직접 그려 낸 병변 위치 표시도를 나란히 보여 주며, 누르면 크게 열립니다. 📌 <b>전달 메모</b> = 30일 안에 다음 예약이 있으면 예약 일시·예약담당자(구분)와 함께 오늘 같이 진행할지 확인하는 메모입니다. 예약 메모는 잘리지 않고 전체가 그대로 나옵니다. (남색 박스)<br>
+    🛍️ <b>보호자 요청 (필수 준비)</b> = 보호자가 GHN 건강관리표·카톡으로 미리 요청한 물품으로, 원무과가 내원 전에 준비해야 합니다. (주황 박스) · 🏢 원무과 준비 = 차트상 원무과 준비 사항 (초록 박스) · 🏢 원무과 확인 = 원무과가 확인할 사항 (초록 점선 박스) — 🛍️ 보호자 요청·🏢 원무과 준비·🏢 원무과 확인 박스와 □ 원무과 준비 체크는 <b>원장님 뷰에서는 표시되지 않고</b>, 원무과 뷰·전체 보기 등에서만 나옵니다. · 💳 <b>선결제·보관</b> = 진료내용의 ▼ 표시 항목을 모아 보여 줍니다. (파란 박스) · 📋 <b>보호자 사전체크·건강관리표 핵심</b> = 보호자가 GHN 건강관리표로 남긴 사전체크(부위·증상·질문·원장님 확인 사항)를 ②를 펼치지 않아도 바로 보여 줍니다. (연주황 박스) · 💬 <b>보호자 문의·메모</b> = 카톡·진료신청으로 남긴 문의 (연보라 박스) · 🩺 <b>② 혹·이전 이상</b> = 🟣 기존 혹(혹 기록 부위·수술·차트 소견) / □ 신규(GHN 건강관리표로 새로 올린 혹·병변) / 🔴 이전 이상(지난 검사 이상·면역L·종양H) — 원장님 뷰·전체 보기에서만 표시됩니다. 🖼 혹 위치 그림 = 🟣 기존 혹 기록 그림, □ 보호자가 이번에 GHN 건강관리표로 체크한 혹·병변 위치 그림, 🟡 보호자가 종이에 직접 그려 낸 병변 위치 표시도를 나란히 보여 주며, 누르면 크게 열립니다. 📌 <b>전달 메모</b> = 30일 안에 다음 예약이 있으면 예약 일시·예약담당자(구분)와 함께 오늘 같이 진행할지 확인하는 메모입니다. <b>1번 장봉환 원장님 탭만 초록색 ‘확정 예약’</b>이고, 나머지 탭([비대기-내원,미용중진료]·기타(예약;미용)·처방건 등)은 <b>주황색 ‘비대기’</b>로 표시됩니다. 예약 메모는 잘리지 않고 전체가 그대로 나옵니다. (남색 박스)<br>
     자료는 원무과·검사과에서 올린 내용을 그대로 모아 보여 줍니다. 비어 있는 칸은 '안 했다'가 아니라 '기록이 없다'는 뜻입니다.<br>🩺 검사지·✍️ 코멘트·💊 조제·💳 결제이력은 <b>GCN_실시간_데이터</b> 시트의 각 탭에서 아이별로 바로 불러옵니다.
   </div>
 </div>
@@ -424,9 +438,9 @@ function load(){
   $('#out').innerHTML='<div class="loading">불러오는 중…</div>';
   $('#err').innerHTML='';
   Promise.all([fetchSheet(TAB_APPTS), fetchSheet(TAB_INQ), fetchSheet(TAB_META).catch(function(){return [];}),
-    fetch('lump.json?v=1124-1236',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};}),
-    fetch('lumps/index.json?v=1124-1236',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};}),
-    fetch('next.json?v=1124-1236',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};})])
+    fetch('lump.json?v=1124-1330',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};}),
+    fetch('lumps/index.json?v=1124-1330',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};}),
+    fetch('next.json?v=1124-1330',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};})])
   .then(function(res){
     S.data = res[0].filter(function(r){return r['아이']||r['날짜'];}).map(function(r){
       r['날짜']=String(r['날짜']||'').slice(0,10);
@@ -497,7 +511,7 @@ function chartByDate(){
   if(CHART_CACHE) return CHART_CACHE;
   var m={};
   Object.keys(NEXT||{}).forEach(function(k){
-    var parts=String(k).split('|'), nm=parts[0]||'', ow=parts[1]||'';
+    var ks=String(k), ci=ks.lastIndexOf('|'), nm=ci<0?ks:ks.slice(0,ci), ow=ci<0?'':ks.slice(ci+1);
     (NEXT[k]||[]).forEach(function(e){
       var ds=String(e[0]||'').slice(0,10); if(!ds) return;
       var kind=e[3]||'visit';
@@ -543,7 +557,7 @@ function openChartDay(ds){
     line.appendChild(el('span','mqty',x.time||'-'));
     line.appendChild(el('span','mitem',x.name+(x.owner?' ('+x.owner+')':'')));
     if(x.kind==='rx') line.appendChild(el('span','mtag','처방'));
-    if(x.doctor) line.appendChild(el('span','mtag',x.doctor));
+    if(x.doctor) line.appendChild(el('span','mtag',tabLabel(x.doctor)));
     b.appendChild(line);
     if(x.memo){
       var mm=el('div','memo',clipText(x.memo,120));
@@ -664,10 +678,41 @@ function nextList(nm,ow){
   if(NEXT[k]) return NEXT[k];
   var t=nzName(nm), out=[];
   for(var kk in NEXT){
-    var p=kk.split('|');
-    if(nzName(p[0])===t && nzOwner(p[1])===ow) out=out.concat(NEXT[kk]);
+    var i=kk.lastIndexOf('|');           /* 이름에 '|'가 섞여도('인절미|(ref해마루)') 마지막 '|'로 나눈다 */
+    if(i<0) continue;
+    if(nzName(kk.slice(0,i))===t && nzOwner(kk.slice(i+1))===ow) out=out.concat(NEXT[kk]);
   }
   return out;
+}
+/* 구분 — 1번 장봉환 원장님 탭만 '예약', 나머지 탭은 전부 '비대기'
+   (next.json 6번째 값이 있으면 그것을 쓰고, 없으면 예약담당자 이름으로 판별) */
+function apptCls(rec){
+  var c=String((rec&&rec.cls)||'');
+  if(c) return c;
+  var doc=String((rec&&rec.doctor)||'');
+  if(/장봉환/.test(doc)) return '예약';
+  if(/처방/.test(doc)) return '처방';
+  if(/업체/.test(doc)) return '업체';
+  if(rec && rec.kind==='rx') return '처방';
+  return '비대기';
+}
+function apptRank(c){ return c==='예약'?0:(c==='비대기'?1:(c==='처방'?2:3)); }
+function cmpAppt(a,b){
+  if(a.date!==b.date) return a.date<b.date?-1:1;
+  var r=apptRank(a.cls)-apptRank(b.cls); if(r) return r;
+  return String(a.time)<String(b.time)?-1:(String(a.time)>String(b.time)?1:0);
+}
+/* 예약담당자(탭) 이름 — '기타(예약;미용)'처럼 '예약' 글자가 들어가 헷갈리는 원문 대신 화면용 이름으로 */
+function tabLabel(doc){
+  var d=String(doc||'').replace(/\s+/g,' ').trim();
+  if(!d) return '담당 미지정';
+  if(/장봉환/.test(d)) return '1번 장봉환 원장님 탭';
+  if(/^기타/.test(d)) return '기타·미용 탭';
+  if(/비대기/.test(d)) return '비대기 탭';
+  if(/처방/.test(d)) return '보호자 처방건';
+  if(/업체/.test(d)) return '업체 주문';
+  if(/원무과/.test(d)) return '원무과';
+  return d;
 }
 function nextAppt(r){
   var base=parseISO(r['날짜']||'');
@@ -676,8 +721,10 @@ function nextAppt(r){
   nextList(nm,ow).forEach(function(a){
     var d=parseISO(a[0]||'');
     if(isNaN(d.getTime()) || !(d>base) || d>lim) return;
-    var rec={date:a[0],time:a[1]||'',memo:a[2]||'',kind:a[3]||'visit',doctor:a[4]||''};
-    if(rec.kind==='visit'){ if(!best || d<parseISO(best.date)) best=rec; }
+    var rec={date:a[0],time:a[1]||'',memo:a[2]||'',kind:a[3]||'visit',doctor:a[4]||'',cls:a[5]||''};
+    rec.cls=apptCls(rec);
+    if(rec.cls==='업체') return;               /* 업체 주문·검침은 환자 예약이 아님 */
+    if(rec.cls!=='처방'){ if(!best || cmpAppt(rec,best)<0) best=rec; }
     else if(!bed || d<parseISO(bed.date)) bed=rec;
   });
   if(best) return best;
@@ -687,7 +734,7 @@ function nextAppt(r){
     if((x['구분']||'')!=='확정') return;
     var d=parseISO(x['날짜']||'');
     if(isNaN(d.getTime()) || !(d>base) || d>lim) return;
-    if(!bed || d<parseISO(bed.date)) bed={date:x['날짜'],time:x['시각']||'',memo:x['진료내용']||'',kind:'visit'};
+    if(!bed || d<parseISO(bed.date)) bed={date:x['날짜'],time:x['시각']||'',memo:x['진료내용']||'',kind:'visit',cls:'예약'};
   });
   return bed;
 }
@@ -933,14 +980,19 @@ function cardEl(r){
       }
       c.appendChild(hb);
     }
-    /* 📌 30일 안 다음 예약 전달 메모 */
+    /* 📌 30일 안 다음 예약 전달 메모 — 1번 장봉환 원장님 탭만 '확정 예약', 나머지 탭은 '비대기'(색·배지로 구분) */
     var na=nextAppt(r);
     if(na){
-      var nb=el('div','dept next');
+      var ncl=apptCls(na), booked=(ncl==='예약'), isRx=(ncl==='처방');
+      var nb=el('div','dept next '+(booked?'nxok':(isRx?'nxrx':'nxno')));
       nb.appendChild(el('b','nextlab','📌 전달 메모'));
+      nb.appendChild(el('span','nxbadge '+(booked?'ok':(isRx?'rx':'no')), booked?'확정 예약':(isRx?'처방':'비대기')));
       var nd=parseISO(na.date);
       var days=Math.round((nd-parseISO(r['날짜']))/(1000*60*60*24));
-      nb.appendChild(document.createTextNode(' 다음 예약 '+md(nd)+'('+wk(nd)+') '+na.time+(na.doctor?' ('+na.doctor+')':'')+'이 30일 안('+days+'일 뒤)에 있어요 — 오늘 같이 진행할지 원장님 확인 필요'));
+      var what=booked?'예약':(isRx?'처방 수령':'비대기 내원');
+      var tl=(!isRx && na.doctor)?(' · 담당 '+tabLabel(na.doctor)):'';
+      nb.appendChild(document.createTextNode(' 다음 '+what+' '+md(nd)+'('+wk(nd)+') '+na.time+tl+' · '+days+'일 뒤 — '
+        +(booked?'원장님 진료 예약입니다. 오늘 같이 진행할지 원장님 확인 필요':(isRx?'예약이 아니라 보호자 처방 수령 건입니다. 오늘 함께 준비할지 확인 필요':'예약이 아닙니다(비대기). 오늘 함께 진행할지 원무과 확인 필요'))));
       if(na.memo) nb.appendChild(el('div','nextmemo','· '+na.memo));
       c.appendChild(nb);
     }
