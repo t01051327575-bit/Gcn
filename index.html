@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- GCN v1124-1005 | 📌 전달 메모에 예약담당자(구분) 표시 + 예약 메모 110자 자르지 않고 전체 표시 · 👨‍⚕️ 원장님 뷰에서 원무과 준비 항목 숨김 · 🩺 ② 혹·이전 이상 · 📋 보호자 사전체크·건강관리표 핵심 -->
+<!-- GCN v1124-1012 | 📌 전달 메모에 예약담당자(구분) 표시 + 예약 메모 110자 자르지 않고 전체 표시(160자 절단 해제) + 오늘 내원 아이 다음 예약 누락·시각 보정 · 👨‍⚕️ 원장님 뷰에서 원무과 준비 항목 숨김 · 🩺 ② 혹·이전 이상 · 📋 보호자 사전체크·건강관리표 핵심 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -301,9 +301,9 @@ function load(){
   $('#out').innerHTML='<div class="loading">불러오는 중…</div>';
   $('#err').innerHTML='';
   Promise.all([fetchSheet(TAB_APPTS), fetchSheet(TAB_INQ), fetchSheet(TAB_META).catch(function(){return [];}),
-    fetch('lump.json?v=1124-1005',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};}),
-    fetch('lumps/index.json?v=1124-1005',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};}),
-    fetch('next.json?v=1124-1005',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};})])
+    fetch('lump.json?v=1124-1012',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};}),
+    fetch('lumps/index.json?v=1124-1012',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};}),
+    fetch('next.json?v=1124-1012',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};})])
   .then(function(res){
     S.data = res[0].filter(function(r){return r['아이']||r['날짜'];}).map(function(r){
       r['날짜']=String(r['날짜']||'').slice(0,10);
