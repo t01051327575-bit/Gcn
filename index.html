@@ -1507,7 +1507,7 @@ function renderMonthSummary(out){
   var mCounts=bkCount(mAll);
   var head=el('div','sumhead');
   head.appendChild(el('h2',null,'🗓 월간 한눈에 보기'));
-  head.appendChild(el('div','sum',r.y+'년 '+r.m+'월 · 예약 있는 날 '+days+'일 · '+(S.bk?'':'총 ')+total+'건'+(S.bk?' (전체 '+mCounts.total+'건 중)':'')+' · 확정 '+(mCounts['확정']||0)+' · 비대기 '+(mCounts['비대기']||0)+' · 처방 '+(mCounts['처방']||0)+' ※ 진료는 월·화·수'));
+  head.appendChild(el('div','sum',r.y+'년 '+r.m+'월 · 예약 있는 날 '+days+'일 · '+(S.bk?'':'총 ')+total+'건'+(S.bk?' (전체 '+mCounts.total+'건 중)':(' · 확정 '+(mCounts['확정']||0)+' · 비대기 '+(mCounts['비대기']||0)+' · 처방 '+(mCounts['처방']||0)))+' ※ 진료는 월·화·수'));
   var sw=el('div','switchbtn');
   var tb=el('button','btn b-gray','오늘 달'); tb.type='button';
   tb.addEventListener('click',function(){S.month=mkOf(TODAY);render();});
