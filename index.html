@@ -232,6 +232,8 @@ input[type=date],input[type=text]{font:700 .9em 'Noto Sans KR';border:1.5px soli
 .mcell:hover{border-color:var(--green2);box-shadow:0 2px 8px rgba(15,23,42,.07)}
 .mcell.blank{background:transparent;border:0;cursor:default;box-shadow:none}
 .mcell.off{background:#F8FAFC;cursor:default}
+.mcell:disabled{color:inherit;opacity:1;cursor:default}
+.mcell:disabled:hover{border-color:var(--line);box-shadow:none}
 .mcell.off:hover{border-color:var(--line);box-shadow:none}
 .mcell.has{border-top:3px solid var(--green2)}
 .mcell.today{background:#FFF9FB;box-shadow:0 0 0 2px #FBCFE8 inset}
@@ -1205,6 +1207,8 @@ function wEntries(ds,chart){
   if(g){
     (g.list||[]).forEach(function(x){
       if(/^\s*[xX]\s*\(/.test(String(x.memo||''))) return;   /* 차트에서 취소·날짜이동된 건 */
+      if(/^\s*\[업체\]/.test(String(x.doctor||''))) return;    /* 업체 주문·검침 등 환자 예약이 아닌 건 */
+      if(/^(진료실|미용실|검사실|대기실|처방)$/.test(String(x.name||''))) return;
       var k=nzName(x.name)+'|'+nzOwner(x.owner);
       if(have[k]) return;
       have[k]=1;
@@ -1366,17 +1370,16 @@ function renderWeekSummary(out){
 }
 
 function renderMonthSummary(out){
-  var r=monthRange(), chart=chartByDate();
-  var head=el('div','sumhead');
-  head.appendChild(el('h2',null,'🗓 월간 요약'));
-  var days=0, total=0, cdays=0, todayIso=iso(TODAY);
+  var r=monthRange(), chart=chartByDate(), per={}, days=0, total=0, chartTot=0;
   for(var q=0;q<r.days;q++){
-    var ds=iso(new Date(r.y,r.m-1,q+1));
-    var n=dayRows(ds).length;
-    if(n){days++; total+=n;}
-    var cg=(ds>=todayIso? chart[ds] : null); if(cg&&cg.visits&&!n) cdays++;
+    var dsx=iso(new Date(r.y,r.m-1,q+1));
+    per[dsx]=wEntries(dsx,chart);
+    if(per[dsx].length){ days++; total+=per[dsx].length; }
+    per[dsx].forEach(function(e){ if(e.chart) chartTot++; });
   }
-  head.appendChild(el('div','sum','예약 있는 날 '+days+'일 · 총 '+total+'건'+(cdays?' · 📌 차트만 있는 날 '+cdays+'일':'')));
+  var head=el('div','sumhead');
+  head.appendChild(el('h2',null,'🗓 월간 한눈에 보기'));
+  head.appendChild(el('div','sum',r.y+'년 '+r.m+'월 · 예약 있는 날 '+days+'일 · 총 '+total+'건'+(chartTot?' (그중 차트 '+chartTot+')':'')+' ※ 진료는 월·화·수'));
   var sw=el('div','switchbtn');
   var tb=el('button','btn b-gray','오늘 달'); tb.type='button';
   tb.addEventListener('click',function(){S.month=mkOf(TODAY);render();});
@@ -1396,49 +1399,37 @@ function renderMonthSummary(out){
   ['일','월','화','수','목','금','토'].forEach(function(w,i){ dow.appendChild(el('div',i===0?'sun':(i===6?'sat':''),w)); });
   cal.appendChild(dow);
 
-  var grid=el('div','mgrid');
+  var grid=el('div','mgrid'), todayIso=iso(TODAY);
   for(var i=0;i<r.lead;i++) grid.appendChild(el('div','mcell blank'));
   for(var d=1;d<=r.days;d++){
     (function(d){
-      var dd=new Date(r.y,r.m-1,d), ds=iso(dd), w=dd.getDay();
-      var rows=dayRows(ds), st=dayStats(rows), cg=(ds>=todayIso? chart[ds] : null), has=rows.length>0;
-      var isToday=(ds===iso(TODAY));
+      var dd=new Date(r.y,r.m-1,d), ds=iso(dd), w=dd.getDay(), list=per[ds], st=wCounts(list);
+      var isToday=(ds===todayIso);
       var cls='mcell'+(w===0?' sun':(w===6?' sat':''))+(isToday?' today':'');
-      if(has) cls+=' has'; else if(!isClinicDay(ds)) cls+=' off';
-      var c=el('div',cls);
+      if(list.length) cls+=' has'; else if(!isClinicDay(ds)) cls+=' off';
+      var c=el('button',cls); c.type='button';
       var dn=el('div','dnum');
       dn.appendChild(el('b',null,String(d)));
-      if(has) dn.appendChild(el('span','cnt',rows.length+'건'));
+      if(list.length) dn.appendChild(el('span','cnt',list.length+'건'));
       c.appendChild(dn);
-      if(has){
-        c.appendChild(brkEl(st));
-        var tg=tagRows(st); if(tg) c.appendChild(tg);
+      if(list.length){
+        c.appendChild(wChips(st));
         var nm=el('div','names');
-        rows.slice(0,3).forEach(function(x,k){
-          if(k) nm.appendChild(document.createTextNode(' · '));
-          nm.appendChild(el('i',null,x['시각']+' '));
-          nm.appendChild(document.createTextNode(x['아이']));
-        });
-        if(rows.length>3) nm.appendChild(document.createTextNode(' 외 '+(rows.length-3)));
+        nm.appendChild(document.createTextNode(list.slice(0,3).map(function(e){return e.t+' '+e.name;}).join(' · ')+(list.length>3?' 외 '+(list.length-3):'')));
         c.appendChild(nm);
         c.addEventListener('click',function(){openDate(ds);});
-      }else if(cg&&cg.visits){
-        c.appendChild(el('div','offt','예약표 미등록'));
       }else if(!isClinicDay(ds)){
         c.appendChild(el('div','offt','휴진'));
-      }
-      if(cg&&cg.visits&&!has){
-        var ln=el('div','chartln','📌 차트 '+cg.visits+' · '+clipText(cg.names.slice(0,2).join(' · ')+(cg.names.length>2?' 외 '+(cg.names.length-2):''),34));
-        ln.style.cursor='pointer';
-        ln.addEventListener('click',function(ev){ev.stopPropagation();openChartDay(ds);});
-        c.appendChild(ln);
+        c.disabled=true;
+      }else{
+        c.disabled=true;
       }
       grid.appendChild(c);
     })(d);
   }
   cal.appendChild(grid);
   out.appendChild(cal);
-  out.appendChild(el('div','legend','날짜 칸을 누르면 그 날 상세 카드로 갑니다. · 큰 숫자 = 원무과 예약표 건수 · 📌 차트 = 차트(예약관리)에 잡혀 있는 예약 건수(예약표와 별도 집계 · 누르면 목록) · 흐린 칸 = 휴진(진료는 월·화·수) 또는 예약 없음 · 휴대폰에서는 예약 있는 날만 목록으로 보입니다.'));
+  out.appendChild(el('div','legend','날짜 칸을 누르면 그 날 상세 카드로 갑니다. · 숫자 = 예약표(시트)+차트 예약을 합친 건수 · 차트N = 차트(예약관리)에만 있고 예약표에는 아직 없는 건 · 흐린 칸 = 휴진(진료는 월·화·수) 또는 예약 없음 · 휴대폰에서는 예약 있는 날만 목록으로 보입니다.'));
   markActive();
 }
 
