@@ -324,7 +324,7 @@ function nxHtml(p){
     var memo=n.f||n.t||'';
     return '<div class="nxline"><span class="nxdate">📅 '+md(n.d)+'('+wd(n.d)+')'+(n.tm?' '+n.tm:'')+'</span>'+
       '<span class="nxkind '+kl[0]+'">'+esc(kl[1])+'</span></div>'+
-      (memo?'<div class="nxmemo'+(i?' clamp':'')+'">'+esc2(memo)+'</div>':'');
+      (memo?'<div class="nxmemo'+(i?' clamp':'')+'">'+esc2(memo).replace(/혹이미지/g,'<b style="color:#BE185D;font-weight:900">혹이미지</b>')+'</div>':'');
   }).join('')+'</div>';
 }
 function thumbsHtml(p,r){
@@ -465,6 +465,7 @@ function load(){
         return {d:r.d||'',zd:r.zd||'',files:files,videos:vids,label:'옛 혹 기록 모음',notes:(r.notes||[]),marks:r.marks||'',s:r.s||'',src:'옛 혹 기록 모음(클로드 아티팩트)'};
       });
       p.nx=(p.nx||[]).map(function(n){return {d:n.d||'',w:n.w||'',tm:n.tm||'',t:n.t||'',f:n.f||n.t||'',x:n.x||0,m:n.m||0,k:n.k||'',c:n.c||''}});
+      if(p.nxt&&p.nxt.length){ p.nx=p.nxt.map(function(n){return {d:n.d||'',w:n.w||'',tm:n.tm||'',t:n.t||'',f:n.f||n.t||'',x:n.x||0,m:n.m||0,k:n.k||'',c:n.c||''}}); }
       p.recs.sort(function(a,b){return String(b.d||'0000').localeCompare(String(a.d||'0000'))});
       BY[keyOf(p.pet,p.g)]=p; P.push(p);
     });
