@@ -585,10 +585,8 @@ function loadLive(){
         var d=gdate(r['날짜']), body=(r['코멘트']||'')+' '+(r['제목']||'');
         if(!d||!body.trim()) return;
         var hit=kw.test(body)?1:0;
-        var cur=best[p.key];
-        if(!cur||d>cur.d||(hit&&!cur.hit&&d>=cur.d)){
-          if(!cur||d>cur.d||(d===cur.d&&hit&&!cur.hit)) best[p.key]={d:d,t:(r['제목']?('['+r['제목']+'] '):'')+String(r['코멘트']||'').trim(),hit:hit};
-        }
+        var bk=keyOf(pet,g), cur=best[bk];
+        if(!cur||d>cur.d||(d===cur.d&&hit&&!cur.hit)) best[bk]={d:d,t:(r['제목']?('['+r['제목']+'] '):'')+String(r['코멘트']||'').trim(),hit:hit};
         LIVE.cmt++;
       });
       Object.keys(best).forEach(function(k){ BY[k].lastCmt=best[k]; });
