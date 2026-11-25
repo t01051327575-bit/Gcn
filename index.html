@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- GCN v1125-0925 | 🔗 상단 바로가기 = 🩺 혹모음(GDN) · 📋 GHN 접수함(새 탭으로 열림) · 🔎 주간·월간 한눈에 보기 = 구분 필터(전체·확정 예약·비대기·처방) + 타임테이블 블록에 예약 내용 1~2줄 + 월간 셀에 확정/비대기/처방 배지(next.json 예약 건도 확정으로 집계) · 🗓 주간 = 08:00~19:00 × 월~일 타임테이블(구분별 색·배지·이전/다음 주), 월간 = 일~토 달력(이전/다음 달) · ✨ A+ 자료 = 오늘 새로 올라온 자료(당일 GHN·신규 접수) 기준으로 정리 · 🟡 종이 표시도 그림 · 🖼 혹 위치 그림 = 🟣 기존 혹 + □ 신규(GHN) + 🟡 종이 표시도 + 📷 보호자 카톡 사진 · 📌 전달 메모 = 1번 장봉환 원장님 탭만 '확정 예약'(초록), 나머지 탭은 '비대기'(주황) · 🩺 ② 혹·이전 이상 · 📋 보호자 사전체크·건강관리표 핵심 -->
+<!-- GCN v1125-1000 | 🎥 보호자 보행 영상 = 카드에서 바로 재생(호세아·이소연 11/23 영상 3개) · 🔗 상단 바로가기 = 🩺 혹모음(GDN) · 📋 GHN 접수함(새 탭으로 열림) · 🔎 주간·월간 한눈에 보기 = 구분 필터(전체·확정 예약·비대기·처방) + 타임테이블 블록에 예약 내용 1~2줄 + 월간 셀에 확정/비대기/처방 배지(next.json 예약 건도 확정으로 집계) · 🗓 주간 = 08:00~19:00 × 월~일 타임테이블(구분별 색·배지·이전/다음 주), 월간 = 일~토 달력(이전/다음 달) · ✨ A+ 자료 = 오늘 새로 올라온 자료(당일 GHN·신규 접수) 기준으로 정리 · 🟡 종이 표시도 그림 · 🖼 혹 위치 그림 = 🟣 기존 혹 + □ 신규(GHN) + 🟡 종이 표시도 + 📷 보호자 카톡 사진 · 📌 전달 메모 = 1번 장봉환 원장님 탭만 '확정 예약'(초록), 나머지 탭은 '비대기'(주황) · 🩺 ② 혹·이전 이상 · 📋 보호자 사전체크·건강관리표 핵심 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -135,6 +135,7 @@ input[type=date],input[type=text]{font:700 .9em 'Noto Sans KR';border:1.5px soli
 .lumpfig a{display:block}
 .lumpimg{width:100%;max-height:300px;object-fit:contain;border:1.5px solid #6EE7B7;border-radius:10px;background:#fff;display:block;cursor:zoom-in}
 .lumpcap{font-size:.84em;font-weight:800;color:#047857;margin-top:2px;line-height:1.35}
+.lumpvid video{display:block;width:100%;max-height:360px;background:#000;border-radius:10px}
 #lumpbox{position:fixed;inset:0;background:rgba(3,25,18,.92);display:none;z-index:9999;padding:14px;align-items:center;justify-content:center;flex-direction:column;gap:8px}
 #lumpbox.on{display:flex}
 #lumpbox img{max-width:100%;max-height:calc(100% - 44px);border-radius:12px;background:#fff}
@@ -415,7 +416,7 @@ var S = {data:null, xdata:[], inq:[], meta:{}, date:null, day:'today', view:'doc
 var PAT = {};
 var LUMP = {};   /* 혹 기록(부위·수술·세포검사) — 사이트 같은 위치의 lump.json */
 var LUMPIMG = {}; /* 혹 마킹 그림 파일명 — lumps/index.json */
-var LUMPV = '1125-0925'; /* 혹 그림 파일 캐시 버전(같은 파일명으로 교체해도 바로 반영) */
+var LUMPV = '1125-1000'; /* 혹 그림 파일 캐시 버전(같은 파일명으로 교체해도 바로 반영) */
 var NEXT = {};   /* 앞으로의 예약(아이|보호자) — next.json */
 var CK_KEY = 'gcn_desk_prep_v1';
 
@@ -464,7 +465,7 @@ function load(){
   $('#err').innerHTML='';
   Promise.all([fetchSheet(TAB_APPTS), fetchSheet(TAB_INQ), fetchSheet(TAB_META).catch(function(){return [];}),
     fetch('lump.json?v=1124-1555',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};}),
-    fetch('lumps/index.json?v=1125-0925',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};}),
+    fetch('lumps/index.json?v=1125-1000',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};}),
     fetch('next.json?v=1125-0830',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};})])
   .then(function(res){
     var allRows = res[0].filter(function(r){return r['아이']||r['날짜'];}).map(function(r){
@@ -997,7 +998,7 @@ function cardEl(r){
       /* 🖼 혹 위치 그림: 🟣 기존(차트) · □ 신규(GHN) · 🟡 종이 표시도 · 📷 보호자 카톡 사진 — 누르면 크게 열림 */
       var lmi=LUMPIMG[(r['아이']||'')+'|'+(r['보호자']||'')];
       if(typeof lmi==='string') lmi={old:lmi};
-      if(lmi && (lmi.old || lmi.new || lmi.paper || lmi.chat)){
+      if(lmi && (lmi.old || lmi.new || lmi.paper || lmi.chat || lmi.videos)){
         var fw=el('div','lumpfigs');
         [['old','🟣 기존 혹'],['new','□ 신규(GHN)'],['paper','🟡 종이 표시도'],['chat','📷 보호자 카톡']].forEach(function(P){
           var fs=lmi[P[0]]; if(!fs) return;
@@ -1020,6 +1021,30 @@ function cardEl(r){
         });
         hb.appendChild(fw);
         hb.appendChild(el('div','lumpcap','🖼 그림을 누르면 크게 열립니다 — 🟣 기존 혹 기록 / □ 보호자가 이번에 GHN으로 체크한 혹·병변 위치 / 🟡 보호자가 종이에 직접 그려 온 병변 위치 표시도 / 📷 보호자가 카톡으로 보낸 병변 사진'));
+      }
+      /* 🎥 보호자 보행 영상 — 카드에서 바로 재생(모바일·PC) */
+      if(lmi && lmi.videos){
+        var vids=(typeof lmi.videos==='string')?[lmi.videos]:lmi.videos;
+        if(vids && vids.length){
+          var vw=el('div','lumpfigs lumpvids');
+          vids.forEach(function(f,vi){
+            var vsrc=/^https?:/i.test(f) ? f : 'lumps/'+f+'?v='+LUMPV;
+            var vlab='🎥 보호자 보행 영상'+(vids.length>1?' '+(vi+1):'');
+            var vcell=el('div','lumpfig');
+            vcell.appendChild(el('div','flab',vlab));
+            var vd=document.createElement('video');
+            vd.controls=true;
+            vd.setAttribute('playsinline','');
+            vd.setAttribute('webkit-playsinline','');
+            vd.setAttribute('preload','metadata');
+            vd.setAttribute('aria-label',vlab);
+            vd.src=vsrc;
+            vcell.appendChild(vd);
+            vw.appendChild(vcell);
+          });
+          hb.appendChild(vw);
+          hb.appendChild(el('div','lumpcap','🎥 보호자 보행 영상 — 재생 버튼을 누르면 카드에서 바로 재생됩니다.'));
+        }
       }
       c.appendChild(hb);
     }
