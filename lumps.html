@@ -106,6 +106,9 @@ a{color:var(--green)}
 .how{font-size:.76em;font-weight:800;color:#0B5F57;background:var(--green-soft);border-radius:8px;padding:3px 8px;align-self:flex-start}
 .how.inq{color:#5B21B6;background:var(--purple-soft)}
 .how.cmt{color:#92400E;background:var(--amber-soft)}
+details.cmt{border:1px solid var(--line);border-radius:10px;padding:6px 9px;background:#FFFDF5}
+details.cmt summary{font-size:.82em;font-weight:900;color:#92400E;cursor:pointer}
+details.cmt p{margin:6px 0 0;font-size:.84em;line-height:1.55;white-space:pre-wrap;word-break:keep-all;max-height:220px;overflow:auto}
 /* 모달 */
 #zoom{position:fixed;inset:0;background:rgba(3,25,18,.94);display:none;z-index:9999;padding:12px;
   align-items:center;justify-content:center;flex-direction:column;gap:8px}
@@ -367,6 +370,7 @@ function cardHtml(p){
         return '<button data-c="'+i+'_'+j+'" aria-pressed="'+(j===k)+'">'+(x.d?fmt(x.d):'날짜 없음')+(j===0&&p.recs.length>1?'<span class="fin"> · 최종</span>':'')+'</button>';
       }).join('')+'</div>':'')+
       (r?recBody(p,r):'')+
+      (p.lastCmt?'<details class="cmt"><summary>✍️ 최근 진료 코멘트 '+(p.lastCmt.d?fmt(p.lastCmt.d):'')+'</summary><p>'+esc2(p.lastCmt.t)+'</p><span class="how cmt">GCN 코멘트 탭</span></details>':'')+
       (p.memo?'<p class="marks">📋 '+esc(p.memo)+'</p>':'')+
       (r&&r.src?'<span class="how'+(r.kind==='inq'?' inq':r.kind==='cmt'?' cmt':'')+'">'+esc(r.src)+'</span>':'')+
     '</div></article>';
@@ -571,34 +575,23 @@ function loadLive(){
         touched=true; LIVE.inq++;
       });
     }
-    /* 3) 코멘트 — 혹·병변 관련 코멘트만, 기록에 없는 날짜는 최대 3건 누적 */
+    /* 3) 코멘트 — 기록을 늘리지 않고 '최근 진료 코멘트'로만 연결(혹·병변 언급 우선) */
     if(cm&&cm.length){
       var kw=/혹|병변|지방종|표피낭|피지선|세포\s?검사|mass|MASS|결절|림프|혈청종|유선종양|조직검사/;
-      var byP={};
+      var best={};
       cm.forEach(function(r){
         var pet=r['아이']||'', g=r['보호자']||''; if(!pet) return;
         var p=BY[keyOf(pet,g)]; if(!p||!p.recs.length) return;
         var d=gdate(r['날짜']), body=(r['코멘트']||'')+' '+(r['제목']||'');
         if(!d||!body.trim()) return;
-        if(!kw.test(body)) return;
-        var item={d:d,t:((r['제목']?('['+r['제목']+'] '):'')+String(r['코멘트']||'').trim()).slice(0,1200)};
-        (byP[p.key]=byP[p.key]||{p:p,items:[]}).items.push(item);
+        var hit=kw.test(body)?1:0;
+        var cur=best[p.key];
+        if(!cur||d>cur.d||(hit&&!cur.hit&&d>=cur.d)){
+          if(!cur||d>cur.d||(d===cur.d&&hit&&!cur.hit)) best[p.key]={d:d,t:(r['제목']?('['+r['제목']+'] '):'')+String(r['코멘트']||'').trim(),hit:hit};
+        }
         LIVE.cmt++;
       });
-      Object.keys(byP).forEach(function(k){
-        var o=byP[k], p=o.p;
-        o.items.sort(function(a,b){return b.d.localeCompare(a.d)});
-        var haveDates={}; p.recs.forEach(function(r){if(r.d)haveDates[r.d]=1});
-        var latest=firstDate(p), added=0;
-        o.items.forEach(function(it){
-          if(added>=2) return;
-          if(haveDates[it.d]) return;
-          if(latest&&it.d<=latest) return;
-          p.recs.push({d:it.d,zd:it.d,files:[],videos:[],label:'진료 코멘트',notes:[{d:fmt(it.d),t:it.t}],marks:'',s:'',src:'GCN 코멘트 탭',kind:'cmt'});
-          haveDates[it.d]=1; added++; touched=true;
-        });
-        p.lastCmt=o.items[0];
-      });
+      Object.keys(best).forEach(function(k){ BY[k].lastCmt=best[k]; });
     }
     LIVE.ok=true;
     P.forEach(function(p){p.recs.sort(function(a,b){return String(b.d||'0000').localeCompare(String(a.d||'0000'))})});
