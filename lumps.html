@@ -246,6 +246,7 @@ var SEL={};         /* 카드별 선택 기록 index */
 var ZOOM={files:[],videos:[],i:0,label:''};
 var LIVE={appts:0,inq:0,cmt:0,ok:false};
 var NEWCUT=iso(addDays(TODAY,-14));
+var NEXTJS={};
 
 /* ================= 병합 ================= */
 function overlayRecs(ov){
@@ -449,14 +450,32 @@ function drawZoom(){
 function closeZoom(){$('zoom').classList.remove('on');$('zoom').querySelector('.stage').innerHTML=''}
 
 /* ================= 데이터 ================= */
+function livenx(p,live){
+  /* 기존(차트 next.json·옛 기록) 예약과 실시간 예약 시트를 합집합 */
+  var out=(p.nx||[]).slice();
+  live.forEach(function(n){
+    var dup=out.some(function(x){return String(x.d).slice(0,10)===n.d&&String(x.tm||'')===String(n.tm||'')});
+    if(!dup) out.push(n);
+  });
+  var seen={},res=[];
+  out.filter(function(n){return n&&n.d&&String(n.d).slice(0,10)>=TODAY_S})
+     .sort(function(a,b){return String(a.d).localeCompare(String(b.d))})
+     .forEach(function(n){
+       var k=String(n.d).slice(0,10)+'|'+(n.tm||'')+'|'+String(n.t||n.f||'').slice(0,20);
+       if(seen[k]) return; seen[k]=1; res.push(n);
+     });
+  return res;
+}
 function load(){
   $('grid').innerHTML='<div class="empty">불러오는 중…</div>';
   $('err').innerHTML=''; $('loadstate').textContent='기본 기록 불러오는 중…';
   P=[];BY={};
   var pBase=jget('lumps/data.json?v=1125-1200');
   var pIdx=jget('lumps/index.json?v=1125-1200');
-  Promise.all([pBase,pIdx]).then(function(res){
-    var data=res[0], idx=res[1]||{};
+  var pNext=jget('next.json?v=1125-1200');
+  Promise.all([pBase,pIdx,pNext]).then(function(res){
+    var data=res[0], idx=res[1]||{}, njs=res[2]||{};
+    NEXTJS=njs;
     if(!data||!data.patients){throw new Error('lumps/data.json 을 불러오지 못했습니다')}
     data.patients.forEach(function(p){
       p.recs=(p.recs||[]).map(function(r){
@@ -479,13 +498,31 @@ function load(){
       if(ov.note) p.ovNote=ov.note;
       overlayRecs(ov).forEach(function(r){
         r.src=r.label||'추가 기록';
-        p.recs.push(r);
+        var same=null;
+        for(var q=0;q<p.recs.length;q++){ if(r.d&&p.recs[q].d===r.d){ same=p.recs[q]; break } }
+        if(same){
+          same.files=(same.files||[]).concat(r.files||[]);
+          same.videos=(same.videos||[]).concat(r.videos||[]);
+          same.notes=(same.notes||[]).concat(r.notes||[]);
+          if(r.label&&same.label.indexOf(r.label)<0) same.label=same.label+' · '+r.label;
+          same.src=same.label;
+        } else { p.recs.push(r); }
       });
       if(ov.nx&&ov.nx.length) p.nx=p.nx.concat(ov.nx);
     });
     P.forEach(function(p){
       p.recs.sort(function(a,b){return String(b.d||'0000').localeCompare(String(a.d||'0000'))});
-      p.nx=(p.nx||[]).filter(function(n){return n&&n.d});
+      var extra=NEXTJS[p.pet+'|'+p.g]||NEXTJS[p.pet+'|'+String(p.g||'').replace(/\s+/g,'')]||[];
+      if(extra.length){
+        var rows=extra.map(function(row){
+          var d=row[0],tm=row[1],memo=row[2],typ=row[3],who=row[4],kind=row[5];
+          var c=(String(kind).trim()==='예약'&&String(who).indexOf('장봉환')>=0)?'doc':(String(kind).trim()==='처방'?'rx':(String(kind).trim()==='미용'?'groom':'wait'));
+          return {d:d,tm:tm,t:memo,f:memo,c:c,x:0};
+        });
+        p.nx=livenx(p,rows);
+      } else {
+        p.nx=livenx(p,[]);
+      }
     });
     $('ver').textContent=(data.meta&&data.meta.v?data.meta.v:'')+' · '+(data.meta&&data.meta.built?data.meta.built:'');
     render();
@@ -517,7 +554,7 @@ function loadLive(){
       Object.keys(byKey).forEach(function(k){
         var p=BY[k]; if(!p) return;
         var live=byKey[k].filter(function(n){return n.d>=TODAY_S});
-        if(live.length){ p.nx=live; touched=true; }
+        if(live.length){ p.nx=livenx(p,live); touched=true; }
       });
       LIVE.appts=ap.length;
     }
@@ -536,11 +573,11 @@ function loadLive(){
     }
     /* 3) 코멘트 — 혹·병변 관련 코멘트만, 기록에 없는 날짜는 최대 3건 누적 */
     if(cm&&cm.length){
-      var kw=/혹|병변|종양|지방종|표피낭|피지|세포검사|세포 검사|mass|MASS|결절|림프|혈청종|조직검사|제거|수술|상처|진물|궤양|피부/;
+      var kw=/혹|병변|지방종|표피낭|피지선|세포\s?검사|mass|MASS|결절|림프|혈청종|유선종양|조직검사/;
       var byP={};
       cm.forEach(function(r){
         var pet=r['아이']||'', g=r['보호자']||''; if(!pet) return;
-        var p=BY[keyOf(pet,g)]; if(!p) return;
+        var p=BY[keyOf(pet,g)]; if(!p||!p.recs.length) return;
         var d=gdate(r['날짜']), body=(r['코멘트']||'')+' '+(r['제목']||'');
         if(!d||!body.trim()) return;
         if(!kw.test(body)) return;
@@ -552,10 +589,11 @@ function loadLive(){
         var o=byP[k], p=o.p;
         o.items.sort(function(a,b){return b.d.localeCompare(a.d)});
         var haveDates={}; p.recs.forEach(function(r){if(r.d)haveDates[r.d]=1});
-        var added=0;
+        var latest=firstDate(p), added=0;
         o.items.forEach(function(it){
-          if(added>=3) return;
+          if(added>=2) return;
           if(haveDates[it.d]) return;
+          if(latest&&it.d<=latest) return;
           p.recs.push({d:it.d,zd:it.d,files:[],videos:[],label:'진료 코멘트',notes:[{d:fmt(it.d),t:it.t}],marks:'',s:'',src:'GCN 코멘트 탭',kind:'cmt'});
           haveDates[it.d]=1; added++; touched=true;
         });
