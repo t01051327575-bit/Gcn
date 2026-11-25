@@ -493,7 +493,7 @@ function load(){
   P=[];BY={};
   var pBase=jget('lumps/data.json?v=1125-1200');
   var pIdx=jget('lumps/index.json?v=1125-1915');
-  var pNext=jget('next.json?v=1125-1200');
+  var pNext=jget('next.json?v=1125-2100');
   Promise.all([pBase,pIdx,pNext]).then(function(res){
     var data=res[0], idx=res[1]||{}, njs=res[2]||{};
     NEXTJS=njs;
