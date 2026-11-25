@@ -492,7 +492,7 @@ function load(){
   $('err').innerHTML=''; $('loadstate').textContent='기본 기록 불러오는 중…';
   P=[];BY={};
   var pBase=jget('lumps/data.json?v=1125-1200');
-  var pIdx=jget('lumps/index.json?v=1125-1200');
+  var pIdx=jget('lumps/index.json?v=1125-1915');
   var pNext=jget('next.json?v=1125-1200');
   Promise.all([pBase,pIdx,pNext]).then(function(res){
     var data=res[0], idx=res[1]||{}, njs=res[2]||{};
