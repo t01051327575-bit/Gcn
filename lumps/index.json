@@ -3,5 +3,6 @@
   "정하늘|정은혜": {"paper": "haneul_paper_1124.jpg", "new": "haneul_ghn.png"},
   "릴리|이원정 박건주": {"new": "lily_ghn.png", "chat": ["lily_chat_1125_1.jpg", "lily_chat_1125_2.jpg"]},
   "리아|채희연": {"new": "ria_ghn.png"},
-  "호세아|이소연": {"chat": ["hosea_chat_1123_1.jpg", "hosea_chat_1123_2.jpg", "hosea_chat_1123_3.jpg"], "videos": ["hosea_video_1.mp4", "hosea_video_2.mp4", "hosea_video_3.mp4"]}
+  "호세아|이소연": {"chat": ["hosea_chat_1123_1.jpg", "hosea_chat_1123_2.jpg", "hosea_chat_1123_3.jpg"], "videos": ["hosea_video_1.mp4", "hosea_video_2.mp4", "hosea_video_3.mp4"]},
+  "두부|양수정": {"chat": ["dubu_chat_1125.png"]}
 }
