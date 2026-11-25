@@ -469,6 +469,24 @@ function livenx(p,live){
      });
   return res;
 }
+function nxLookup(p){
+  var k1=p.pet+'|'+p.g, k2=p.pet+'|'+String(p.g||'').replace(/\s+/g,'');
+  if(NEXTJS[k1]) return NEXTJS[k1];
+  if(NEXTJS[k2]) return NEXTJS[k2];
+  var toks=String(p.g||'').split(/[\s\/|·]+/).filter(Boolean);
+  if(toks.length){
+    var hit='';
+    Object.keys(NEXTJS).forEach(function(kk){
+      var parts=kk.split('|'), pet=parts[0], ow=parts.slice(1).join(' ');
+      if(norm(pet)!==norm(p.pet)) return;
+      if(toks.every(function(x){return norm(ow).indexOf(norm(x))>=0})){
+        if(!hit||kk.length<hit.length) hit=kk;
+      }
+    });
+    if(hit) return NEXTJS[hit];
+  }
+  return [];
+}
 function load(){
   $('grid').innerHTML='<div class="empty">불러오는 중…</div>';
   $('err').innerHTML=''; $('loadstate').textContent='기본 기록 불러오는 중…';
@@ -515,7 +533,7 @@ function load(){
     });
     P.forEach(function(p){
       p.recs.sort(function(a,b){return String(b.d||'0000').localeCompare(String(a.d||'0000'))});
-      var extra=NEXTJS[p.pet+'|'+p.g]||NEXTJS[p.pet+'|'+String(p.g||'').replace(/\s+/g,'')]||[];
+      var extra=nxLookup(p);
       if(extra.length){
         var rows=extra.map(function(row){
           var d=row[0],tm=row[1],memo=row[2],typ=row[3],who=row[4],kind=row[5];
