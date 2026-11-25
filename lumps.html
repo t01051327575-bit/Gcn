@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>혹 기록 모음 · GCN</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1E293B; --mut:#64748B; --line:#E2E8F0; --bg:#F4F6F8; --card:#FFFFFF;
+  --green:#0F766E; --green2:#14B8A6; --green-soft:#E6F4F1; --pink:#D84A7A; --pink-soft:#FCE7EF;
+  --purple:#6D28D9; --purple-soft:#F1EBFF; --amber:#B45309; --amber-soft:#FEF3E2;
+  --scale:1;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,'Malgun Gothic',sans-serif;
+  font-size:calc(15px * var(--scale));line-height:1.55;-webkit-text-size-adjust:100%}
+body.size-l{--scale:1.12}
+body.size-xl{--scale:1.26}
+a{color:var(--green)}
+.wrap{max-width:1180px;margin:0 auto;padding:12px 12px 70px}
+/* 상단 */
+.top{position:sticky;top:0;z-index:40;background:rgba(244,246,248,.97);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);padding:8px 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.top .brand{font-weight:900;letter-spacing:-.2px}
+.top .brand small{color:var(--mut);font-weight:700}
+.top .sp{flex:1}
+.btn{border:1.5px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;padding:6px 12px;
+  font:700 .9em 'Noto Sans KR';cursor:pointer;white-space:nowrap;text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+.btn:hover{border-color:var(--green2)}
+.btn.on{background:var(--green);border-color:var(--green);color:#fff}
+.btn.back{background:#fff;border-color:#CBD5E1}
+.btn.refresh{background:var(--green);border-color:var(--green);color:#fff}
+.ver{font-size:.78em;color:var(--mut);font-weight:700}
+/* 헤더 */
+.hero{padding:10px 2px 2px}
+.hero h1{margin:0;font-size:1.5em;font-weight:900;letter-spacing:-.5px}
+.hero p{margin:2px 0 0;color:var(--mut);font-weight:700;font-size:.9em}
+.secret{margin:10px 0 0;padding:9px 12px;border-radius:10px;border:1.5px solid #E9A3AD;background:#FDECEE;color:#8A2433;
+  font-size:.88em;font-weight:800;line-height:1.5}
+.search{display:flex;gap:8px;margin:10px 0 6px;flex-wrap:wrap}
+.search input{flex:1 1 260px;min-width:0;border:2px solid var(--green2);border-radius:14px;padding:11px 14px;
+  font:700 1em 'Noto Sans KR';background:#fff;color:var(--ink);outline:none}
+.search input:focus{border-color:var(--green)}
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:6px 0}
+.tools .lbl{font-weight:900;font-size:.86em;color:var(--mut);margin-right:2px;white-space:nowrap}
+.seg{display:flex;gap:5px;flex-wrap:wrap}
+.seg button{font:700 .84em 'Noto Sans KR';border:1.5px solid var(--line);background:var(--card);color:var(--ink);
+  border-radius:999px;padding:6px 11px;cursor:pointer;white-space:nowrap}
+.seg button[aria-pressed="true"]{background:var(--green);border-color:var(--green);color:#fff}
+.tools input[type=date]{border:1.5px solid var(--line);border-radius:10px;padding:5px 8px;font:700 .86em 'Noto Sans KR';background:#fff;color:var(--ink)}
+.stat{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0 2px;font-size:.88em;font-weight:800;color:var(--mut)}
+.stat b{color:var(--green)}
+.stat .new{color:var(--pink)}
+.load{font-size:.8em;font-weight:700;color:var(--mut)}
+/* 그리드 */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px;margin-top:10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;min-width:0;
+  box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.card.isnew{outline:2.5px solid #F9A8D4;outline-offset:-1px}
+.thumbs{display:flex;gap:3px;background:#EEF6F4;min-height:0}
+.thumbs .ph{flex:1;min-width:0;padding:0;border:0;background:#fff;cursor:zoom-in;position:relative}
+.thumbs img{display:block;width:100%;height:250px;object-fit:contain;background:#fff}
+.thumbs video{display:block;width:100%;height:250px;object-fit:contain;background:#000}
+.thumbs .more{position:absolute;right:6px;bottom:6px;background:rgba(17,24,39,.78);color:#fff;border-radius:999px;
+  padding:2px 9px;font:800 .78em 'Noto Sans KR'}
+.thumbs .vtag{position:absolute;left:6px;top:6px;background:rgba(17,24,39,.78);color:#fff;border-radius:999px;padding:2px 8px;font:800 .76em 'Noto Sans KR'}
+.noimg{padding:18px 14px;color:var(--mut);font-weight:700;font-size:.86em;background:#F8FAFC;text-align:center}
+.info{padding:12px 14px 14px;display:flex;flex-direction:column;gap:7px}
+.toprow{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.pet{font-size:1.35em;font-weight:900;line-height:1.2;letter-spacing:-.3px}
+.g{color:var(--mut);font-size:.86em;font-weight:700}
+.n{font-size:.8em;font-weight:900;color:var(--green);background:var(--green-soft);border-radius:999px;padding:2px 10px;white-space:nowrap}
+.n.zero{color:var(--mut);background:#F1F5F9}
+.badges{display:flex;gap:4px;flex-wrap:wrap}
+.bdg{font-size:.74em;font-weight:900;border-radius:999px;padding:2px 8px;white-space:nowrap}
+.bdg.cut{background:#E0F2FE;color:#075985}
+.bdg.add{background:var(--pink-soft);color:#9D174D}
+.bdg.old{background:#F1F5F9;color:#475569}
+/* 다음 예약 */
+.nxbox{background:#F8FAFC;border:1px solid var(--line);border-radius:10px;padding:7px 9px;display:flex;flex-direction:column;gap:5px}
+.nxline{display:flex;gap:6px;align-items:baseline;flex-wrap:wrap;font-size:.86em;font-weight:800;line-height:1.35}
+.nxdate{color:#0F172A;font-variant-numeric:tabular-nums;white-space:nowrap}
+.nxkind{font-size:.9em;font-weight:900;border-radius:999px;padding:1px 8px;white-space:nowrap}
+.nxkind.doc{background:#DCFCE7;color:#166534}
+.nxkind.wait{background:#FEF3C7;color:#92400E}
+.nxkind.rx{background:#DBEAFE;color:#1E40AF}
+.nxkind.groom{background:#F3E8FF;color:#6B21A8}
+.nxkind.x{background:#FEE2E2;color:#991B1B}
+.nxmemo{font-size:.8em;font-weight:600;color:#334155;line-height:1.45;white-space:pre-wrap;word-break:keep-all}
+.nxmemo.clamp{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.nxnone{font-size:.84em;font-weight:700;color:var(--amber);background:var(--amber-soft);border:1px solid #FCD9A8;border-radius:10px;padding:6px 9px}
+/* 날짜 알약 */
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chips button{font:800 .82em 'Noto Sans KR';border:1.5px solid var(--line);background:var(--card);color:var(--ink);
+  border-radius:999px;padding:4px 10px;cursor:pointer;font-variant-numeric:tabular-nums;white-space:nowrap}
+.chips button[aria-pressed="true"]{background:var(--pink);border-color:var(--pink);color:#fff}
+.chips button .fin{font-weight:900}
+.notes{display:flex;flex-direction:column;gap:6px;border-left:3px solid var(--pink-soft);padding-left:9px;max-height:340px;overflow:auto}
+.notes p{margin:0;font-size:.88em;line-height:1.55;white-space:pre-wrap;word-break:keep-all}
+.notes p b{color:var(--pink)}
+.notes .none{color:var(--mut)}
+.marks{margin:0;font-size:.82em;color:var(--mut);font-weight:700;line-height:1.5}
+.how{font-size:.76em;font-weight:800;color:#0B5F57;background:var(--green-soft);border-radius:8px;padding:3px 8px;align-self:flex-start}
+.how.inq{color:#5B21B6;background:var(--purple-soft)}
+.how.cmt{color:#92400E;background:var(--amber-soft)}
+/* 모달 */
+#zoom{position:fixed;inset:0;background:rgba(3,25,18,.94);display:none;z-index:9999;padding:12px;
+  align-items:center;justify-content:center;flex-direction:column;gap:8px}
+#zoom.on{display:flex}
+#zoom .stage{flex:1;display:flex;align-items:center;justify-content:center;min-height:0;width:100%}
+#zoom img,#zoom video{max-width:100%;max-height:100%;border-radius:10px;background:#fff}
+#zoom .bar{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;color:#D1FAE5;font-weight:800;font-size:.9em}
+#zoom .bar button{font:800 .9em 'Noto Sans KR';border:0;border-radius:999px;padding:8px 16px;background:#fff;color:#111;cursor:pointer}
+#zoom .x{position:absolute;top:12px;right:12px}
+#zoom .cap{color:#BBF7D0;background:rgba(0,0,0,.35);border-radius:8px;padding:4px 10px;font-size:.85em;font-weight:700}
+.empty{text-align:center;color:var(--mut);padding:46px 16px;border:2px dashed var(--line);border-radius:16px;font-weight:700}
+.foot{margin-top:22px;color:var(--mut);font-size:.8em;line-height:1.7;font-weight:600}
+.foot b{color:var(--ink)}
+@media(max-width:560px){
+  .grid{grid-template-columns:1fr}
+  .thumbs img,.thumbs video{height:230px}
+  .hero h1{font-size:1.3em}
+}
+</style>
+</head>
+<body>
+<div class="top">
+  <a class="btn back" href="index.html">← GCN 메인으로</a>
+  <div class="brand">🩺 혹 기록 모음 <small>· GCN</small></div>
+  <span class="ver" id="ver">불러오는 중…</span>
+  <span class="sp"></span>
+  <button class="btn refresh" id="reload">🔄 새로고침</button>
+  <button class="btn" id="fsz">가+ 크게</button>
+</div>
+
+<div class="wrap">
+  <div class="hero">
+    <h1>혹 기록 모음</h1>
+    <p>아이별 혹·병변 위치 표시도와 보호자 사진·영상, 날짜별 소견과 다음 예약을 한 화면에 모았습니다.</p>
+  </div>
+  <div class="secret">🔒 원내 대외비 — 환자·보호자 정보와 병변 사진이 들어 있습니다. 외부 공유·화면 캡처 유포 금지.</div>
+
+  <div class="search">
+    <input id="q" type="search" placeholder="아이 이름 · 보호자 성함 · 병변 부위 · 소견 검색" autocomplete="off">
+  </div>
+
+  <div class="tools">
+    <span class="lbl">정렬</span>
+    <div class="seg" id="sortbox">
+      <button data-sort="date" aria-pressed="true">최근 날짜순</button>
+      <button data-sort="next" aria-pressed="false">다음 예약순</button>
+      <button data-sort="many" aria-pressed="false">기록 많은 순</button>
+      <button data-sort="name" aria-pressed="false">이름순</button>
+    </div>
+  </div>
+  <div class="tools">
+    <span class="lbl">보기</span>
+    <div class="seg" id="filtbox">
+      <button data-f="all" aria-pressed="true">전체</button>
+      <button data-f="week" aria-pressed="false">다음 주 예약</button>
+      <button data-f="any" aria-pressed="false">예약 있는 아이</button>
+      <button data-f="cut" aria-pressed="false">✂️ 제거 완료</button>
+      <button data-f="new" aria-pressed="false">🆕 최근 14일 추가</button>
+    </div>
+    <span class="lbl">예약일</span>
+    <input type="date" id="fdate">
+  </div>
+
+  <div class="stat">
+    <span id="count">불러오는 중…</span>
+    <span class="load" id="loadstate"></span>
+  </div>
+
+  <div id="grid" class="grid"></div>
+  <div id="err"></div>
+
+  <div class="foot">
+    <b>자료 출처</b> · 옛 혹 기록 모음(클로드 아티팩트 실측) 198마리·309장 + <b>GCN_실시간_데이터</b> 예약·문의·코멘트 탭 + <b>patient-data.json</b> · 새 사진·영상은 <code>lumps/index.json</code>에 등록하면 이 화면에 자동으로 누적됩니다.<br>
+    <b>기록 N회</b> = 그 아이의 혹·병변 기록 수(옛 기록 + 새 사진·영상 + 문의·코멘트). 날짜 알약을 누르면 그날 기록으로 바뀌고, 사진을 누르면 크게 열립니다.<br>
+    빈 칸은 ‘안 했다’가 아니라 ‘기록이 없다’는 뜻입니다. 원내 대외비 — 외부 공유 금지.
+  </div>
+</div>
+
+<div id="zoom" role="dialog" aria-modal="true" aria-label="혹 이미지 크게 보기">
+  <button class="btn x" id="zx">닫기 ✕</button>
+  <div class="stage"><img id="zimg" alt=""></div>
+  <div class="bar"><button id="zprev">← 이전</button><span id="zcap"></span><button id="znext">다음 →</button></div>
+</div>
+
+<script>
+/* ================= 공통 ================= */
+var $=function(id){return document.getElementById(id)};
+var esc=function(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
+var norm=function(s){return String(s==null?'':s).normalize('NFKC').replace(/[\/|·ㆍ\s]/g,'').toLowerCase()};
+var keyOf=function(pet,g){return norm(pet)+'|'+norm(g)};
+var iso=function(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+var TODAY=new Date(); TODAY.setHours(0,0,0,0);
+var TODAY_S=iso(TODAY);
+function addDays(d,n){var x=new Date(d);x.setDate(x.getDate()+n);return x}
+function fmt(d){if(!d)return '';var p=String(d).slice(0,10).split('-');if(p.length<3)return d;return p[0].slice(2)+'.'+p[1]+'.'+p[2]}
+function md(d){if(!d)return '';var p=String(d).slice(0,10).split('-');return (+p[1])+'/'+(+p[2])}
+function wd(d){if(!d)return '';var p=String(d).slice(0,10).split('-');if(p.length<3)return '';var dt=new Date(+p[0],+p[1]-1,+p[2]);return '일월화수목금토'[dt.getDay()]}
+function esc2(s){return esc(s).replace(/\n/g,'<br>')}
+/* gviz 날짜(Date(2026,10,23)) → ISO */
+function gdate(v){
+  if(v==null) return '';
+  var s=String(v).trim();
+  var m=s.match(/Date\((\d{4}),(\d{1,2}),(\d{1,2})/);
+  if(m) return m[1]+'-'+String(+m[2]+1).padStart(2,'0')+'-'+String(+m[3]).padStart(2,'0');
+  m=s.match(/^(\d{4})[.\-\/](\d{1,2})[.\-\/](\d{1,2})/);
+  if(m) return m[1]+'-'+String(+m[2]).padStart(2,'0')+'-'+String(+m[3]).padStart(2,'0');
+  return s.slice(0,10);
+}
+function gtime(v){
+  if(v==null||v==='') return '';
+  var s=String(v).trim();
+  var m=s.match(/Date\(1899,\d+,\d+,(\d{1,2}),(\d{1,2})/);
+  if(m) return String(+m[1]).padStart(2,'0')+':'+String(+m[2]).padStart(2,'0');
+  m=s.match(/(\d{1,2}):(\d{2})/);
+  if(m) return String(+m[1]).padStart(2,'0')+':'+m[2];
+  return '';
+}
+var SHEET_ID='1qBrHBcGRy0LDrCrj11HS5bZr3a-T1J32nFGZOF09dG8';
+function gviz(tab){
+  var u='https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:json&headers=1&sheet='+encodeURIComponent(tab);
+  return fetch(u,{cache:'no-store'}).then(function(r){return r.text()}).then(function(t){
+    var i=t.indexOf('{'), j=t.lastIndexOf('}');
+    var o=JSON.parse(t.slice(i,j+1));
+    var cols=o.table.cols.map(function(c){return c.label||''});
+    return (o.table.rows||[]).map(function(r){
+      var o2={}; r.c.forEach(function(c,k){ if(!c)return; o2[cols[k]]=(c.f!=null&&c.f!=='')?c.f:c.v; });
+      return o2;
+    });
+  });
+}
+function jget(u){return fetch(u,{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).catch(function(){return null})}
+
+/* ================= 상태 ================= */
+var P=[];           /* 통합 환자 */
+var BY={};          /* keyOf → P 항목 */
+var SORT='date', FILT='all', FDATE='';
+var SEL={};         /* 카드별 선택 기록 index */
+var ZOOM={files:[],videos:[],i:0,label:''};
+var LIVE={appts:0,inq:0,cmt:0,ok:false};
+var NEWCUT=iso(addDays(TODAY,-14));
+
+/* ================= 병합 ================= */
+function overlayRecs(ov){
+  var out=[];
+  function one(f,d,l,n){
+    if(!f) return;
+    if(Array.isArray(f)){ if(!f.length) return; out.push(mk(f,[],d,l,n)); return; }
+    out.push(mk([f],[],d,l,n));
+  }
+  one(ov.old, ov.oldD||ov.d, ov.oldL||'기존 혹 위치 표시도', ov.oldN);
+  one(ov.paper, ov.paperD||ov.d, ov.paperL||'보호자 종이 표시도', ov.paperN);
+  one(ov.new, ov.newD||ov.d, ov.newL||'GHN 건강관리표 혹 표시', ov.newN);
+  if(ov.chat&&ov.chat.length) out.push(mk(ov.chat.slice(),[],ov.chatD||ov.d,ov.chatL||'보호자 카톡 사진',ov.chatN));
+  if(ov.videos&&ov.videos.length) out.push(mk([],[],ov.videoD||ov.d,ov.videoL||'보호자 영상',ov.videoN,ov.videos.slice()));
+  (ov.extra||[]).forEach(function(x){
+    out.push(mk((x.files||[]).slice(),(x.videos||[]).slice(),x.d||'',x.label||'추가 기록',x.note,x.marks));
+  });
+  return out;
+}
+function mk(files,videos,d,label,note,marks){
+  return {d:d||'',zd:d||'',files:files||[],videos:videos||[],label:label||'',notes:(note?[{d:'',t:note}]:[]),
+          marks:marks||'',s:'',src:label||'추가 기록',ov:1};
+}
+function addRec(p,r){
+  /* 같은 날짜·같은 출처 기록은 사진만 합치고 새 기록을 만들지 않음 */
+  var same=p.recs.filter(function(x){return x.d&&x.d===r.d});
+  if(same.length&&r.kind!=='ov'){
+    var t=same[0];
+    t.notes=t.notes.concat(r.notes||[]);
+    t.files=(t.files||[]).concat(r.files||[]);
+    t.videos=(t.videos||[]).concat(r.videos||[]);
+    return;
+  }
+  p.recs.push(r);
+}
+function sortRecs(p){
+  p.recs.sort(function(a,b){return String(b.d||'0000').localeCompare(String(a.d||'0000'))||String(a.label||'').localeCompare(String(b.label||''),'ko')});
+}
+function ensurePatient(pet,g){
+  var k=keyOf(pet,g);
+  if(BY[k]) return BY[k];
+  var p={pet:pet,g:g,key:(pet||'')+'|'+(g||''),recs:[],nx:[],rm:[],memo:'',marks0:'',ops:[],breed:'',lastVisit:'',made:1};
+  BY[k]=p; P.push(p); return p;
+}
+
+/* ================= 렌더 ================= */
+function nxList(p){
+  var list=(p.nx||[]).filter(function(n){return n&&n.d});
+  list=list.filter(function(n){return String(n.d).slice(0,10)>=TODAY_S});
+  list.sort(function(a,b){return String(a.d).localeCompare(String(b.d))});
+  return list;
+}
+function lastRec(p){return p.recs[0]||null}
+function photoCount(p){
+  return p.recs.reduce(function(s,r){return s+(r.files?r.files.length:0)+(r.videos?r.videos.length:0)},0);
+}
+function firstDate(p){
+  for(var i=0;i<p.recs.length;i++){if(p.recs[i].d)return p.recs[i].d}
+  return '';
+}
+function kindLabel(c){
+  if(c==='doc') return ['doc','🟢 장봉환 원장님 확정 진료예약'];
+  if(c==='wait') return ['wait','🟡 비대기 접수예정'];
+  if(c==='rx') return ['rx','💊 보호자 처방건'];
+  if(c==='groom') return ['groom','✂️ 미용 예약'];
+  return ['wait','예약'];
+}
+function nxHtml(p){
+  var list=nxList(p);
+  if(!list.length){
+    if(p.recs.length) return '<div class="nxnone">📅 다음 진료 예약 없음 — 예약 잡을지 확인 필요</div>';
+    return '';
+  }
+  return '<div class="nxbox">'+list.slice(0,3).map(function(n,i){
+    var kl=kindLabel(n.c||(String(n.t||'').indexOf('비')===0?'wait':''));
+    var memo=n.f||n.t||'';
+    return '<div class="nxline"><span class="nxdate">📅 '+md(n.d)+'('+wd(n.d)+')'+(n.tm?' '+n.tm:'')+'</span>'+
+      '<span class="nxkind '+kl[0]+'">'+esc(kl[1])+'</span></div>'+
+      (memo?'<div class="nxmemo'+(i?' clamp':'')+'">'+esc2(memo)+'</div>':'');
+  }).join('')+'</div>';
+}
+function thumbsHtml(p,r){
+  if(!r) return '<div class="noimg">아직 위치 표시도·사진 기록이 없습니다</div>';
+  var files=(r.files||[]), vids=(r.videos||[]);
+  var total=files.length+vids.length;
+  if(!total) return '<div class="noimg">이 기록은 사진 없이 소견만 있습니다</div>';
+  var out='';
+  if(vids.length){
+    out+='<div class="ph" data-open="0"><video src="lumps/'+encodeURIComponent(vids[0])+'" preload="metadata" muted playsinline></video><span class="vtag">🎥 영상</span>'+(total>1?'<span class="more">외 '+(total-1)+'</span>':'')+'</div>';
+    var rest=files.slice(0,2);
+    rest.forEach(function(f,i){out+='<div class="ph" data-open="'+(i+1)+'"><img src="lumps/'+encodeURIComponent(f)+'" loading="lazy" alt="'+esc(p.pet)+' '+esc(r.d)+'"><' + '/div>'});
+  }else{
+    files.slice(0,3).forEach(function(f,i){
+      out+='<div class="ph" data-open="'+i+'"><img src="lumps/'+encodeURIComponent(f)+'" loading="lazy" alt="'+esc(p.pet)+' '+esc(r.d)+'">'+(i===0&&total>1?'<span class="more">사진 '+total+'장</span>':'')+'</div>';
+    });
+  }
+  return out;
+}
+function cardHtml(p){
+  var i=P.indexOf(p), k=Math.min(SEL[i]||0,Math.max(0,p.recs.length-1)), r=p.recs[k]||null;
+  var nx=nxList(p);
+  var isNew=p.recs.some(function(x){return (x.d||'')>=NEWCUT});
+  var cut=(p.rm&&p.rm.length)||p.ops.length;
+  return '<article class="card'+(isNew?' isnew':'')+'" data-i="'+i+'">'+
+    '<div class="thumbs">'+thumbsHtml(p,r)+'</div>'+
+    '<div class="info">'+
+      '<div class="toprow"><div><div class="pet">'+esc(p.pet)+'</div><div class="g">'+(p.g?esc(p.g)+' 보호자님':'보호자 확인 필요')+
+        (p.breed?' · '+esc(String(p.breed).split('/').pop().trim()):'')+
+        (p.lastVisit?' · 최근 내원 '+fmt(p.lastVisit):'')+'</div></div>'+
+        '<span class="n'+(p.recs.length?'':' zero')+'">기록 '+p.recs.length+'회</span></div>'+
+      '<div class="badges">'+
+        (isNew?'<span class="bdg add">🆕 최근 추가</span>':'')+
+        (cut?'<span class="bdg cut">✂️ 제거 완료</span>':'')+
+        (photoCount(p)?'<span class="bdg old">사진 '+photoCount(p)+'장</span>':'')+
+      '</div>'+
+      nxHtml(p)+
+      (p.recs.length?'<div class="chips" role="group" aria-label="기록 날짜">'+p.recs.map(function(x,j){
+        return '<button data-c="'+i+'_'+j+'" aria-pressed="'+(j===k)+'">'+(x.d?fmt(x.d):'날짜 없음')+(j===0&&p.recs.length>1?'<span class="fin"> · 최종</span>':'')+'</button>';
+      }).join('')+'</div>':'')+
+      (r?recBody(p,r):'')+
+      (p.memo?'<p class="marks">📋 '+esc(p.memo)+'</p>':'')+
+      (r&&r.src?'<span class="how'+(r.kind==='inq'?' inq':r.kind==='cmt'?' cmt':'')+'">'+esc(r.src)+'</span>':'')+
+    '</div></article>';
+}
+function recBody(p,r){
+  var notes=(r.notes||[]).filter(function(n){return (n.t||'').trim()});
+  var body='';
+  if(notes.length){
+    body+='<div class="notes">'+notes.map(function(n){
+      return '<p>'+(n.d?'<b>'+esc(n.d)+'</b> ':'')+esc2(n.t)+'</p>';
+    }).join('')+'</div>';
+  }else if((r.s||'').trim()){
+    body+='<p class="notes"><span>'+esc2(r.s)+'</span></p>';
+  }else{
+    body+='<p class="marks none">이미지에 적힌 소견 없음</p>';
+  }
+  if(r.marks) body+='<p class="marks">📍 '+esc(r.marks)+'</p>';
+  else if(p.marks0) body+='<p class="marks">📍 '+esc(p.marks0)+'</p>';
+  return body;
+}
+function weekRange(){
+  var t=new Date(TODAY); var add=((8-t.getDay())%7)||7; t.setDate(t.getDate()+add);
+  var a=iso(t); t.setDate(t.getDate()+6); return [a,iso(t)];
+}
+function matchQ(p,q){
+  if(!q) return true;
+  var hay=(p.pet+' '+p.g+' '+(p.breed||'')+' '+(p.memo||'')+' '+(p.marks0||'')+' '+
+    p.recs.map(function(r){return (r.d||'')+' '+(r.label||'')+' '+(r.marks||'')+' '+(r.notes||[]).map(function(n){return (n.d||'')+' '+(n.t||'')}).join(' ')}).join(' ')+' '+
+    nxList(p).map(function(n){return (n.d||'')+' '+(n.tm||'')+' '+(n.f||n.t||'')}).join(' ')).replace(/\s+/g,'');
+  return hay.toLowerCase().indexOf(q)>=0;
+}
+function render(){
+  var q=$('q').value.trim().replace(/\s+/g,'').toLowerCase();
+  var wk=weekRange();
+  var rows=P.filter(function(p){
+    if(!matchQ(p,q)) return false;
+    var nx=nxList(p);
+    if(FDATE) return nx.some(function(n){return String(n.d).slice(0,10)===FDATE});
+    if(FILT==='week') return nx.some(function(n){var d=String(n.d).slice(0,10);return d>=wk[0]&&d<=wk[1]});
+    if(FILT==='any') return nx.length>0;
+    if(FILT==='cut') return (p.rm&&p.rm.length)||p.ops.length;
+    if(FILT==='new') return p.recs.some(function(r){return (r.d||'')>=NEWCUT});
+    return true;
+  });
+  rows.sort(function(a,b){
+    if(SORT==='next'){
+      var na=nxList(a)[0], nb=nxList(b)[0];
+      return String(na?na.d:'9999').localeCompare(String(nb?nb.d:'9999'))||a.pet.localeCompare(b.pet,'ko');
+    }
+    if(SORT==='many') return b.recs.length-a.recs.length||String(firstDate(b)).localeCompare(String(firstDate(a)));
+    if(SORT==='name') return a.pet.localeCompare(b.pet,'ko')||String(a.g).localeCompare(String(b.g),'ko');
+    return String(firstDate(b)||'0000').localeCompare(String(firstDate(a)||'0000'))||a.pet.localeCompare(b.pet,'ko');
+  });
+  var photos=rows.reduce(function(s,p){return s+photoCount(p)},0);
+  var recs=rows.reduce(function(s,p){return s+p.recs.length},0);
+  var added=rows.filter(function(p){return p.recs.some(function(r){return (r.d||'')>=NEWCUT})}).length;
+  $('count').innerHTML='<b>'+rows.length+'마리</b> · '+photos+'장 · 기록 '+recs+'회'+(added?' · <span class="new">최근 14일 추가 '+added+'마리</span>':'');
+  $('grid').innerHTML=rows.length?rows.map(cardHtml).join(''):'<div class="empty">찾는 아이가 없습니다. 이름·보호자 성함을 다시 확인해 주세요.</div>';
+}
+function rerenderCard(i){
+  var art=document.querySelector('.card[data-i="'+i+'"]');
+  if(art) art.outerHTML=cardHtml(P[i]);
+}
+
+/* ================= 모달 ================= */
+function openZoom(p,r,idx){
+  var files=(r.files||[]), vids=(r.videos||[]);
+  var items=files.map(function(f){return {t:'img',f:f}}).concat(vids.map(function(v){return {t:'vid',f:v}}));
+  if(!items.length) return;
+  ZOOM={items:items,i:Math.min(idx||0,items.length-1),pet:p.pet,d:r.d,label:r.label};
+  drawZoom();
+  $('zoom').classList.add('on');
+}
+function drawZoom(){
+  var it=ZOOM.items[ZOOM.i], st=$('zoom').querySelector('.stage');
+  st.innerHTML = it.t==='vid'
+    ? '<video src="lumps/'+encodeURIComponent(it.f)+'" controls autoplay playsinline></video>'
+    : '<img src="lumps/'+encodeURIComponent(it.f)+'" alt="">';
+  $('zcap').textContent=ZOOM.pet+' · '+(ZOOM.d?fmt(ZOOM.d):'날짜 없음')+' · '+(ZOOM.i+1)+'/'+ZOOM.items.length;
+}
+function closeZoom(){$('zoom').classList.remove('on');$('zoom').querySelector('.stage').innerHTML=''}
+
+/* ================= 데이터 ================= */
+function load(){
+  $('grid').innerHTML='<div class="empty">불러오는 중…</div>';
+  $('err').innerHTML=''; $('loadstate').textContent='기본 기록 불러오는 중…';
+  P=[];BY={};
+  var pBase=jget('lumps/data.json?v=1125-1200');
+  var pIdx=jget('lumps/index.json?v=1125-1200');
+  Promise.all([pBase,pIdx]).then(function(res){
+    var data=res[0], idx=res[1]||{};
+    if(!data||!data.patients){throw new Error('lumps/data.json 을 불러오지 못했습니다')}
+    data.patients.forEach(function(p){
+      p.recs=(p.recs||[]).map(function(r){
+        var files=[],vids=[];
+        if(r.img){ /\.(mp4|webm|mov)$/i.test(r.img)?vids.push(r.img):files.push(r.img) }
+        return {d:r.d||'',zd:r.zd||'',files:files,videos:vids,label:'옛 혹 기록 모음',notes:(r.notes||[]),marks:r.marks||'',s:r.s||'',src:'옛 혹 기록 모음(클로드 아티팩트)'};
+      });
+      p.nx=(p.nx||[]).map(function(n){return {d:n.d||'',w:n.w||'',tm:n.tm||'',t:n.t||'',f:n.f||n.t||'',x:n.x||0,m:n.m||0,k:n.k||'',c:n.c||''}});
+      p.recs.sort(function(a,b){return String(b.d||'0000').localeCompare(String(a.d||'0000'))});
+      BY[keyOf(p.pet,p.g)]=p; P.push(p);
+    });
+    /* ---- lumps/index.json 덮어쓰기 아니라 누적 ---- */
+    Object.keys(idx).forEach(function(rawKey){
+      var parts=rawKey.split('|'), pet=parts[0], g=parts.slice(1).join('|');
+      var ov=idx[rawKey];
+      if(!ov) return;
+      if(typeof ov==='string') ov={old:ov};
+      var p=ensurePatient(pet,g);
+      if(ov.note) p.ovNote=ov.note;
+      overlayRecs(ov).forEach(function(r){
+        r.src=r.label||'추가 기록';
+        p.recs.push(r);
+      });
+      if(ov.nx&&ov.nx.length) p.nx=p.nx.concat(ov.nx);
+    });
+    P.forEach(function(p){
+      p.recs.sort(function(a,b){return String(b.d||'0000').localeCompare(String(a.d||'0000'))});
+      p.nx=(p.nx||[]).filter(function(n){return n&&n.d});
+    });
+    $('ver').textContent=(data.meta&&data.meta.v?data.meta.v:'')+' · '+(data.meta&&data.meta.built?data.meta.built:'');
+    render();
+    $('loadstate').textContent='실시간 예약·문의·코멘트 불러오는 중…';
+    loadLive();
+  }).catch(function(e){
+    $('grid').innerHTML='<div class="empty">기본 기록을 불러오지 못했습니다.<br>'+esc(e.message)+'</div>';
+    $('err').innerHTML='';
+    loadLive();
+  });
+}
+function loadLive(){
+  Promise.all([gviz('예약').catch(function(){return null}),gviz('문의').catch(function(){return null}),gviz('코멘트').catch(function(){return null})])
+  .then(function(res){
+    var ap=res[0],inq=res[1],cm=res[2];
+    var touched=false;
+    /* 1) 예약 — 다음 예약(오늘 이후)을 시트 실시간 값으로 교체 */
+    if(ap&&ap.length){
+      var byKey={};
+      ap.forEach(function(r){
+        var d=gdate(r['날짜']), t=gtime(r['시각']), pet=r['아이']||'', g=r['보호자']||'';
+        if(!d||!pet) return;
+        if(String(r['구분']||'').trim()==='X') return;
+        var k=keyOf(pet,g);
+        (byKey[k]=byKey[k]||[]).push({d:d,tm:t,c:sheetKind(r['구분']),t:r['진료내용']||'',f:(r['진료내용']||'')+((r['준비①']||r['안내②'])?'\n'+(r['준비①']||'')+(r['안내②']?' · '+(r['안내②']):''):'')});
+        var p=BY[k];
+        if(p&&r['보호자요청']) p.guardReq=r['보호자요청'];
+      });
+      Object.keys(byKey).forEach(function(k){
+        var p=BY[k]; if(!p) return;
+        var live=byKey[k].filter(function(n){return n.d>=TODAY_S});
+        if(live.length){ p.nx=live; touched=true; }
+      });
+      LIVE.appts=ap.length;
+    }
+    /* 2) 문의 — 보호자 문의도 한 건의 기록으로 누적 */
+    if(inq&&inq.length){
+      inq.forEach(function(r){
+        var pet=r['아이']||'', g=r['보호자']||''; if(!pet) return;
+        var k=keyOf(pet,g), p=BY[k]||ensurePatient(pet,g);
+        var d=gdate(r['날짜']);
+        var txt=[];
+        if(r['요약']) txt.push('💬 '+String(r['요약']).trim());
+        if(r['본문']) txt.push(String(r['본문']).trim());
+        addRec(p,{d:d,zd:d,files:[],videos:[],label:'보호자 문의',notes:[{d:'',t:txt.join('\n')}],marks:'',s:'',src:'GCN 문의 탭',kind:'inq'});
+        touched=true; LIVE.inq++;
+      });
+    }
+    /* 3) 코멘트 — 혹·병변 관련 코멘트만, 기록에 없는 날짜는 최대 3건 누적 */
+    if(cm&&cm.length){
+      var kw=/혹|병변|종양|지방종|표피낭|피지|세포검사|세포 검사|mass|MASS|결절|림프|혈청종|조직검사|제거|수술|상처|진물|궤양|피부/;
+      var byP={};
+      cm.forEach(function(r){
+        var pet=r['아이']||'', g=r['보호자']||''; if(!pet) return;
+        var p=BY[keyOf(pet,g)]; if(!p) return;
+        var d=gdate(r['날짜']), body=(r['코멘트']||'')+' '+(r['제목']||'');
+        if(!d||!body.trim()) return;
+        if(!kw.test(body)) return;
+        var item={d:d,t:((r['제목']?('['+r['제목']+'] '):'')+String(r['코멘트']||'').trim()).slice(0,1200)};
+        (byP[p.key]=byP[p.key]||{p:p,items:[]}).items.push(item);
+        LIVE.cmt++;
+      });
+      Object.keys(byP).forEach(function(k){
+        var o=byP[k], p=o.p;
+        o.items.sort(function(a,b){return b.d.localeCompare(a.d)});
+        var haveDates={}; p.recs.forEach(function(r){if(r.d)haveDates[r.d]=1});
+        var added=0;
+        o.items.forEach(function(it){
+          if(added>=3) return;
+          if(haveDates[it.d]) return;
+          p.recs.push({d:it.d,zd:it.d,files:[],videos:[],label:'진료 코멘트',notes:[{d:fmt(it.d),t:it.t}],marks:'',s:'',src:'GCN 코멘트 탭',kind:'cmt'});
+          haveDates[it.d]=1; added++; touched=true;
+        });
+        p.lastCmt=o.items[0];
+      });
+    }
+    LIVE.ok=true;
+    P.forEach(function(p){p.recs.sort(function(a,b){return String(b.d||'0000').localeCompare(String(a.d||'0000'))})});
+    if(touched) render(); else $('loadstate').textContent='';
+    $('loadstate').textContent='실시간 반영 · 예약 '+LIVE.appts+'건 · 문의 '+LIVE.inq+'건 · 코멘트 '+LIVE.cmt+'건';
+  }).catch(function(){
+    $('loadstate').textContent='실시간 시트는 불러오지 못했습니다(기본 기록은 표시).';
+  });
+}
+function sheetKind(v){
+  v=String(v||'').trim();
+  if(v.indexOf('확정')===0) return 'doc';
+  if(v.indexOf('처방')===0) return 'rx';
+  if(/미용/.test(v)) return 'groom';
+  if(v==='X') return 'x';
+  return 'wait';
+}
+
+/* ================= 이벤트 ================= */
+$('q').addEventListener('input',render);
+$('reload').onclick=function(){load()};
+$('fsz').onclick=function(){
+  var b=document.body;
+  if(!b.classList.contains('size-l')){b.classList.add('size-l');this.textContent='가++ 아주 크게'}
+  else if(!b.classList.contains('size-xl')){b.classList.add('size-xl');this.textContent='가- 기본'}
+  else {b.classList.remove('size-l','size-xl');this.textContent='가+ 크게'}
+};
+Array.prototype.forEach.call($('sortbox').children,function(b){
+  b.onclick=function(){
+    SORT=b.getAttribute('data-sort');
+    Array.prototype.forEach.call($('sortbox').children,function(x){x.setAttribute('aria-pressed',String(x===b))});
+    render();
+  };
+});
+Array.prototype.forEach.call($('filtbox').children,function(b){
+  b.onclick=function(){
+    FILT=b.getAttribute('data-f'); $('fdate').value=''; FDATE='';
+    Array.prototype.forEach.call($('filtbox').children,function(x){x.setAttribute('aria-pressed',String(x===b))});
+    if(FILT!=='all'&&SORT!=='next'){SORT='next';Array.prototype.forEach.call($('sortbox').children,function(x){x.setAttribute('aria-pressed',String(x.getAttribute('data-sort')==='next'))})}
+    render();
+  };
+});
+$('fdate').addEventListener('change',function(){
+  FDATE=this.value||'';
+  if(FDATE){Array.prototype.forEach.call($('filtbox').children,function(x){x.setAttribute('aria-pressed','false')});FILT='all';}
+  render();
+});
+$('grid').addEventListener('click',function(e){
+  var c=e.target.closest('button[data-c]');
+  if(c){
+    var ij=c.getAttribute('data-c').split('_').map(Number);
+    SEL[ij[0]]=ij[1]; rerenderCard(ij[0]); return;
+  }
+  var ph=e.target.closest('[data-open]');
+  if(ph){
+    var art=ph.closest('.card'); if(!art) return;
+    var i=+art.getAttribute('data-i'); var p=P[i]; var r=p.recs[Math.min(SEL[i]||0,Math.max(0,p.recs.length-1))];
+    if(r) openZoom(p,r,+ph.getAttribute('data-open'));
+  }
+});
+$('zx').onclick=closeZoom;
+$('zoom').addEventListener('click',function(e){if(e.target===$('zoom'))closeZoom()});
+$('zprev').onclick=function(){if(!ZOOM.items)return;ZOOM.i=(ZOOM.i-1+ZOOM.items.length)%ZOOM.items.length;drawZoom()};
+$('znext').onclick=function(){if(!ZOOM.items)return;ZOOM.i=(ZOOM.i+1)%ZOOM.items.length;drawZoom()};
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape')closeZoom();
+  if($('zoom').classList.contains('on')){
+    if(e.key==='ArrowLeft')$('zprev').click();
+    if(e.key==='ArrowRight')$('znext').click();
+  }
+});
+load();
+</script>
+</body>
+</html>
