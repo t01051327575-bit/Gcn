@@ -172,6 +172,8 @@ details.more summary{font-size:.84em;font-weight:900;color:#475569;cursor:pointe
 #pv .bar .close{background:#fff;color:#0F172A}
 .sheet{background:#fff;color:#111;width:100%;max-width:820px;margin:14px auto;padding:26px 24px;border-radius:6px;
   box-shadow:0 8px 30px rgba(2,6,23,.35);font-size:10pt;line-height:1.45}
+.sheet+.sheet{margin-top:18px}
+.sheet .pgno{font-size:7.6pt;color:#777;font-weight:800;text-align:right;margin:2px 0 6px}
 .sheet *{box-sizing:border-box}
 .sh-head{display:flex;align-items:flex-end;justify-content:space-between;gap:8px;border-bottom:2px solid #111;padding-bottom:5px;margin-bottom:9px;flex-wrap:wrap}
 .sh-h1{font-size:12pt;font-weight:900}
@@ -182,9 +184,12 @@ details.more summary{font-size:.84em;font-weight:900;color:#475569;cursor:pointe
 .sh-sec h3{margin:0 0 4px;font-size:9.5pt;font-weight:900;border-left:4px solid #0F766E;padding-left:6px}
 .sh-sec h3.c2{border-color:#D84A7A}
 .sheet table{width:100%;border-collapse:collapse;table-layout:fixed}
-.sheet th,.sheet td{border:1px solid #999;padding:3px 5px;font-size:8.3pt;vertical-align:top;word-break:break-all}
+.sheet th,.sheet td{border:1px solid #999;padding:3px 5px;font-size:8.3pt;vertical-align:top;word-break:break-all;line-height:1.35}
 .sheet th{background:#F1F5F9;font-weight:900;text-align:left;white-space:nowrap}
-.sheet td.k{background:#F8FAFC;font-weight:900;width:19%}
+.sheet td.k{background:#F8FAFC;font-weight:900;white-space:nowrap}
+.sheet .t-info td.k{width:13%}
+.sheet .t-info td.v{width:37%}
+.sheet td.v{word-break:break-all}
 .sheet .memo{border:1px solid #999;border-top:0;padding:4px 6px;font-size:8.3pt;white-space:pre-wrap;min-height:20px}
 .sheet .sigrow{display:flex;gap:14px;margin-top:8px;flex-wrap:wrap}
 .sheet .sigcell{flex:1 1 240px;border:1px solid #999;padding:5px 7px}
@@ -230,6 +235,7 @@ details.more summary{font-size:.84em;font-weight:900;color:#475569;cursor:pointe
   #pv{position:static !important;display:block !important;background:#fff !important;padding:0 !important;overflow:visible !important}
   #pv .bar{display:none !important}
   .sheet{max-width:none;margin:0;padding:0;box-shadow:none;border-radius:0;font-size:10pt}
+  .sheet+.sheet{margin-top:0;page-break-before:always;break-before:page}
   .pbreak{page-break-before:always;break-before:page}
   .sh-sec{page-break-inside:avoid}
   .sheet table{page-break-inside:auto}
@@ -1112,12 +1118,12 @@ function buildSheet(){
     var r='<tr>';
     for(var q=0;q<4;q++){
       var pr=pairs[k+q];
-      if(pr){r+='<td class="k">'+esc(pr[0])+'</td><td>'+esc(pr[1]||'')+'</td>';}
-      else r+='<td class="k"></td><td></td>';
+      if(pr){r+='<td class="k">'+esc(pr[0])+'</td><td class="v">'+esc(pr[1]||'')+'</td>';}
+      else r+='<td class="k"></td><td class="v"></td>';
     }
     r+='</tr>';rows.push(r);
   }
-  g.push('<div class="sh-sec"><h3>1. 수술 전 기본정보</h3><table>'+rows.join('')+'</table>'+
+  g.push('<div class="sh-sec"><h3>1. 수술 전 기본정보</h3><table class="t-info">'+rows.join('')+'</table>'+
     '<div class="memo"><b>수술 전 메모</b> '+(i.memo?nl2br(i.memo):'—')+'</div></div>');
 
   /* 혹·부위 */
@@ -1132,7 +1138,7 @@ function buildSheet(){
   /* 약물 */
   var ds=C.drugs||[];
   g.push('<div class="sh-sec"><h3>3. 마취 · 약물 기록</h3><table>'+
-    '<tr><th style="width:8%">시각</th><th style="width:15%">구분</th><th style="width:21%">약명</th><th style="width:9%">mg</th><th style="width:9%">ml</th><th style="width:8%">경로</th><th style="width:8%">흡입 %</th><th style="width:8%">O₂</th><th style="width:9%">투여자</th><th>비고</th></tr>'+
+    '<tr><th style="width:7%">시각</th><th style="width:13%">구분</th><th style="width:17%">약명</th><th style="width:7%">mg</th><th style="width:7%">ml</th><th style="width:6%">경로</th><th style="width:6%">흡입 %</th><th style="width:6%">O₂</th><th style="width:9%">투여자</th><th>비고</th></tr>'+
     (ds.length?ds.map(function(d){
       return '<tr><td>'+esc(d.t||'')+'</td><td>'+esc(d.phase||'')+'</td><td>'+esc(d.name||'')+'</td><td>'+esc(d.mg||'')+'</td><td>'+esc(d.ml||'')+'</td><td>'+esc(d.route||'')+'</td><td>'+esc(d.inh||'')+'</td><td>'+esc(d.o2||'')+'</td><td>'+esc(d.agent||'')+'</td><td>'+esc(d.note||'')+'</td></tr>';
     }).join(''):'<tr><td colspan="10" style="height:26px">기록 없음</td></tr>')+
@@ -1141,7 +1147,7 @@ function buildSheet(){
   /* 생체징후 */
   var vs=C.vitals||[],gaps=vitalGaps();
   g.push('<div class="sh-sec"><h3>4. 생체징후 (5분 간격)</h3><table>'+
-    '<tr><th style="width:11%">시각</th><th>HR</th><th>RR</th><th>SpO₂ %</th><th>체온 ℃</th><th>ETCO₂</th><th>반사</th><th>마취 깊이</th><th style="width:26%">비고</th></tr>'+
+    '<tr><th style="width:8%">시각</th><th style="width:7%">HR</th><th style="width:7%">RR</th><th style="width:8%">SpO₂ %</th><th style="width:8%">체온 ℃</th><th style="width:8%">ETCO₂</th><th style="width:7%">반사</th><th style="width:9%">마취 깊이</th><th>비고</th></tr>'+
     (vs.length?vs.map(function(v,ix){
       var gp=gaps[ix],over=(gp!=null&&gp>5);
       return '<tr><td>'+esc(v.t||'')+(over?' ⚠'+gp+'분':'')+'</td><td>'+esc(v.hr||'')+'</td><td>'+esc(v.rr||'')+'</td><td>'+esc(v.spo2||'')+'</td><td>'+esc(v.temp||'')+'</td><td>'+esc(v.etco2||'')+'</td><td>'+esc(v.reflex||'')+'</td><td>'+esc(v.depth||'')+'</td><td>'+esc(v.note||'')+'</td></tr>';
@@ -1149,9 +1155,11 @@ function buildSheet(){
     '</table>'+(vs.length?'':'')+'</div>');
 
   g.push('<div class="sh-foot"><span>굿모닝펫동물병원 · 수술·마취 기록지 · '+esc(i.pet||'환자')+' '+esc(i.date||'')+'</span><span class="who">진심경영멘토 유희진 · 경영부원장</span></div>');
+  g.push('<div class="pgno">1쪽</div>');
+  g.push('</div>');
 
   /* 동의서 (2장) */
-  g.push('<div class="pbreak"></div>');
+  g.push('<div class="sheet">');
   g.push('<div class="sh-head"><div class="sh-h1">굿모닝펫동물병원<span>분당</span></div><div class="sh-t" style="color:#B0243F">수술 · 마취 동의서</div><div class="sh-d">'+esc(cs.date||i.date||'')+'</div></div>');
   g.push('<div class="sh-sec"><table>'+
     '<tr><td class="k">환자 이름</td><td>'+esc(i.pet||'')+'</td><td class="k">보호자</td><td>'+esc(cs.gname||i.guardian||'')+'</td></tr>'+
@@ -1176,6 +1184,7 @@ function buildSheet(){
       '<div class="cap">'+esc(cs.vetname||i.vet||'')+' · '+esc(cs.date||i.date||'')+'</div></div>'+
     '</div>');
   g.push('<div class="sh-foot"><span>굿모닝펫동물병원 · 수술·마취 동의서 · '+esc(i.pet||'환자')+'</span><span class="who">진심경영멘토 유희진 · 경영부원장</span></div>');
+  g.push('<div class="pgno">2쪽</div>');
   g.push('</div>');
   return g.join('');
 }
