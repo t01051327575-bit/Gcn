@@ -78,6 +78,9 @@ a{color:var(--green)}
 .f textarea{min-height:56px;resize:vertical;line-height:1.5}
 .f input:focus,.f select:focus,.f textarea:focus{border-color:var(--green2)}
 .f input[type=number]{font-variant-numeric:tabular-nums}
+.chips2{display:flex;gap:5px;flex-wrap:wrap;margin-top:2px}
+.chips2 button{border:1.5px solid var(--line);background:#fff;color:#475569;border-radius:999px;padding:3px 9px;font:800 .78em 'Noto Sans KR';cursor:pointer;min-height:26px}
+.chips2 button:hover{border-color:var(--green2);color:var(--green)}
 .box{border:1.5px dashed #BFDBFE;background:#F5FAFF;border-radius:12px;padding:8px 11px;font-size:.88em;font-weight:800;color:#1E3A8A;min-height:44px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .box.warnbox{border-color:#FCD9A8;background:var(--amber-soft);color:#7C2D12}
 .box b{font-size:1.05em}
@@ -295,7 +298,9 @@ details.more summary{font-size:.84em;font-weight:900;color:#475569;cursor:pointe
         <label class="f"><span>마취 전 혈액검사</span><select data-k="info.blood">
           <option value="">선택</option><option>실시 — 결과 정상</option><option>실시 — 결과 확인 중</option><option>미실시</option><option>해당 없음</option>
         </select></label>
-        <label class="f"><span>마지막 공복 시각</span><input type="datetime-local" data-k="info.fast"></label>
+        <label class="f"><span>마지막 공복 시각</span><input type="datetime-local" data-k="info.fast">
+          <span class="chips2"><button type="button" data-fast="12">12시간 전</button><button type="button" data-fast="8">8시간 전</button><button type="button" data-fast="6">6시간 전</button></span>
+        </label>
         <div class="f wide"><div class="box" id="fastBox">마지막 공복 시각을 넣으면 금식 시간을 계산합니다.</div></div>
         <label class="f"><span>담당 수의사</span><input type="text" data-k="info.vet" placeholder="예: 장봉환"></label>
         <label class="f"><span>보조 인원</span><input type="text" data-k="info.assist" placeholder="이름 · 역할"></label>
@@ -751,6 +756,24 @@ function doSearch(){
 }
 $('lgo').addEventListener('click',doSearch);
 $('lq').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();doSearch()}});
+/* 공복 시각 빠른 입력(시작 시각에서 N시간 전) */
+(function(){
+  var bs=document.querySelectorAll('[data-fast]');
+  for(var i=0;i<bs.length;i++){
+    bs[i].addEventListener('click',function(){
+      var inf=CUR.info;
+      if(!inf.date||!inf.time){toast('날짜와 시작 시각을 먼저 넣어 주세요');return}
+      var s=new Date(inf.date+'T'+inf.time);
+      if(isNaN(s.getTime())){toast('시작 시각을 확인해 주세요');return}
+      var h=+this.getAttribute('data-fast');
+      var t=new Date(s.getTime()-h*3600000);
+      var v=t.getFullYear()+'-'+pad2(t.getMonth()+1)+'-'+pad2(t.getDate())+'T'+pad2(t.getHours())+':'+pad2(t.getMinutes());
+      CUR.info.fast=v;
+      document.querySelector('[data-k="info.fast"]').value=v;
+      updFast();queueSave();toast(h+'시간 전으로 넣었습니다 — 시각 확인');
+    });
+  }
+})();
 $('lres').addEventListener('click',function(e){
   var f=e.target.closest('figure[data-img]');
   if(f){$('lzi').src=f.getAttribute('data-img');$('lz').classList.add('on');return}
