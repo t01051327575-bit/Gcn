@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- GCN v1128-시술체크 | ➕ 시술 체크(플러스·마이너스) 신설 — 예약표 각 아이 줄 이름 밑에서 항목별 + (진행·추가) / − (진행 안 함) 원터치, 같은 버튼 다시 누르면 해제(미체크), 누가·몇 시에 눌렀는지 기록, 날짜 머리 ⛔ 미시행 모아보기(그 날 − 만 · 복사 · GTN 연결), ⚙️ 항목 관리(코드 수정 없이 추가·삭제 · 기본 8개 = 리브렐라·사이토포인트·넵트라·렙트라·불소도포·스케일링·레이저·FMT, 판매·예약 데이터 근거) · 저장은 이 기기(localStorage), 기기 간 공유는 Apps Script 'proc' 액션 배포 뒤 PROC_SYNC=true |  -->
 <!-- GCN v1125-2115 | 📊 11/25 21:06 최종 판매내역 반영 — 결제이력 22,764→22,766행 (11/25 44건 1,353,500 → 46건 1,375,400원: 16:30 진료실 칼멕스 4,900 · 20:00 진료실 네이락 퓨어트릿 17,000) · 밤(김화령) 11/25 7줄 508,000원은 원무과 확인 미수 → 비고 칸 미수 표시 + 앱에서 미수 배지/미수 합계 표시 (11/24분은 14:10본과 동일 확인) · 판매내역 0원 출고 1건(밤 장내미생물-프로 15:57)은 종전 관례대로 결제이력 제외 · 원무과 카톡(21:04) 대조: 코멘트·예약 신규 없음, 호세아 엑스레이 2장(35,000×2) 결제 청구서 누락 확인(진료비라 결제이력 대상 아님) · next.json(462건)·예약·코멘트·검사·조제는 v1125-2100 그대로 | 📊 11/25 저녁 마감 반영 — next.json = 261125_최종_예약데이터_오후8시27분(514행→462건 · 281마리 · 11/25~2027-01-27) · 예약 시트 오늘 정정(두부 10:20→12:50 · 하늘이(오영례) 12:00 → 어미(김희정) 구내염약 픽업 · 로로 11:30 미용 x → 11/30 10:00 이동 · 엠마 12:40 처방 추가) + 다음 주 11/30~12/02 예약 88건 시트 반영(비비 김민자 11/30 09:30 확정 포함) · 조제 탭에 11/24~11/25 조제 내복약 17건·처방약품 출고 64건 · 검사지 탭에 11/24~11/25 차트 TX 검사 70건(TX) · 코멘트는 11/25 13:36 사랑 코멘트까지로 신규 없음(대조 확인) · 결제이력은 인투 판매 기준 11/25 14:10분까지 그대로(저녁 판매내역 미업로드) · patient-data.json 예약 207명·다음예약 173명·최근 코멘트·내복약 갱신 · 문의 탭 비비(김민자) GHN 미매칭 → 11/30 09:30 예약 매칭 완료로 정리 · 📷 모네(한예인) 11/25 보호자 카톡 추가 — 갑자기 앞다리 파행(잘 걷다가 절뚝·반반=간헐적), 다음주 화요일 오전 예약 요청 → 병원 “화요일 오전에 오세요·많이 힘들면 관절통 약 먼저” 회신 · 12/01(화) 오전 내원(시각 미정) · 문의 탭(예약없음) 등록 + 혹모음에 카톡 사진·다음 예약(2027-01-22 09:40) 표시 | 📊 11/25 14:15 원무과 업로드(예약데이터 오후2시1분·판매내역 오후2시10분·공지방코멘트 오후1시36분) 반영: next.json = 261125_예약데이터_오후2시1분(506행→459건) · 예약 시트에 오늘 추가분 8건(달(신환)·버디·두부·또치·하늘이·택이·루루·또또) + 시각·구분 정정(감자 09:40·릴리 08:20 확정·최릴리 취소 X·복숭아 10:00) · 결제이력 11/24~11/25 110건 추가 · 코멘트 11/23 오후~11/25 47건 추가 · 수동 보강(로이 엑스토닌·릴리·호세아·두부 사진/영상)은 그대로 | 📷 릴리(이원정/박건주) 11/25 보호자 카톡 대화 스샷 추가(대화 1 + 병변 사진 2 + GHN 혹 표시 1 = 4장, 카톡 대화는 '📷 보호자 카톡 대화'로 따로 표기) · 문의 박스에서 예약 있는 아이(릴리)도 카톡 사진 표시 + 보호자 표기 '/'↔공백 매칭 보정(이원정/박건주 ↔ 이원정 박건주) · 두부(양수정 11/25) = 눈 아래 붉은 혹 문의로 정정 · 📷 예약 없는 문의도 보호자 카톡 사진 표시(두부·양수정 11/25 눈 아래 붉은 점) · 🎥 보호자 보행 영상 = 카드에서 바로 재생(호세아·이소연 11/23 영상 3개) · 🔗 상단 바로가기 = 🩺 혹모음 = GCN 자체 혹 기록 모음(lumps.html · 옛 198마리·309장 + 새 사진·영상·문의·코멘트 누적 · 다음 예약 표시) · 📋 GHN 접수함(새 탭으로 열림) · 🔎 주간·월간 한눈에 보기 = 구분 필터(전체·확정 예약·비대기·처방) + 타임테이블 블록에 예약 내용 1~2줄 + 월간 셀에 확정/비대기/처방 배지(next.json 예약 건도 확정으로 집계) · 🗓 주간 = 08:00~19:00 × 월~일 타임테이블(구분별 색·배지·이전/다음 주), 월간 = 일~토 달력(이전/다음 달) · ✨ A+ 자료 = 오늘 새로 올라온 자료(당일 GHN·신규 접수) 기준으로 정리 · 🟡 종이 표시도 그림 · 🖼 혹 위치 그림 = 🟣 기존 혹 + □ 신규(GHN) + 🟡 종이 표시도 + 📷 보호자 카톡 사진 · 📌 전달 메모 = 1번 장봉환 원장님 탭만 '확정 예약'(초록), 나머지 탭은 '비대기'(주황) · 🩺 ② 혹·이전 이상 · 📋 보호자 사전체크·건강관리표 핵심 -->
 <html lang="ko">
 <head>
@@ -113,6 +114,52 @@ input[type=date],input[type=text]{font:700 .9em 'Noto Sans KR';border:1.5px soli
 .bdg.new{background:#ECFDF5;color:#065F46;border-color:#A7F3D0}
 .bdg.vid{background:#EFF6FF;color:#1D4ED8;border-color:#BFDBFE}
 .memo{margin:6px 0;color:#334155;font-size:.95em;word-break:keep-all}
+
+/* ➕ 시술 체크 (플러스·마이너스) */
+.pbox{margin:8px 0 4px;border:2px solid var(--green2);border-radius:14px;background:#F0FDFA;padding:7px 9px 9px}
+.phead{all:unset;display:flex;align-items:center;gap:6px;width:100%;cursor:pointer;padding:2px 0;box-sizing:border-box}
+.pttl{font-weight:900;color:var(--green);font-size:.98em}
+.psum{font-size:.76em;font-weight:900;color:#0B5F57;background:#CCFBF1;border:1px solid #99F6E4;border-radius:999px;padding:1px 8px}
+.pgear{font-size:.95em;opacity:.75}
+.pcar{color:#0F766E;font-weight:900;transition:transform .15s}
+.pbox.open .pcar{transform:rotate(180deg)}
+.pbody{display:none;margin-top:5px}
+.pbox.open .pbody{display:block}
+.pwhorow{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin:0 0 5px;font-size:.76em;font-weight:800;color:#0F766E}
+.pwhorow input{width:78px;border:1.5px solid #99F6E4;border-radius:8px;padding:3px 6px;font:800 .95em 'Noto Sans KR';color:#0f172a;background:#fff}
+.pkey{font-size:.72em;font-weight:700;color:#0F766E;margin:0 0 6px;line-height:1.4}
+.pgrid{display:grid;grid-template-columns:1fr;gap:1px}
+@media(min-width:720px){ .pgrid{grid-template-columns:1fr 1fr;gap:4px 10px} }
+.pitem{display:flex;align-items:center;gap:6px;background:#fff;border:1.5px solid #CCFBF1;border-radius:11px;padding:3px 6px;margin:4px 0;min-height:44px}
+.pitem.done{border-color:#5EEAD4;background:#F7FFFE}
+.pitem.neg{border-color:#FCA5A5;background:#FFF7F7}
+.pitem.blank{background:#FCFDFE;border-style:dashed;border-color:#E2E8F0}
+.pin{flex:1;min-width:0}
+.pin b{display:block;font-size:.95em;font-weight:900;line-height:1.25}
+.pin .psub{display:block;font-size:.72em;color:var(--mut);font-weight:700;line-height:1.25;word-break:keep-all}
+.stag{display:inline-block;font-size:.66em;font-weight:900;border-radius:999px;padding:0 6px;margin-left:5px;vertical-align:2px;border:1.4px solid}
+.stag.p{color:#fff;background:#0F766E;border-color:#0F766E}
+.stag.m{color:#fff;background:#DC2626;border-color:#DC2626}
+.stag.n{color:#64748B;background:#F1F5F9;border-color:#E2E8F0}
+.pbtns{display:flex;gap:5px;flex:0 0 auto}
+.pb{width:44px;height:40px;border-radius:11px;border:1.8px solid #CBD5E1;background:#fff;font:900 1.15em 'Noto Sans KR';color:#94A3B8;cursor:pointer;padding:0;line-height:1}
+.pb.plus{border-color:#5EEAD4;background:#F0FDFA;color:#0F766E}
+.pb.minus{border-color:#FCA5A5;background:#FEF2F2;color:#B91C1C}
+.pb.plus.on{background:#0F766E;border-color:#0F766E;color:#fff}
+.pb.minus.on{background:#DC2626;border-color:#DC2626;color:#fff}
+.pitem.blank .pb{opacity:.6}
+.pft{margin-top:6px;font-size:.74em;font-weight:800;color:#0F766E;line-height:1.45;word-break:keep-all}
+.ppill{display:inline-flex;align-items:center;gap:4px;border:1.5px solid #FCA5A5;background:#FEF2F2;color:#B91C1C;border-radius:999px;padding:3px 9px;font:900 .76em 'Noto Sans KR';cursor:pointer}
+.pbar{margin:6px 0 2px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.pbar .btn{font-size:.82em}
+.plist{display:flex;flex-direction:column;gap:6px;margin:8px 0}
+.prow{display:flex;gap:6px 8px;align-items:center;flex-wrap:wrap;border:1px solid var(--line);border-radius:10px;padding:7px 9px;background:#fff;font-size:.92em}
+.prow>div{min-width:0}
+.prow b{font-weight:900}
+.prow .pmeta{margin-left:auto;color:var(--mut);font-weight:800;font-size:.82em}
+.padmin{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:6px 0}
+.padmin input{flex:1 1 130px;min-width:110px;border:1.5px solid var(--line);border-radius:10px;padding:7px 9px;font:700 .92em 'Noto Sans KR'}
+@media(max-width:420px){ .pb{width:46px;height:42px} }
 .xnote{margin:6px 0 10px;padding:8px 10px;border-radius:10px;background:#FEF2F2;border:1px dashed #FCA5A5;color:#991B1B;font-size:.9em;font-weight:700;word-break:keep-all}
 .sec{border-top:1px dashed var(--line);margin-top:8px}
 .sec>button{all:unset;display:flex;width:100%;align-items:center;gap:8px;cursor:pointer;padding:7px 0;font-weight:900;font-size:.94em;color:#0f172a}
@@ -462,6 +509,7 @@ label.sw.on{border-color:#86EFAC;background:#F0FDF4;color:#065F46}
 
   <div class="note">
     기호 안내: 비) 비대기 | X 미내원 | ▼ 선결제·보관 | ★ 필수 주의사항<br>
+    ➕ <b>시술 체크</b> = 예약표 줄마다 <b>+ 진행·추가 / − 진행 안 함 / 안 누름 = 미체크</b> 세 가지로 찍습니다. 같은 버튼을 다시 누르면 해제되고, <b>누가·몇 시에</b> 눌렀는지 함께 남습니다. 접수·진료실·원장님 뷰가 같은 값을 보며, 날짜 머리의 <b>⛔ 미시행 모아보기</b>로 그 날 − 만 따로 모아 다음 안내·재구매로 넘길 수 있습니다. 항목은 <b>⚙️ 시술 항목 관리</b>에서 코드 수정 없이 더하고 지웁니다.<br>
     ❌ <b>미내원(X)</b> = '예약' 탭 구분이 <b>X</b>인 행은 미내원·오시지 않음 알림 대상으로 보고 <b>예약 목록·건수에서 빼고</b>, 날짜 머리 아래에 <b>이름만 따로</b> 알려 줍니다. 시트에는 기록이 그대로 남습니다.<br>
     🛍️ <b>보호자님 준비 요청</b> = 보호자가 GHN 건강관리표에서 "다시 필요해요(준비해 주세요)"로 올린 물품을 아이별 체크리스트로 보여 줍니다. (주황 박스·원무과 뷰) 항목마다 <b>준비 완료</b>를 누르면 <b>누가·언제</b> 했는지 남고, 다 끝나면 자동으로 접힙니다. 병원 설정 <b>원장님 뷰에 보호자 준비 요청 표시</b>가 켜진 병원은 <b>준비 완료한 항목만</b> 원장님 뷰에 한 줄로 뜨고(미완료 건은 절대 뜨지 않습니다), 굿모닝펫은 꺼 두었습니다. · 🏢 원무과 준비 = 차트상 원무과 준비 사항 (초록 박스) · 🏢 원무과 확인 = 원무과가 확인할 사항 (초록 점선 박스) — 🛍️ 보호자 요청·🏢 원무과 준비·🏢 원무과 확인 박스와 □ 원무과 준비 체크는 <b>원장님 뷰에서는 표시되지 않고</b>, 원무과 뷰·전체 보기 등에서만 나옵니다. · 💳 <b>선결제·보관</b> = 진료내용의 ▼ 표시 항목을 모아 보여 줍니다. (파란 박스) · 📋 <b>보호자 사전체크·건강관리표 핵심</b> = 보호자가 GHN 건강관리표로 남긴 사전체크(부위·증상·질문·원장님 확인 사항)를 ②를 펼치지 않아도 바로 보여 줍니다. (연주황 박스) · 💬 <b>보호자 문의·메모</b> = 카톡·진료신청으로 남긴 문의 (연보라 박스) · 🩺 <b>② 혹·이전 이상</b> = 🟣 기존 혹(혹 기록 부위·수술·차트 소견) / □ 신규(GHN 건강관리표로 새로 올린 혹·병변) / 🔴 이전 이상(지난 검사 이상·면역L·종양H) — 원장님 뷰·전체 보기에서만 표시됩니다. 🖼 혹 위치 그림 = 🟣 기존 혹 기록 그림, □ 보호자가 이번에 GHN 건강관리표로 체크한 혹·병변 위치 그림, 🟡 보호자가 종이에 직접 그려 낸 병변 위치 표시도를 나란히 보여 주며, 누르면 크게 열립니다. 📌 <b>전달 메모</b> = 30일 안에 다음 예약이 있으면 예약 일시·예약담당자(구분)와 함께 오늘 같이 진행할지 확인하는 메모입니다. <b>1번 장봉환 원장님 탭만 초록색 ‘확정 예약’</b>이고, 나머지 탭([비대기-내원,미용중진료]·기타(예약;미용)·처방건 등)은 <b>주황색 ‘비대기’</b>로 표시됩니다. 예약 메모는 잘리지 않고 전체가 그대로 나옵니다. (남색 박스)<br>
     자료는 원무과·검사과에서 올린 내용을 그대로 모아 보여 줍니다. 비어 있는 칸은 '안 했다'가 아니라 '기록이 없다'는 뜻입니다.<br>📂 <b>긴 목록</b>(보호자님 준비 요청·사전체크·선결제·원무과 준비·코멘트)은 <b>한 줄 요약과 건수만</b> 먼저 보이고, 누르면 펼쳐집니다. 펼친 상태는 새로고침해도 유지됩니다.<br>🩺 검사지·✍️ 코멘트·💊 조제·💳 결제이력은 <b>GCN_실시간_데이터</b> 시트의 각 탭에서 아이별로 바로 불러옵니다.
@@ -1347,6 +1395,7 @@ function load(){
     GROOMOPS = (res[7]||[]).filter(function(r){ return r['아이']; });
     if(!S.date) S.date = iso(TODAY);
     render();
+    if(PROC_SYNC) procCloudPull().then(function(ch){ if(ch) render(); });
   }).catch(function(e){
     $('#out').innerHTML='';
     $('#err').innerHTML='<div class="err">시트 데이터를 불러오지 못했습니다: '+esc(e.message)+'<br>구글 시트 공유 설정이 ‘링크가 있는 모든 사용자: 뷰어’인지 확인해 주세요.</div>';
@@ -1857,6 +1906,381 @@ function inquiryBox(dateIso){
   return box;
 }
 
+/* ===== ➕ 시술 체크 (플러스·마이너스) =====
+   · + 진행·추가 / − 진행 안 함 / 아무것도 안 누름 = 미체크, 같은 버튼을 다시 누르면 해제
+   · 누가·몇 시에 눌렀는지 함께 남긴다
+   · 항목 목록은 코드 수정 없이 화면에서 추가·삭제(⚙️ 시술 항목 관리)
+   · 저장: localStorage (앱이 이미 쓰는 방식). 기기끼리 공유는 서버(Apps Script 'proc') 배포 뒤 PROC_SYNC=true 로 켠다. */
+var PROC_SYNC=false;
+var PROC_API='https://script.google.com/macros/s/AKfycbwogzgIJoyeF6H19M4nb8q3woW3I_XHxLo6i9KSj6CA33IL5R8QfRN2UFWQNXQ3mICj/exec';
+var PROC_KEY='gcn_proc_v1';
+var PROC_OPEN_KEY='gcn_proc_open_v1';
+var PROC_ITEM_KEY='gcn_proc_items_v1';
+var PROC_WHO_KEY='gcn_proc_who_v1';
+/* 항목 초안 — 1년 판매·사입·예약 데이터에서 뽑은 실제 이름.
+   '렙트라'는 판매·사입·예약 어디에도 없는 명칭(발음이 가까운 실제 품목: 리브렐라·넵트라)이라 이름만 그대로 두었다. */
+var PROC_DEFAULT_ITEMS=[
+  {code:'libr', name:'리브렐라',     sub:'관절 통증 주사'},
+  {code:'cyto', name:'사이토포인트',  sub:'아토피 주사'},
+  {code:'nept', name:'넵트라',       sub:'외이염 점이제'},
+  {code:'lept', name:'렙트라',       sub:'월 1회 주사'},
+  {code:'flour',name:'불소도포',     sub:'치아 예방 처치'},
+  {code:'scale',name:'스케일링',     sub:'치석 제거'},
+  {code:'laser',name:'레이저',       sub:'레이저 치료'},
+  {code:'fmt',  name:'FMT',         sub:'장내미생물'}
+];
+function procItems(){
+  try{ var a=JSON.parse(localStorage.getItem(PROC_ITEM_KEY)||'null'); if(a && a.length) return a; }catch(e){}
+  return PROC_DEFAULT_ITEMS.slice();
+}
+function procSaveItems(a){ try{ localStorage.setItem(PROC_ITEM_KEY,JSON.stringify(a)); }catch(e){} }
+function procItemName(code){
+  var a=procItems();
+  for(var i=0;i<a.length;i++){ if(a[i].code===code) return a[i].name; }
+  return code;
+}
+function procMap(){ try{ return JSON.parse(localStorage.getItem(PROC_KEY)||'{}')||{}; }catch(e){ return {}; } }
+function procSaveMap(m){ try{ localStorage.setItem(PROC_KEY,JSON.stringify(m)); }catch(e){} }
+function procWho(){
+  try{ var v=String(localStorage.getItem(PROC_WHO_KEY)||'').trim(); if(v) return v; }catch(e){}
+  return prepWho();
+}
+function procSetWho(v){ try{ v=String(v||'').trim(); if(v) localStorage.setItem(PROC_WHO_KEY,v); else localStorage.removeItem(PROC_WHO_KEY); }catch(e){} }
+function procRowKey(r){ return String(r['날짜']||'')+'|'+String(r['시각']||'')+'|'+String(r['아이']||'')+'|'+String(r['보호자']||''); }
+function procNow(){
+  var d=new Date();
+  return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+' '+pad(d.getHours())+':'+pad(d.getMinutes());
+}
+function procHm(at){ var m=String(at||'').match(/(\d{1,2}:\d{2})/); return m?m[1]:''; }
+function procEntry(r,code){ return procMap()[procRowKey(r)+'|'+code] || null; }
+/* 60일이 지난 기록은 저장소에서 정리한다(오늘 화면만 쓰므로 오래된 값은 필요 없다) */
+function procPrune(m){
+  var lim=iso(addDays(TODAY,-60)), k;
+  for(k in m){ if(m[k] && String(m[k].date||'') < lim) delete m[k]; }
+  return m;
+}
+function procSet(r,code,state){
+  var m=procMap(), k=procRowKey(r)+'|'+code, cur=m[k], who=procWho();
+  if(cur && cur.s===state){
+    delete m[k];                              /* 같은 버튼을 다시 누르면 해제(미체크) */
+  }else{
+    m[k]={s:state, by:(who||'이름 없음'), at:procNow(), date:String(r['날짜']||'').slice(0,10),
+          pet:r['아이']||'', owner:r['보호자']||'', time:String(r['시각']||''), code:code, name:procItemName(code)};
+  }
+  procSaveMap(procPrune(m));
+  procPush(m[k]?m[k]:{s:'', code:code, date:String(r['날짜']||'').slice(0,10), pet:r['아이']||'', owner:r['보호자']||'', time:String(r['시각']||'')});
+  return m[k]||null;
+}
+/* 시트 공유(배포 전에는 조용히 넘어간다) */
+function procPush(e){
+  if(!PROC_SYNC || !window.fetch) return;
+  try{
+    fetch(PROC_API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify({action:'proc', date:e.date, time:e.time, pet:e.pet, owner:e.owner,
+        code:e.code, name:e.name||procItemName(e.code), state:e.s||'', by:e.by||'', at:e.at||''})}).catch(function(){});
+  }catch(err){}
+}
+/* 시트('시술체크' 탭)에서 다른 기기가 누른 값을 받아 합친다 — PROC_SYNC=true(서버 'proc' 액션 배포)일 때만 */
+function procCloudPull(){
+  if(!PROC_SYNC) return Promise.resolve(false);
+  return fetchSheet('시술체크').then(function(rows){
+    if(!rows || !rows.length) return false;
+    var m=procMap(), ch=false;
+    rows.forEach(function(x){
+      var code=String(x['항목코드']||'').trim(), st=String(x['상태']||'').trim();
+      if(!code) return;
+      var k=[String(x['날짜']||'').slice(0,10), normTime(x['시각']), String(x['아이']||''), String(x['보호자']||''), code].join('|');
+      var at=String(x['누른시각']||'');
+      if(m[k] && String(m[k].at||'')>=at) return;
+      if(st!=='+' && st!=='-'){ delete m[k]; ch=true; return; }
+      m[k]={s:st, by:String(x['직원']||''), at:at, date:String(x['날짜']||'').slice(0,10),
+            pet:String(x['아이']||''), owner:String(x['보호자']||''), time:normTime(x['시각']), code:code, name:String(x['항목']||code)};
+      ch=true;
+    });
+    if(ch) procSaveMap(procPrune(m));
+    return ch;
+  }).catch(function(){ return false; });
+}
+function procOpenMap(){ try{ return JSON.parse(localStorage.getItem(PROC_OPEN_KEY)||'{}')||{}; }catch(e){ return {}; } }
+function procOpen(base,def){
+  var m=procOpenMap();
+  return (base in m)? !!m[base] : !!def;
+}
+function procSetOpen(base,on){
+  var m=procOpenMap(); m[base]=on?1:0;
+  try{ localStorage.setItem(PROC_OPEN_KEY,JSON.stringify(m)); }catch(e){}
+}
+function procCounts(r){
+  var items=procItems(), m=procMap(), base=procRowKey(r), c={plus:0,minus:0,blank:0,total:items.length,last:null,n:0};
+  items.forEach(function(it){
+    var e=m[base+'|'+it.code];
+    if(!e){ c.blank++; return; }
+    c.n++;
+    if(e.s==='+') c.plus++; else c.minus++;
+    if(e.at && (!c.last || e.at>c.last)) c.last=e.at;
+  });
+  return c;
+}
+/* 오늘(또는 그 날짜) 미시행(−)만 모은다 */
+function procMinusOf(dateStr){
+  var m=procMap(), out=[], k;
+  for(k in m){
+    var e=m[k];
+    if(!e || e.s!=='-') continue;
+    if(String(e.date||'')!==String(dateStr||'')) continue;
+    out.push(e);
+  }
+  out.sort(function(a,b){ return String(a.time||'').localeCompare(String(b.time||'')) || String(a.pet||'').localeCompare(String(b.pet||'')); });
+  return out;
+}
+function procBoxEl(r){
+  if(/처방|미용/.test(String(r['구분']||''))) return null;   /* 처방 수령·미용 전용 줄에는 시술 체크를 두지 않는다 */
+  var items=procItems();
+  if(!items.length) return null;
+  var base=procRowKey(r);
+  var c0=procCounts(r);
+  var box=el('div','pbox'+(procOpen(base,(c0.n>0))?' open':''));
+  var head=el('button','phead'); head.type='button';
+  head.setAttribute('aria-expanded',box.classList.contains('open')?'true':'false');
+  head.appendChild(el('span','pttl','➕ 시술 체크'));
+  var sum=el('span','psum');
+  head.appendChild(sum);
+  var sp=el('span'); sp.style.flex='1';
+  head.appendChild(sp);
+  var gear=el('span','pgear','⚙️'); gear.title='시술 항목 관리';
+  head.appendChild(gear);
+  head.appendChild(el('span','pcar','▾'));
+  box.appendChild(head);
+  var body=el('div','pbody');
+  box.appendChild(body);
+
+  function sumText(){
+    var c=procCounts(r);
+    if(!c.n) return '아직 없음 · '+c.total+'개 항목';
+    return '진행 '+c.plus+(c.minus?(' · 미시행 '+c.minus):'')+(c.blank?(' · 미체크 '+c.blank):'');
+  }
+  function paint(){
+    var c=procCounts(r);
+    sum.textContent=sumText();
+    sum.style.background=c.minus?'#FEE2E2':'#CCFBF1';
+    sum.style.borderColor=c.minus?'#FCA5A5':'#99F6E4';
+    sum.style.color=c.minus?'#B91C1C':'#0B5F57';
+  }
+  function buildBody(){
+    body.innerHTML='';
+    var who=procWho();
+    var wr=el('div','pwhorow');
+    wr.appendChild(document.createTextNode('체크하는 사람'));
+    var wi=el('input'); wi.type='text'; wi.value=who; wi.maxLength=10; wi.setAttribute('aria-label','체크하는 사람 이름');
+    wi.addEventListener('change',function(){ procSetWho(wi.value); wi.value=procWho(); paint(); });
+    wr.appendChild(wi);
+    var mg=el('button','btn b-gray','⚙️ 항목 관리'); mg.type='button';
+    mg.style.marginLeft='auto'; mg.style.fontSize='.86em'; mg.style.padding='3px 9px';
+    mg.addEventListener('click',function(ev){ ev.stopPropagation(); procManageModal(); });
+    wr.appendChild(mg);
+    body.appendChild(wr);
+    body.appendChild(el('div','pkey','+ 진행·추가  |  − 진행 안 함  |  안 누름 = 미체크 (같은 버튼을 다시 누르면 해제)'));
+    var grid=el('div','pgrid');
+    body.appendChild(grid);
+
+    items.forEach(function(it){
+      var e=procEntry(r,it.code);
+      var row=el('div','pitem '+(e?(e.s==='+'?'done':'neg'):'blank'));
+      var pin=el('div','pin');
+      var b=el('b'); b.appendChild(document.createTextNode(it.name));
+      var tg=el('span','stag '+(e?(e.s==='+'?'p':'m'):'n'), e?(e.s==='+'?'진행':'미시행'):'미체크');
+      b.appendChild(tg); pin.appendChild(b);
+      var subTxt=(it.sub||'')+(e?(' · '+e.by+' '+procHm(e.at)):'');
+      pin.appendChild(el('span','psub',subTxt));
+      row.appendChild(pin);
+      var btns=el('div','pbtns');
+      var bp=el('button','pb plus'+(e&&e.s==='+'?' on':''),'+'); bp.type='button';
+      bp.setAttribute('aria-label',it.name+' 진행');
+      bp.addEventListener('click',function(ev){ ev.stopPropagation(); procSet(r,it.code,'+'); repaint(); });
+      var bm=el('button','pb minus'+(e&&e.s==='-'?' on':''),'−'); bm.type='button';
+      bm.setAttribute('aria-label',it.name+' 진행 안 함');
+      bm.addEventListener('click',function(ev){ ev.stopPropagation(); procSet(r,it.code,'-'); repaint(); });
+      btns.appendChild(bp); btns.appendChild(bm);
+      row.appendChild(btns);
+      grid.appendChild(row);
+    });
+
+    var c=procCounts(r);
+    var ft=el('div','pft');
+    if(c.n){
+      var lastE=null;
+      items.forEach(function(it){
+        var e=procEntry(r,it.code);
+        if(e && e.at && (!lastE || e.at>lastE.at)) lastE=e;
+      });
+      ft.appendChild(document.createTextNode('🖊️ '+(lastE?lastE.by:'')+' · '+procHm(lastE?lastE.at:'')+' · '));
+      var parts=[];
+      items.forEach(function(it){
+        var e=procEntry(r,it.code);
+        if(!e) return;
+        parts.push(it.name+(e.s==='+'?' +':' −'));
+      });
+      ft.appendChild(document.createTextNode(parts.join(', ')));
+    }else{
+      ft.appendChild(document.createTextNode('아직 누른 항목이 없습니다 — 진료실 무전을 듣고 + / − 만 눌러 주세요.'));
+    }
+    body.appendChild(ft);
+    if(c.minus){
+      var pw=el('div','pbar');
+      var pb2=el('button','ppill','⛔ 이 아이 미시행 '+c.minus+'건 모아보기'); pb2.type='button';
+      pb2.addEventListener('click',function(ev){ ev.stopPropagation(); procMinusModal(String(r['날짜']||'').slice(0,10)); });
+      pw.appendChild(pb2);
+      body.appendChild(pw);
+    }
+    paint2();
+  }
+  function paint2(){
+    body.querySelectorAll('.pitem').forEach(function(row,ix){
+      var it=items[ix]; if(!it) return;
+      var e=procEntry(r,it.code);
+      var tg=row.querySelector('.stag'), sub=row.querySelector('.psub');
+      var bp=row.querySelector('.pb.plus'), bm=row.querySelector('.pb.minus');
+      row.className='pitem '+(e?(e.s==='+'?'done':'neg'):'blank');
+      if(tg){ tg.className='stag '+(e?(e.s==='+'?'p':'m'):'n'); tg.textContent=e?(e.s==='+'?'진행':'미시행'):'미체크'; }
+      if(sub) sub.textContent=(it.sub||'')+(e?(' · '+e.by+' '+procHm(e.at)):'');
+      if(bp) bp.classList.toggle('on',!!(e&&e.s==='+'));
+      if(bm) bm.classList.toggle('on',!!(e&&e.s==='-'));
+    });
+    paint();
+  }
+  function repaint(){
+    box.classList.add('open'); procSetOpen(base,true);
+    head.setAttribute('aria-expanded','true');
+    buildBody();
+    procRefreshDayBar();
+  }
+  head.addEventListener('click',function(){
+    var on=!box.classList.contains('open');
+    box.classList.toggle('open',on);
+    procSetOpen(base,on);
+    head.setAttribute('aria-expanded',on?'true':'false');
+  });
+  head.querySelector('.pgear').addEventListener('click',function(ev){ ev.stopPropagation(); procManageModal(); });
+  paint();
+  buildBody();
+  return box;
+}
+/* 날짜 머리 아래 미시행 모아보기 줄 — 누르면 그 날 미시행만 한 화면에 */
+function procFillDayBar(slot){
+  if(!slot || !slot.isConnected) return;
+  slot.innerHTML='';
+  var ds=slot.getAttribute('data-date');
+  var list=procMinusOf(ds);
+  if(!list.length) return;
+  var w=el('div','pbar');
+  var b=el('button','ppill','⛔ 이 날 미시행 모아보기');
+  b.type='button';
+  b.appendChild(el('b','pcnt',' '+list.length+'건'));
+  b.addEventListener('click',function(){ procMinusModal(ds); });
+  w.appendChild(b);
+  w.appendChild(el('span','ctlnote','→ 다음 안내·재구매로 넘기기'));
+  slot.appendChild(w);
+}
+function procRefreshDayBar(){
+  var slots=document.querySelectorAll('.procDayBarSlot');
+  for(var i=0;i<slots.length;i++) procFillDayBar(slots[i]);
+}
+function procMinusModal(ds){
+  var body=$('#mbody'); body.innerHTML='';
+  var list=procMinusOf(ds||iso(TODAY));
+  body.appendChild(el('h3',null,'⛔ 미시행 모아보기 · '+fmtMD(ds||iso(TODAY))));
+  body.appendChild(el('div','sub','그 날 − 로 찍힌 항목만 모았습니다. 안 누른 칸(미체크)은 여기에 들어오지 않습니다.'));
+  if(!list.length){
+    body.appendChild(el('div','mstat','이 날짜에 미시행으로 찍힌 항목이 없습니다.'));
+  }else{
+    var box=el('div','plist');
+    list.forEach(function(e){
+      var row=el('div','prow');
+      var left=el('div');
+      left.appendChild(el('b',null,e.pet+(e.owner?('('+e.owner+')'):'')));
+      left.appendChild(document.createTextNode(' — '+procItemName(e.code)));
+      row.appendChild(left);
+      row.appendChild(el('span','pmeta',(e.time?e.time+' · ':'')+e.by+' '+procHm(e.at)));
+      box.appendChild(row);
+    });
+    body.appendChild(box);
+    var txt=list.map(function(e){ return e.pet+(e.owner?('('+e.owner+')'):'')+' — '+procItemName(e.code); }).join('\n');
+    var bar=el('div','padmin');
+    var cp=el('button','btn b-green','📋 목록 복사'); cp.type='button';
+    var msg=el('span','ctlnote','');
+    cp.addEventListener('click',function(){
+      var full='[미시행] '+fmtMD(ds||iso(TODAY))+'\n'+txt;
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(full).then(function(){ msg.textContent='복사했습니다 — GTN 3종 카톡·재구매 안내에 붙여 넣으세요'; },
+          function(){ msg.textContent='복사가 막혔습니다 — 아래 목록을 길게 눌러 복사해 주세요'; });
+      }else{ msg.textContent='이 브라우저는 자동 복사가 안 됩니다 — 목록을 길게 눌러 복사해 주세요'; }
+    });
+    bar.appendChild(cp);
+    var gt=el('a','rlink','✨ GTN 3종 카톡으로'); gt.href='https://t01051327575-bit.github.io/petmate-guide/gtn.html';
+    gt.target='_blank'; gt.rel='noopener noreferrer';
+    bar.appendChild(gt);
+    body.appendChild(bar);
+    body.appendChild(msg);
+  }
+  var cl=el('button','btn b-gray','닫기'); cl.type='button'; cl.style.marginTop='10px';
+  cl.addEventListener('click',function(){ $('#mask').classList.remove('show'); });
+  body.appendChild(cl);
+  $('#mask').classList.add('show');
+}
+function procManageModal(){
+  var body=$('#mbody'); body.innerHTML='';
+  body.appendChild(el('h3',null,'➕ 시술 항목 관리'));
+  body.appendChild(el('div','sub','항목을 더하거나 지우면 이 기기에 저장되고, 접수·진료실·원장님 뷰에 바로 나옵니다.'));
+  function draw(){
+    var items=procItems();
+    var old=body.querySelector('.plist'); if(old) old.parentNode.removeChild(old);
+    var box=el('div','plist');
+    items.forEach(function(it,ix){
+      var row=el('div','prow');
+      var left=el('div');
+      left.appendChild(el('b',null,it.name));
+      if(it.sub) left.appendChild(document.createTextNode(' · '+it.sub));
+      row.appendChild(left);
+      var del=el('button','btn b-gray','지우기'); del.type='button';
+      del.style.cssText='font-size:.82em;padding:2px 9px;margin-left:8px';
+      del.addEventListener('click',function(){
+        var a=procItems(); a.splice(ix,1); procSaveItems(a); draw();
+      });
+      var wrapR=el('div'); wrapR.style.cssText='margin-left:auto;display:flex;align-items:center';
+      row.appendChild(wrapR); wrapR.appendChild(del);
+      box.appendChild(row);
+    });
+    if(!items.length) box.appendChild(el('div','mstat','항목이 없습니다 — 아래에서 추가해 주세요.'));
+    body.appendChild(box);
+  }
+  draw();
+  var form=el('div','padmin');
+  var n1=el('input'); n1.type='text'; n1.placeholder='항목 이름 (예: 줄기세포)'; n1.maxLength=24;
+  var n2=el('input'); n2.type='text'; n2.placeholder='설명 (예: 관절 주사)'; n2.maxLength=24;
+  var add=el('button','btn b-green','+ 추가'); add.type='button';
+  add.addEventListener('click',function(){
+    var name=String(n1.value||'').trim();
+    if(!name){ n1.focus(); return; }
+    var a=procItems();
+    a.push({code:'c'+String(Date.now()).slice(-6), name:name, sub:String(n2.value||'').trim()});
+    procSaveItems(a); n1.value=''; n2.value=''; draw(); render();
+  });
+  form.appendChild(n1); form.appendChild(n2); form.appendChild(add);
+  body.appendChild(form);
+  var reset=el('button','btn b-gray','기본 항목 8개로 되돌리기'); reset.type='button';
+  reset.style.marginTop='6px';
+  reset.addEventListener('click',function(){
+    try{ localStorage.removeItem(PROC_ITEM_KEY); }catch(e){}
+    draw(); render();
+  });
+  body.appendChild(reset);
+  body.appendChild(el('div','ctlnote','지운 항목에 남아 있던 오늘 체크 기록은 목록에 다시 나오지 않습니다.'));
+  var cl2=el('button','btn b-gray','닫기'); cl2.type='button'; cl2.style.marginTop='10px';
+  cl2.addEventListener('click',function(){ $('#mask').classList.remove('show'); });
+  body.appendChild(cl2);
+  $('#mask').classList.add('show');
+}
+
 function cardEl(r){
   var kind=r['구분']||'비대기';
   var c=el('article','card '+(kind==='확정'?'vet':(kind==='비대기'?'non':'rx')));
@@ -1867,6 +2291,9 @@ function cardEl(r){
   var kd=el('span','kind '+(kind==='확정'?'k1':(kind==='비대기'?'k2':'k3')),kind);
   head.appendChild(kd);
   c.appendChild(head);
+  /* ➕ 시술 체크 — 진료실 무전을 듣고 + (진행·추가) / − (진행 안 함)을 이름 줄 바로 밑에서 (긴 진료내용에 밀리지 않게) */
+  var pbox=procBoxEl(r);
+  if(pbox) c.appendChild(pbox);
 
   if(r['배지']){
     var bw=el('div','badges');
@@ -2612,6 +3039,10 @@ function render(){
     }
     out.appendChild(hd);
     out.appendChild(filterBar(dayAll, rows.length));
+    if(S.day!=='week' && S.day!=='next'){
+      var pslot=el('div','procDayBarSlot'); pslot.setAttribute('data-date',ds);
+      out.appendChild(pslot); procFillDayBar(pslot);
+    }
     var xrows=(S.xdata||[]).filter(function(r){return String(r['날짜']).slice(0,10)===ds;});
     if(xrows.length) out.appendChild(xnoteEl(xrows));
     if(S.day!=='week' && S.day!=='next'){ var cn=chartNote(ds); if(cn) out.appendChild(cn); }
