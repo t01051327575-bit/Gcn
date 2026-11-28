@@ -788,12 +788,14 @@ function groomCommentEditor(r, round, ops){
     var text=String(ta.value||'').trim();
     if(!text){ msg.textContent='소견 내용을 적어 주세요. (적은 내용은 이 화면에 그대로 남습니다)'; msg.style.color='#c0392b'; return; }
     save.disabled=true; save.textContent='저장 중…'; msg.style.color='#6b7f90'; msg.textContent='';
-    var jobs=[groomPost({action:'comment', id:id, code:cur.code, part:cur.part, text:text, author:'원장님'})];
-    if(rcb.checked){
-      jobs.push(groomPost({action:'revisit', id:id, code:cur.code, part:cur.part,
-        text:'재진 필요'+(cur.part?(' — '+cur.part+' 재확인'):'')}));
-    }
-    Promise.all(jobs).then(function(res){
+    /* 두 줄을 한 번에 보내면 시트 마지막 줄 계산이 겹칠 수 있어 차례로 보낸다 */
+    var p1=groomPost({action:'comment', id:id, code:cur.code, part:cur.part, text:text, author:'원장님'});
+    var p2=p1.then(function(r1){
+      if(!rcb.checked) return null;
+      return groomPost({action:'revisit', id:id, code:cur.code, part:cur.part,
+        text:'재진 필요'+(cur.part?(' — '+cur.part+' 재확인'):'')});
+    });
+    Promise.all([p1,p2]).then(function(res){
       var at=(res[0]&&res[0].at)||groomNow();
       GROOMOPS.push({'시각':at,'접수ID':id,'미용일':round['미용일'],'아이':r['아이'],'보호자':r['보호자'],
         '작성자':'원장님','항목코드':cur.code,'부위':(cur.part||groomPartLabel(cur.code)),'소견':text,'종류':'소견'});
