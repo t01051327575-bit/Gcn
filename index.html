@@ -882,12 +882,13 @@ function groomOpinionEl(r){
   var list=ops.filter(function(o){return o['종류']!=='재진처리';});
   if(!list.length) return null;
   var byCode={}, order=[];
-  list.forEach(function(o){
+  list.filter(function(o){ return o['종류']!=='재진'; }).forEach(function(o){
     var c=String(o['항목코드']||'').toUpperCase();
     var key=c||('@'+String(o['접수ID']||''));
     if(!byCode[key]){ byCode[key]=[]; }
     byCode[key].push(o);
   });
+  var revs=list.filter(function(o){return o['종류']==='재진';});
   var groups=Object.keys(byCode).map(function(k){return byCode[k];});
   groups.forEach(function(g){
     g.sort(function(a,b){return String(a['시각']||'').localeCompare(String(b['시각']||''));});
@@ -914,7 +915,7 @@ function groomOpinionEl(r){
     var part=String(g[0]['부위']||'');
     if(code||part) line.appendChild(el('b',null,(code?code+' ':'')+(part||'')));
     if(g.length>1){
-      var prev=g[g.length-2], last=g[g.length-1];
+      var prev=g[0], last=g[g.length-1];
       line.appendChild(document.createTextNode(' '+groomFmt(prev['시각'])+' "'+clipText(prev['소견'],40)+'" → '+
         groomFmt(last['시각'])+' "'+clipText(last['소견'],40)+'" '));
       var same=groomPartKey(prev['소견'])===groomPartKey(last['소견']);
@@ -932,6 +933,15 @@ function groomOpinionEl(r){
       }
     }
     box.appendChild(line);
+  });
+  revs.slice(-2).forEach(function(o){
+    var rl=el('div');
+    rl.style.cssText='margin-top:3px;color:#8a4b12';
+    var tg=el('span',null,'🔁 재진 필요');
+    tg.style.cssText='display:inline-block;padding:0 6px;border-radius:999px;font-size:11.5px;font-weight:700;background:#fff3e0;color:#8a4b12;border:1px solid #f0d3ae;margin-right:5px';
+    rl.appendChild(tg);
+    rl.appendChild(document.createTextNode(groomFmt(o['시각'])+' '+(o['항목코드']?o['항목코드']+' ':'')+(o['부위']?o['부위']+' — ':'')+o['소견']));
+    box.appendChild(rl);
   });
   /* 이력 전체 보기 — 시간 역순 + 그 회차 사진 */
   var rounds=groomListFor(r);
