@@ -346,7 +346,7 @@ details.more summary{font-size:.84em;font-weight:900;color:#475569;cursor:pointe
       <p class="hint">전처치 → 유도 → 유지(흡입 %·산소 L/min) → 수술 중 진통(CRI ml/hr) → 회복 순서로 한 줄씩 쌓입니다.</p>
       <div class="addbox">
         <div class="grid3">
-          <label class="f"><span>시각</span><input type="time" id="d_t"></label>
+          <label class="f"><span>시각</span><input type="time" id="d_t"><span class="chips2"><button type="button" id="d_now">지금</button><button type="button" id="d_5">+5분</button></span></label>
           <label class="f"><span>구분</span><select id="d_phase"></select></label>
           <label class="f"><span>약명</span><input type="text" id="d_name" list="drugList" placeholder="약 이름" autocomplete="off"></label>
           <label class="f"><span>용량 (mg)</span><input type="number" inputmode="decimal" step="0.01" id="d_mg" placeholder="mg"></label>
@@ -813,6 +813,13 @@ $('dadd').addEventListener('click',function(){
   toast('약물 기록 '+(CUR.drugs.length)+'건');
 });
 $('dcancel').addEventListener('click',function(){EDIT_D=null;$('dadd').textContent='＋ 약물 추가';this.style.display='none';clearDrugForm(false)});
+$('d_now').addEventListener('click',function(){$('d_t').value=nowHM()});
+$('d_5').addEventListener('click',function(){
+  var base=$('d_t').value?hm($('d_t').value):null;
+  if(base==null&&CUR.drugs.length){for(var i=CUR.drugs.length-1;i>=0;i--){var t=hm(CUR.drugs[i].t);if(t!=null){base=t;break}}}
+  if(base==null)base=hm(nowHM());
+  $('d_t').value=hmS(base+5);
+});
 function renderDrugs(){
   var b=$('dbody');
   if(!CUR.drugs.length){b.innerHTML='<tr><td colspan="11"><div class="empty">아직 약물 기록이 없습니다. 위에서 한 줄씩 추가합니다.</div></td></tr>'}
