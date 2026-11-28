@@ -16,8 +16,10 @@ iframe{width:390px;height:844px;border:0;display:block;background:#F4F6F8}
 <div class="note" id="note">390px</div>
 <div class="frame"><iframe id="fr" src="surgery.html" title="수술·마취 기록지 390px"></iframe></div>
 <script>
-var q=new URLSearchParams(location.search),p=q.get('p')||'tab1',v=q.get('v')||'m390';
-document.getElementById('fr').src='surgery.html?v='+encodeURIComponent(v)+'#'+p;
+var q=new URLSearchParams(location.search),p=q.get('p')||'tab1',v=q.get('v')||'m390',y=+(q.get('y')||0);
+var fr=document.getElementById('fr');
+fr.onload=function(){if(y){try{fr.contentWindow.scrollTo(0,y)}catch(e){}}};
+fr.src='surgery.html?v='+encodeURIComponent(v)+'#'+p;
 document.getElementById('note').textContent='수술·마취 기록지 · 폭 390px · '+p;
 </script>
 </body>

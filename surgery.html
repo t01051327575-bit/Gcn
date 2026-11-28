@@ -593,6 +593,10 @@ function goto(t){
   for(var i=0;i<bs.length;i++)bs[i].setAttribute('aria-selected',String(+bs[i].getAttribute('data-tab')===TAB));
   for(var k=1;k<=6;k++)$('p'+k).classList.toggle('on',k===TAB);
   if(TAB===5){drawSig('g');drawSig('v')}
+  if(TAB===2&&!EDIT_D&&!($('lres').innerHTML||'').trim()&&(CUR.info.pet||'').trim()){
+    $('lq').value=CUR.info.pet;
+    setTimeout(doSearch,150);
+  }
   try{history.replaceState(null,'','#tab'+TAB)}catch(e){}
   window.scrollTo({top:0,behavior:'smooth'});
 }
