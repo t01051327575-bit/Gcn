@@ -487,51 +487,31 @@ var LUMPV = '1125-1915'; /* 혹 그림 파일 캐시 버전(같은 파일명으�
 var NEXT = {};   /* 앞으로의 예약(아이|보호자) — next.json */
 var GROOMROWS = [];  /* ✂️ 미용 체크 접수 — 시트 '미용' 탭 */
 function groomNorm(s){ return String(s||'').replace(/\([^)]*\)/g,'').replace(/[\/\s.]/g,'').toLowerCase(); }
+/* ✂️ 미용 체크는 '진료 예약이 있는 날'에만 보인다 — 같은 날짜 + 아이 + 보호자 일치.
+   미용 예약(구분 '미용')·처방 수령·미내원(X)은 표시 근거가 아니다. */
 function groomFor(r){
-  var a=groomNorm(r && r['아이']);
-  if(!a || !GROOMROWS.length) return null;
-  var o=groomNorm(r && r['보호자']);
-  var hit=[], hitG=[];
-  GROOMROWS.forEach(function(g){
+  if(!r || !GROOMROWS.length) return null;
+  var kind=String(r['구분']||'');
+  if(kind==='처방' || kind==='미용') return null;
+  if(typeof isMissed==='function' && isMissed(r)) return null;
+  var d=String(r['날짜']||'').slice(0,10);
+  var a=groomNorm(r['아이']);
+  if(!a) return null;
+  var o=groomNorm(r['보호자']);
+  var list=GROOMROWS.filter(function(g){
+    if(String(g['미용일']||'').slice(0,10)!==d) return false;
     var ga=groomNorm(g['아이']);
-    if(!ga) return;
-    if(ga!==a && ga.indexOf(a)!==0 && a.indexOf(ga)!==0) return;
-    hit.push(g);
-    if(o && groomNorm(g['보호자']) && (groomNorm(g['보호자'])===o || groomNorm(g['보호자']).indexOf(o)===0)) hitG.push(g);
+    if(!ga) return false;
+    if(ga!==a && ga.indexOf(a)!==0 && a.indexOf(ga)!==0) return false;
+    var go=groomNorm(g['보호자']);
+    if(o && go && go!==o) return false;
+    return true;
   });
-  var list=hitG.length?hitG:hit;
   if(!list.length) return null;
   list.sort(function(x,y){ return String(y['접수시각']||'').localeCompare(String(x['접수시각']||'')); });
   var g=list[0];
   g.__count=list.length;
   return g;
-}
-function groomBannerEl(){
-  if(!GROOMROWS.length) return null;
-  var today=iso(TODAY);
-  var list=GROOMROWS.filter(function(g){
-    return String(g['접수시각']||'').slice(0,10)===today || String(g['미용일']||'').slice(0,10)===today;
-  });
-  if(!list.length) return null;
-  var box=el('div','dept');
-  box.style.cssText='background:#fff8e6;border:1px solid #f0dfae;border-radius:12px;padding:10px 12px;margin:10px 0;font-size:15px';
-  box.appendChild(el('b',null,'✂️ 오늘 미용 체크 접수 '+list.length+'건'));
-  list.forEach(function(g){
-    var li=el('div');
-    li.style.marginTop='4px';
-    var bad=Number(g['이상 수']||0);
-    li.appendChild(document.createTextNode('· '+String(g['아이']||'')+(g['보호자']?'('+g['보호자']+')':'')+
-      ' — '+(bad?('이상 '+bad+'곳 · '+(g['이상 항목']||'')):'이상 없음')+
-      (g['미용사·미용실']?' · '+g['미용사·미용실']:'')+
-      ((g['사진 수']||g['영상 수'])?(' · 사진 '+Number(g['사진 수']||0)+'장'+(Number(g['영상 수']||0)?' 영상 '+Number(g['영상 수']||0)+'개':'')):'')));
-    var f=String(g['폴더 링크']||'');
-    if(f){
-      var a=el('a',null,' 폴더 열기'); a.href=f; a.target='_blank'; a.rel='noopener noreferrer'; a.style.marginLeft='6px';
-      li.appendChild(a);
-    }
-    box.appendChild(li);
-  });
-  return box;
 }
 /* 혹 그림 조회 — 문의 탭 보호자 표기('이원정/박건주')와 lumps/index.json 키('이원정 박건주')의 슬래시·공백 차이 보정 */
 function lumpGet(r){
@@ -1336,11 +1316,18 @@ function cardEl(r){
     var gbox=el('div','dept');
     gbox.style.cssText='background:#fff8e6;border:1px solid #f0dfae;border-radius:10px;padding:8px 10px;margin:6px 0;font-size:15px';
     var gbad=Number(gr['이상 수']||0);
+    var gsrc=String(gr['출처']||'');
+    var gshop=String(gr['미용실']||'');
     var ghead=el('div');
     ghead.appendChild(el('b',null,'✂️ 미용 체크'));
-    ghead.appendChild(document.createTextNode(' '+String(gr['미용일']||'').slice(5).replace('-','/')+
+    var gbadge=el('span',null, gsrc==='원내' ? '🏠 원내 미용' : ('🏪 외부 미용'+(gshop?' · '+gshop:'')));
+    gbadge.style.cssText='display:inline-block;margin:0 6px;padding:2px 9px;border-radius:999px;font-size:13px;font-weight:800;'+
+      'line-height:1.5;white-space:normal;word-break:keep-all;'+
+      (gsrc==='원내' ? 'background:#e6f6ee;color:#178a5b;border:1px solid #a9d8c1' : 'background:#fff0e2;color:#b45309;border:1px solid #f0c79a');
+    ghead.appendChild(gbadge);
+    ghead.appendChild(document.createTextNode(String(gr['미용일']||'').slice(5).replace('-','/')+
       ' · '+(gbad?('이상 '+gbad+'곳 — '+(gr['이상 항목']||'')):'이상 없음 (12곳 확인)')+
-      (gr['미용사·미용실']?' · '+gr['미용사·미용실']:'')+
+      (gr['미용사']?' · 미용사 '+gr['미용사']:'')+
       (gr.__count>1?' · 기록 '+gr.__count+'회':'')));
     gbox.appendChild(ghead);
     if(String(gr['병원 전달']||'')==='예') gbox.appendChild(el('div',null,'★ 병원에 꼭 전달한다고 표시했습니다'));
@@ -2062,8 +2049,6 @@ function render(){
     out.appendChild(wsum);
   }
   if(S.day==='today'||S.day==='tomorrow'||S.day==='all'){
-    var gb=groomBannerEl();
-    if(gb) out.appendChild(gb);
     var d=dates[0];
     var box=inquiryBox(d);
     if(box) out.appendChild(box);
