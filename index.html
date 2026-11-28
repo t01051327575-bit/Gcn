@@ -127,6 +127,7 @@ input[type=date],input[type=text]{font:700 .9em 'Noto Sans KR';border:1.5px soli
 .pbox.open .pbody{display:block}
 .pwhorow{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin:0 0 5px;font-size:.76em;font-weight:800;color:#0F766E}
 .pwhorow input{width:78px;border:1.5px solid #99F6E4;border-radius:8px;padding:3px 6px;font:800 .95em 'Noto Sans KR';color:#0f172a;background:#fff}
+.keepk{word-break:keep-all}
 .pkey{font-size:.72em;font-weight:700;color:#0F766E;margin:0 0 6px;line-height:1.4}
 .pgrid{display:grid;grid-template-columns:1fr;gap:1px}
 @media(min-width:720px){ .pgrid{grid-template-columns:1fr 1fr;gap:4px 10px} }
@@ -2189,7 +2190,7 @@ function procMinusModal(ds){
   var body=$('#mbody'); body.innerHTML='';
   var list=procMinusOf(ds||iso(TODAY));
   body.appendChild(el('h3',null,'⛔ 미시행 모아보기 · '+fmtMD(ds||iso(TODAY))));
-  body.appendChild(el('div','sub','그 날 − 로 찍힌 항목만 모았습니다. 안 누른 칸(미체크)은 여기에 들어오지 않습니다.'));
+  body.appendChild(el('div','sub keepk','그 날 − 로 찍힌 항목만 모았습니다. 안 누른 칸(미체크)은 여기에 들어오지 않습니다.'));
   if(!list.length){
     body.appendChild(el('div','mstat','이 날짜에 미시행으로 찍힌 항목이 없습니다.'));
   }else{
@@ -2230,7 +2231,7 @@ function procMinusModal(ds){
 function procManageModal(){
   var body=$('#mbody'); body.innerHTML='';
   body.appendChild(el('h3',null,'➕ 시술 항목 관리'));
-  body.appendChild(el('div','sub','항목을 더하거나 지우면 이 기기에 저장되고, 접수·진료실·원장님 뷰에 바로 나옵니다.'));
+  body.appendChild(el('div','sub keepk','항목을 더하거나 지우면 이 기기에 저장되고, 접수·진료실·원장님 뷰에 바로 나옵니다.'));
   function draw(){
     var items=procItems();
     var old=body.querySelector('.plist'); if(old) old.parentNode.removeChild(old);
