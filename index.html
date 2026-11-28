@@ -337,6 +337,61 @@ td.ttslot.today{background:#FFFDF5}
 
 .dnote .btn{font-size:.82em;padding:4px 9px}
 @media(max-width:560px){table.tt{min-width:820px}td.tttime,table.tt thead th.tcol{width:46px;min-width:46px}}
+/* ===== 접기·펼치기(아코디언) — 긴 목록은 한 줄 요약, 누르면 펼침 (모바일 44px 이상) ===== */
+.acc{margin:6px 0;border:2px solid #FDBA74;border-radius:12px;background:#FFF7ED;overflow:hidden}
+.acc>.acch{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:7px;width:100%;min-height:44px;padding:8px 11px;cursor:pointer;background:#FFEDD5;color:#9A3412;font-family:'Noto Sans KR',sans-serif;font-weight:900;font-size:.95em;line-height:1.25}
+.acc>.acch:hover{filter:brightness(.97)}
+.acc>.acch:focus-visible{outline:3px solid #2563EB;outline-offset:-3px}
+.acc .accttl{flex:1;min-width:0;word-break:keep-all}
+.acc .acccnt{flex:0 0 auto;font-size:.8em;font-weight:900;background:#fff;border:1px solid #FDBA74;border-radius:999px;padding:2px 8px;color:#9A3412;white-space:nowrap}
+.acc .accar{flex:0 0 auto;font-size:.9em;color:#9A3412;transition:transform .15s}
+.acc.open>.acch .accar{transform:rotate(180deg)}
+.acc>.accb{display:none;padding:8px 10px 10px;background:#fff;font-size:.93em;color:#1f2937}
+.acc.open>.accb{display:block}
+.acc.reqacc{border-color:#EA580C;background:#FFF7ED}
+.acc.reqacc>.acch{background:#FFE4CC;color:#7C2D12}
+.acc.reqacc .acccnt{color:#7C2D12;border-color:#FCA5A5}
+.acc.amber{border-color:#FBBF24;background:#FFFBEB}
+.acc.amber>.acch{background:#FEF3C7;color:#78350F}
+.acc.amber .acccnt{color:#78350F;border-color:#FBBF24}
+.acc.gray{border-color:#CBD5E1;background:#F8FAFC}
+.acc.gray>.acch{background:#F1F5F9;color:#334155}
+.acc.gray .acccnt{color:#334155;border-color:#CBD5E1}
+.acc.blue{border-color:#93C5FD;background:#EFF6FF}
+.acc.blue>.acch{background:#DBEAFE;color:#1E3A8A}
+.acc.blue .acccnt{color:#1E3A8A;border-color:#93C5FD}
+.acc.doc{border-color:#6EE7B7;background:#F0FDF4}
+.acc.doc>.acch{background:#DCFCE7;color:#065F46}
+.acc.doc .acccnt{color:#065F46;border-color:#86EFAC}
+/* 보호자님 준비 요청 체크리스트 */
+.preq{list-style:none;margin:0;padding:0}
+.preq>li{border-top:1px dashed #FED7AA;padding:1px 0}
+.preq>li:first-child{border-top:0}
+.preq .prow{display:flex;align-items:flex-start;gap:6px}
+.preq .plab{display:flex;align-items:center;gap:9px;flex:1;min-height:44px;cursor:pointer;font-weight:900;font-size:.95em;line-height:1.3;word-break:keep-all;color:#7C2D12}
+.preq .plab input{width:22px;height:22px;flex:0 0 auto;accent-color:#EA580C}
+.preq li.done .plab{color:#94A3B8;text-decoration:line-through}
+.preq .pmore{all:unset;box-sizing:border-box;min-width:52px;min-height:44px;display:flex;align-items:center;justify-content:center;border:1.5px solid #FDBA74;border-radius:9px;background:#fff;color:#C2410C;font-family:'Noto Sans KR',sans-serif;font-weight:900;font-size:.8em;cursor:pointer}
+.preq .pmore:focus-visible{outline:3px solid #2563EB;outline-offset:-3px}
+.preq .pdet{display:none;font-size:.86em;color:#475569;font-weight:700;line-height:1.45;padding:0 0 8px 31px;white-space:pre-wrap;word-break:keep-all}
+.preq li.xd .pdet{display:block}
+.preq .pwho{font-size:.78em;font-weight:900;color:#0F766E;padding:0 0 6px 31px;white-space:pre-wrap;word-break:keep-all;min-height:0}
+.preq .pbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 4px;font-size:.82em;font-weight:800;color:#9A3412}
+.preq .pwholab{display:inline-flex;align-items:center;gap:5px;min-height:44px;font-weight:900;color:#7C2D12}
+.preq .pw{min-height:40px;border:1.5px solid #FDBA74;border-radius:9px;padding:4px 8px;font:800 .95em 'Noto Sans KR',sans-serif;color:#7C2D12;background:#FFFBF5;width:7.5em}
+.preq .pmsg{font-size:.92em;font-weight:700;color:#A16207}
+.preq .full{font-size:.85em;font-weight:800;color:#065F46;padding:4px 0 0 31px}
+/* 원장님 뷰 한 줄 */
+.docline{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px;font-size:.95em;color:#065F46;padding:3px 0}
+.docline b{font-weight:900}
+.docwho{font-size:.85em;font-weight:800;color:#0F766E}
+.docdet{font-size:.84em;font-weight:700;color:#475569;padding:1px 0 6px;white-space:pre-wrap;word-break:keep-all}
+.accitem{padding:4px 0;border-top:1px dashed var(--line);word-break:keep-all}
+.accitem:first-child{border-top:0;padding-top:0}
+/* 병원 설정 토글 */
+label.sw{display:inline-flex;align-items:center;gap:9px;min-height:44px;padding:4px 13px;border:1.5px solid var(--line);border-radius:11px;background:#fff;font-weight:900;font-size:.92em;color:#334155;cursor:pointer}
+label.sw input{width:20px;height:20px;accent-color:var(--green)}
+label.sw.on{border-color:#86EFAC;background:#F0FDF4;color:#065F46}
 </style>
 </head>
 <body>
@@ -390,6 +445,14 @@ td.ttslot.today{background:#FFFDF5}
       <button class="btn b-gray" data-size="xl">가++ 아주 크게</button>
       <button class="btn b-gray" id="reset">초기화</button>
     </div>
+    <div class="row">
+      <span class="lbl">⚙️ 병원 설정</span>
+      <label class="sw" id="optDocPrepLab">
+        <input type="checkbox" id="optDocPrep">
+        <span>원장님 뷰에 보호자 준비 요청 표시</span>
+      </label>
+      <span class="ctlnote" id="optDocPrepNote"></span>
+    </div>
   </div>
 
   <div id="err"></div>
@@ -398,8 +461,8 @@ td.ttslot.today{background:#FFFDF5}
   <div class="note">
     기호 안내: 비) 비대기 | X 미내원 | ▼ 선결제·보관 | ★ 필수 주의사항<br>
     ❌ <b>미내원(X)</b> = '예약' 탭 구분이 <b>X</b>인 행은 미내원·오시지 않음 알림 대상으로 보고 <b>예약 목록·건수에서 빼고</b>, 날짜 머리 아래에 <b>이름만 따로</b> 알려 줍니다. 시트에는 기록이 그대로 남습니다.<br>
-    🛍️ <b>보호자 요청 (필수 준비)</b> = 보호자가 GHN 건강관리표·카톡으로 미리 요청한 물품으로, 원무과가 내원 전에 준비해야 합니다. (주황 박스) · 🏢 원무과 준비 = 차트상 원무과 준비 사항 (초록 박스) · 🏢 원무과 확인 = 원무과가 확인할 사항 (초록 점선 박스) — 🛍️ 보호자 요청·🏢 원무과 준비·🏢 원무과 확인 박스와 □ 원무과 준비 체크는 <b>원장님 뷰에서는 표시되지 않고</b>, 원무과 뷰·전체 보기 등에서만 나옵니다. · 💳 <b>선결제·보관</b> = 진료내용의 ▼ 표시 항목을 모아 보여 줍니다. (파란 박스) · 📋 <b>보호자 사전체크·건강관리표 핵심</b> = 보호자가 GHN 건강관리표로 남긴 사전체크(부위·증상·질문·원장님 확인 사항)를 ②를 펼치지 않아도 바로 보여 줍니다. (연주황 박스) · 💬 <b>보호자 문의·메모</b> = 카톡·진료신청으로 남긴 문의 (연보라 박스) · 🩺 <b>② 혹·이전 이상</b> = 🟣 기존 혹(혹 기록 부위·수술·차트 소견) / □ 신규(GHN 건강관리표로 새로 올린 혹·병변) / 🔴 이전 이상(지난 검사 이상·면역L·종양H) — 원장님 뷰·전체 보기에서만 표시됩니다. 🖼 혹 위치 그림 = 🟣 기존 혹 기록 그림, □ 보호자가 이번에 GHN 건강관리표로 체크한 혹·병변 위치 그림, 🟡 보호자가 종이에 직접 그려 낸 병변 위치 표시도를 나란히 보여 주며, 누르면 크게 열립니다. 📌 <b>전달 메모</b> = 30일 안에 다음 예약이 있으면 예약 일시·예약담당자(구분)와 함께 오늘 같이 진행할지 확인하는 메모입니다. <b>1번 장봉환 원장님 탭만 초록색 ‘확정 예약’</b>이고, 나머지 탭([비대기-내원,미용중진료]·기타(예약;미용)·처방건 등)은 <b>주황색 ‘비대기’</b>로 표시됩니다. 예약 메모는 잘리지 않고 전체가 그대로 나옵니다. (남색 박스)<br>
-    자료는 원무과·검사과에서 올린 내용을 그대로 모아 보여 줍니다. 비어 있는 칸은 '안 했다'가 아니라 '기록이 없다'는 뜻입니다.<br>🩺 검사지·✍️ 코멘트·💊 조제·💳 결제이력은 <b>GCN_실시간_데이터</b> 시트의 각 탭에서 아이별로 바로 불러옵니다.
+    🛍️ <b>보호자님 준비 요청</b> = 보호자가 GHN 건강관리표에서 "다시 필요해요(준비해 주세요)"로 올린 물품을 아이별 체크리스트로 보여 줍니다. (주황 박스·원무과 뷰) 항목마다 <b>준비 완료</b>를 누르면 <b>누가·언제</b> 했는지 남고, 다 끝나면 자동으로 접힙니다. 병원 설정 <b>원장님 뷰에 보호자 준비 요청 표시</b>가 켜진 병원은 <b>준비 완료한 항목만</b> 원장님 뷰에 한 줄로 뜨고(미완료 건은 절대 뜨지 않습니다), 굿모닝펫은 꺼 두었습니다. · 🏢 원무과 준비 = 차트상 원무과 준비 사항 (초록 박스) · 🏢 원무과 확인 = 원무과가 확인할 사항 (초록 점선 박스) — 🛍️ 보호자 요청·🏢 원무과 준비·🏢 원무과 확인 박스와 □ 원무과 준비 체크는 <b>원장님 뷰에서는 표시되지 않고</b>, 원무과 뷰·전체 보기 등에서만 나옵니다. · 💳 <b>선결제·보관</b> = 진료내용의 ▼ 표시 항목을 모아 보여 줍니다. (파란 박스) · 📋 <b>보호자 사전체크·건강관리표 핵심</b> = 보호자가 GHN 건강관리표로 남긴 사전체크(부위·증상·질문·원장님 확인 사항)를 ②를 펼치지 않아도 바로 보여 줍니다. (연주황 박스) · 💬 <b>보호자 문의·메모</b> = 카톡·진료신청으로 남긴 문의 (연보라 박스) · 🩺 <b>② 혹·이전 이상</b> = 🟣 기존 혹(혹 기록 부위·수술·차트 소견) / □ 신규(GHN 건강관리표로 새로 올린 혹·병변) / 🔴 이전 이상(지난 검사 이상·면역L·종양H) — 원장님 뷰·전체 보기에서만 표시됩니다. 🖼 혹 위치 그림 = 🟣 기존 혹 기록 그림, □ 보호자가 이번에 GHN 건강관리표로 체크한 혹·병변 위치 그림, 🟡 보호자가 종이에 직접 그려 낸 병변 위치 표시도를 나란히 보여 주며, 누르면 크게 열립니다. 📌 <b>전달 메모</b> = 30일 안에 다음 예약이 있으면 예약 일시·예약담당자(구분)와 함께 오늘 같이 진행할지 확인하는 메모입니다. <b>1번 장봉환 원장님 탭만 초록색 ‘확정 예약’</b>이고, 나머지 탭([비대기-내원,미용중진료]·기타(예약;미용)·처방건 등)은 <b>주황색 ‘비대기’</b>로 표시됩니다. 예약 메모는 잘리지 않고 전체가 그대로 나옵니다. (남색 박스)<br>
+    자료는 원무과·검사과에서 올린 내용을 그대로 모아 보여 줍니다. 비어 있는 칸은 '안 했다'가 아니라 '기록이 없다'는 뜻입니다.<br>📂 <b>긴 목록</b>(보호자님 준비 요청·사전체크·선결제·원무과 준비·코멘트)은 <b>한 줄 요약과 건수만</b> 먼저 보이고, 누르면 펼쳐집니다. 펼친 상태는 새로고침해도 유지됩니다.<br>🩺 검사지·✍️ 코멘트·💊 조제·💳 결제이력은 <b>GCN_실시간_데이터</b> 시트의 각 탭에서 아이별로 바로 불러옵니다.
   </div>
 </div>
 
@@ -477,6 +540,184 @@ function lumpGet(r){
   return v||null;
 }
 var CK_KEY = 'gcn_desk_prep_v1';
+
+/* ===== 보호자 준비 요청 체크리스트 (GHN 보호자 제출 → 원무과 준비 → 원장님 뷰) =====
+   GHN '다시 필요해요'(준비해 주세요)로 보호자가 적은 항목은 웹훅이 시트 '예약' P열(보호자요청)에 넣는다.
+   GCN은 그 칸을 아이별 체크리스트로 나누어 보여 주고, 원무과가 항목별로 '준비 완료'를 누르면 누가·언제 했는지 남긴다. */
+var PREP_CHK_KEY = 'gcn_prep_chk_v1';   /* 항목별 준비 완료 체크(누가·언제) */
+var PREP_WHO_KEY = 'gcn_prep_who_v1';   /* 체크한 사람 이름(원무과) */
+var DOC_PREP_KEY = 'gcn_doc_prep_v1';   /* 이 브라우저의 '원장님 뷰 표시' 설정 */
+var DOC_PREP_SHEET = '원장님뷰_보호자준비'; /* 시트 '설정' 탭의 병원 공통 값(켜기/끄기) */
+var DOC_PREP_DEFAULT = true;            /* 설정이 아무 곳에도 없을 때의 기본값: 다른 병원 배포본은 켜기. 굿모닝펫은 시트 설정 '끄기'로 둔다 */
+var ACC_KEY = 'gcn_acc_v1';             /* 접기·펼치기 상태(새로고침해도 유지) */
+
+function prepShow(){
+  try{ var v=localStorage.getItem(DOC_PREP_KEY); if(v==='1') return true; if(v==='0') return false; }catch(e){}
+  var s=String((S.meta&&S.meta[DOC_PREP_SHEET])||'').trim();
+  if(/^(켜기|켜|on|true|1|표시|보임)$/i.test(s)) return true;
+  if(/^(끄기|끔|off|false|0|숨김|안보임)$/i.test(s)) return false;
+  return DOC_PREP_DEFAULT;
+}
+function setPrepShow(on){ try{ localStorage.setItem(DOC_PREP_KEY,on?'1':'0'); }catch(e){} }
+function prepWho(){ try{ var v=String(localStorage.getItem(PREP_WHO_KEY)||'').trim(); if(v) return v; }catch(e){} return '원무과'; }
+function prepSetWho(v){ try{ v=String(v||'').trim(); if(v) localStorage.setItem(PREP_WHO_KEY,v); else localStorage.removeItem(PREP_WHO_KEY); }catch(e){} }
+function prepKeyOf(r){ return (r['날짜']||'')+'|'+(r['시각']||'')+'|'+(r['아이']||'')+'|'+(r['보호자']||''); }
+function prepAll(){ try{ return JSON.parse(localStorage.getItem(PREP_CHK_KEY)||'{}')||{}; }catch(e){ return {}; } }
+function prepState(k){ var m=prepAll(); return m[k]||null; }
+function prepSetState(k,on){
+  var m=prepAll();
+  if(on) m[k]={by:prepWho(),at:new Date().toISOString()}; else delete m[k];
+  try{ localStorage.setItem(PREP_CHK_KEY,JSON.stringify(m)); }catch(e){}
+}
+function prepAt(iso){
+  var d=new Date(iso); if(isNaN(d.getTime())) return '';
+  return (d.getMonth()+1)+'/'+d.getDate()+' '+pad(d.getHours())+':'+pad(d.getMinutes());
+}
+/* 최상위 괄호 밖의 쉼표·줄바꿈·세미콜론으로만 나눈다 */
+function prepSplit(s){
+  var out=[],buf='',dep=0;
+  for(var i=0;i<s.length;i++){
+    var ch=s.charAt(i);
+    if('([{（【'.indexOf(ch)>=0) dep++;
+    else if(dep>0 && ')]}）】'.indexOf(ch)>=0) dep--;
+    if(dep===0 && (ch===','||ch===';'||ch==='\n'||ch==='、')){ out.push(buf); buf=''; continue; }
+    buf+=ch;
+  }
+  out.push(buf);
+  return out.map(function(x){return String(x).trim();}).filter(function(x){return x;});
+}
+/* 보호자요청 P열 → 항목 배열 [{id, short, full, det}] */
+function prepItemsOf(r){
+  var raw=String((r&&r['보호자요청'])||'').replace(/\r/g,'').trim();
+  if(!raw) return [];
+  var list=[];
+  prepSplit(raw).forEach(function(p){
+    var seg=p.split(/\s*·\s*/);
+    /* ' · '는 제품명 사이에도 쓰여('M3 USF · LOWFAT 5kg'), 조각마다 괄호 설명이 붙은 경우만 나눈다 */
+    if(seg.length>1 && seg.every(function(x){ return x.indexOf('(')>=0; })) list=list.concat(seg);
+    else list.push(p);
+  });
+  var items=[], seen={};
+  list.forEach(function(t){
+    t=String(t).trim(); if(!t) return;
+    var short=t.replace(/\s*\([^()]*\)/g,'').replace(/\s*\([^()]*\)/g,'').trim();
+    if(!short) short=t.slice(0,18);
+    var base=short.replace(/\s+/g,' ').slice(0,24), id=base, n=2;
+    while(seen[id]){ id=base+'#'+(n++); }
+    seen[id]=1;
+    items.push({id:id, short:short, full:t, det:(short!==t)});
+  });
+  return items;
+}
+function prepCountText(doneN,n){ return doneN===n? (n+'건 · 모두 완료') : (doneN? doneN+'/'+n+' 완료' : n+'건'); }
+function prepDoneN(key,items){ var d=0; items.forEach(function(it){ if(prepState(key+'|'+it.id)) d++; }); return d; }
+
+/* ===== 접기·펼치기 공통 도구 ===== */
+function accMap(){ try{ return JSON.parse(localStorage.getItem(ACC_KEY)||'{}')||{}; }catch(e){ return {}; } }
+function accIsOpen(k,def){ var m=accMap(); return (k in m)? !!m[k] : !!def; }
+function accRemember(k,on){ var m=accMap(); m[k]=on?1:0; try{ localStorage.setItem(ACC_KEY,JSON.stringify(m)); }catch(e){} }
+/* o = {key, title, count, def, cls, body(함수 또는 노드)} — 버튼 높이 44px, 펼침 상태는 새로고침 뒤에도 유지 */
+function accBox(o){
+  var w=el('div','acc'+(o.cls?' '+o.cls:''));
+  var b=el('button','acch'); b.type='button';
+  b.appendChild(el('span','accttl',o.title));
+  if(o.count) b.appendChild(el('span','acccnt',o.count));
+  b.appendChild(el('span','accar','▾'));
+  var bd=el('div','accb');
+  if(typeof o.body==='function') bd.appendChild(o.body()); else if(o.body) bd.appendChild(o.body);
+  w.appendChild(b); w.appendChild(bd);
+  function apply(on){ w.classList.toggle('open',on); b.setAttribute('aria-expanded',on?'true':'false'); }
+  apply(accIsOpen(o.key,o.def));
+  b.addEventListener('click',function(){ var on=!w.classList.contains('open'); apply(on); accRemember(o.key,on); });
+  w.accApply=apply;
+  return w;
+}
+/* 🛍️ 원무과 뷰 — GHN 보호자 준비 요청 체크리스트 */
+function prepBodyEl(r,key,items){
+  var box=el('div');
+  var bar=el('div','pbar');
+  var wl=el('label','pwholab'); wl.appendChild(document.createTextNode('담당'));
+  var wi=el('input','pw'); wi.type='text'; wi.value=prepWho(); wi.maxLength=12;
+  wi.setAttribute('aria-label','체크한 사람(원무과) 이름');
+  wi.addEventListener('change',function(){ prepSetWho(wi.value); wi.value=prepWho(); });
+  wl.appendChild(wi); bar.appendChild(wl);
+  bar.appendChild(el('span','pmsg','체크하는 순간 이름·시각이 남습니다'));
+  box.appendChild(bar);
+  var ul=el('ul','preq');
+  items.forEach(function(it){
+    var li=el('li'); li.setAttribute('data-id',it.id);
+    var st=prepState(key+'|'+it.id);
+    if(st) li.classList.add('done');
+    var row=el('div','prow');
+    var lab=el('label','plab');
+    var cb=el('input'); cb.type='checkbox'; cb.checked=!!st;
+    lab.appendChild(cb); lab.appendChild(el('span',null,it.short));
+    row.appendChild(lab);
+    if(it.det){
+      var more=el('button','pmore','상세'); more.type='button';
+      more.setAttribute('aria-label',it.short+' 설명 펼치기');
+      more.addEventListener('click',function(){
+        var on=!li.classList.contains('xd');
+        li.classList.toggle('xd',on); more.textContent=on?'접기':'상세';
+      });
+      row.appendChild(more);
+    }
+    li.appendChild(row);
+    if(it.det) li.appendChild(el('div','pdet',it.full));
+    var who=el('div','pwho', st? ('✅ '+st.by+' · '+prepAt(st.at)) : '');
+    li.appendChild(who);
+    cb.addEventListener('change',function(){
+      prepSetState(key+'|'+it.id,cb.checked);
+      li.classList.toggle('done',cb.checked);
+      var s2=prepState(key+'|'+it.id);
+      who.textContent=s2? ('✅ '+s2.by+' · '+prepAt(s2.at)) : '';
+      var boxAcc=(li.closest&&li.closest('.acc'))||null;
+      var c=boxAcc&&boxAcc.querySelector('.acccnt'); if(c) c.textContent=prepCountText(prepDoneN(key,items),items.length);
+    });
+    ul.appendChild(li);
+  });
+  box.appendChild(ul);
+  return box;
+}
+function prepChecklistEl(r){
+  var items=prepItemsOf(r); if(!items.length) return null;
+  var key=prepKeyOf(r), doneN=prepDoneN(key,items);
+  var acc=null;
+  acc=accBox({
+    key:'prep|'+key, cls:'reqacc',
+    title:'🛍️ 보호자님 준비 요청',
+    count:prepCountText(doneN,items.length),
+    def:(doneN<items.length),   /* 미완료가 있으면 원무과 조치 필요 → 기본 펼침, 다 끝났으면 접힘 */
+    body:function(){ return prepBodyEl(r,key,items); }
+  });
+  return acc;
+}
+/* 👨‍⚕️ 원장님 뷰 — 원무과가 '준비 완료'한 요청만 한 줄로(미완료는 절대 표시하지 않는다) */
+function docPrepEl(r){
+  if(!prepShow()) return null;
+  var items=prepItemsOf(r); if(!items.length) return null;
+  var key=prepKeyOf(r), done=[];
+  items.forEach(function(it){ var s=prepState(key+'|'+it.id); if(s) done.push([it,s]); });
+  if(!done.length) return null;
+  var one=(done.length===1);
+  return accBox({
+    key:'docprep|'+key, cls:'doc',
+    title:'보호자 요청 · 준비 완료'+(one?' — '+done[0][0].short:''),
+    count:one?'':done.length+'건',
+    def:false,
+    body:function(){
+      var b=el('div');
+      done.forEach(function(p){
+        var d=el('div','docline');
+        d.appendChild(el('b',null,'✓ '+p[0].short));
+        d.appendChild(el('span','docwho',' · '+p[1].by+' '+prepAt(p[1].at)));
+        b.appendChild(d);
+        if(p[0].det) b.appendChild(el('div','docdet',p[0].full));
+      });
+      return b;
+    }
+  });
+}
 
 function $(s,r){return (r||document).querySelector(s);}
 function el(t,c,x){var e=document.createElement(t); if(c)e.className=c; if(x!=null)e.textContent=x; return e;}
@@ -1205,26 +1446,54 @@ function cardEl(r){
     }
   }
   var iqPre=inqPre(r), iqMsg=inqMsg(r);
+  var ck=prepKeyOf(r);
+  /* 긴 목록은 일단 한 줄로 접어 두고 누르면 펼친다(먼저 보이는 건 건수) */
   if(iqPre.length){
-    c.appendChild(el('div','dept pre','📋 보호자 사전체크·건강관리표 핵심: '+iqPre.join(' · ')));
+    c.appendChild(accBox({key:'pre|'+ck, cls:'amber', title:'📋 보호자 사전체크·건강관리표 핵심', count:iqPre.length+'건',
+      def:iqPre.some(function(x){return /🚨|⚠|🙋|응급|급해/.test(x);}),
+      body:function(){ var d=el('div'); iqPre.forEach(function(x){ d.appendChild(el('div','accitem',x)); }); return d; }}));
   }
   if(iqMsg.length){
-    c.appendChild(el('div','dept msg','💬 보호자 문의·메모: '+iqMsg.join(' · ')));
+    c.appendChild(accBox({key:'msg|'+ck, cls:'gray', title:'💬 보호자 문의·메모', count:iqMsg.length+'건', def:false,
+      body:function(){ var d=el('div'); iqMsg.forEach(function(x){ d.appendChild(el('div','accitem',x)); }); return d; }}));
   }
   /* 원무과 전용 요소(보호자 요청·원무과 준비·확인·준비 체크)는 원장님 뷰(doc)에서 숨김 */
   var deskOnly=(S.view!=='doc');
-  if(deskOnly && r['보호자요청']){
-    var dq=el('div','dept req','🛍️ 보호자 요청 (필수 준비): '+esc(r['보호자요청'])); c.appendChild(dq);
+  if(deskOnly){
+    var pq=prepChecklistEl(r);
+    if(pq) c.appendChild(pq);
+  }
+  /* 👨‍⚕️ 원장님 뷰: 병원 설정이 켜져 있으면 원무과가 준비 완료한 요청만 한 줄로 */
+  if(S.view==='doc'){
+    var dp=docPrepEl(r);
+    if(dp) c.appendChild(dp);
   }
   var pp=prepayOf(r);
   if(pp.length){
-    c.appendChild(el('div','dept prepay','💳 선결제·보관: '+esc(pp.join(' · '))));
+    if(pp.length<=2 && pp.join(' · ').length<=60){
+      c.appendChild(el('div','dept prepay','💳 선결제·보관: '+esc(pp.join(' · '))));
+    }else{
+      c.appendChild(accBox({key:'pay|'+ck, cls:'blue', title:'💳 선결제·보관', count:pp.length+'건', def:false,
+        body:function(){ var d=el('div'); pp.forEach(function(x){ d.appendChild(el('div','accitem',x)); }); return d; }}));
+    }
   }
   if(deskOnly && r['원무과준비']){
-    var d=el('div','dept','🏢 원무과 준비: '+esc(r['원무과준비'])); c.appendChild(d);
+    var pv=String(r['원무과준비']), d;
+    if(pv.length>70){
+      c.appendChild(accBox({key:'ds|'+ck, cls:'gray', title:'🏢 원무과 준비 — '+clipText(pv,26), count:'펼치기', def:false,
+        body:function(){ return el('div','accitem',pv); }}));
+    }else{
+      d=el('div','dept','🏢 원무과 준비: '+esc(pv)); c.appendChild(d);
+    }
   }
   if(deskOnly && r['원무과확인']){
-    var d2=el('div','dept chk','🏢 원무과 확인: '+esc(r['원무과확인'])); c.appendChild(d2);
+    var cv=String(r['원무과확인']);
+    if(cv.length>70){
+      c.appendChild(accBox({key:'dc|'+ck, cls:'gray', title:'🏢 원무과 확인 — '+clipText(cv,26), count:'펼치기', def:false,
+        body:function(){ return el('div','accitem',cv); }}));
+    }else{
+      var d2=el('div','dept chk','🏢 원무과 확인: '+esc(cv)); c.appendChild(d2);
+    }
   }
 
   var prepAuto=!(String(r['준비①']||'').trim()) ? prepFallbackOf(r) : '';
@@ -1765,6 +2034,7 @@ function render(){
   if(S.meta['버전']) $('#ver').textContent='GCN '+S.meta['버전'];
   else $('#ver').textContent='GCN';
   if(S.meta['갱신']) $('#ver').textContent+=' · '+S.meta['갱신'];
+  if(window.__paintDocPrep) window.__paintDocPrep();
 
   if(S.day==='week' && !S.detail){ renderWeekSummary(out); return; }
   if(S.day==='month'){ renderMonthSummary(out); return; }
@@ -1920,9 +2190,18 @@ function renderCm(box,rows){
   groupByDate(rows).forEach(function(g){
     var grp=el('div','mgrp');
     grp.appendChild(el('div','mdate',fmtMD(g[0])));
-    g[1].forEach(function(x){
+    g[1].forEach(function(x,xi){
       if(x['제목']) grp.appendChild(el('div','mcmhead',x['제목']));
-      grp.appendChild(el('div','mcmp',x['코멘트']));
+      var txt=String(x['코멘트']||'');
+      /* 긴 코멘트는 첫 줄만 보이고 누르면 펼침(모바일에서 누르기 쉽게 44px) */
+      if(txt.length>140){
+        var first=String(txt.split('\n')[0]||'').trim();
+        grp.appendChild(accBox({key:'cm|'+(x['날짜']||'')+'|'+xi+'|'+txt.slice(0,20), cls:'gray',
+          title:first?clipText(first,40):'코멘트 펼치기', count:txt.split('\n').length+'줄', def:false,
+          body:function(){ return el('div','mcmp',txt); }}));
+      }else{
+        grp.appendChild(el('div','mcmp',txt));
+      }
     });
     box.appendChild(grp);
   });
@@ -2056,6 +2335,21 @@ $('#q').addEventListener('input',function(){
 });
 $('#reset').addEventListener('click',function(){S.q='';$('#q').value='';S.view='doc';S.day='today';S.date=iso(TODAY);S.f=null;render();});
 $('#reload').addEventListener('click',load);
+/* ⚙️ 병원 설정 — '원장님 뷰에 보호자 준비 요청 표시' (기본 켜기, 굿모닝펫 배포본은 끔) */
+(function(){
+  var cb=$('#optDocPrep'), lab=$('#optDocPrepLab'), note=$('#optDocPrepNote');
+  if(!cb) return;
+  function paint(){
+    var on=prepShow();
+    cb.checked=on; lab.classList.toggle('on',on);
+    note.textContent=on
+      ? '켜짐 · 원무과가 준비 완료한 요청만 원장님 뷰에 한 줄로 뜨짐 (미완료는 안 뜨짐)'
+      : '꺼짐 · 원장님 뷰에는 준비 요청이 뜨지 않습니다 (굿모닝펫 기본) · 이 브라우저에 저장';
+  }
+  cb.addEventListener('change',function(){ setPrepShow(cb.checked); paint(); render(); });
+  window.__paintDocPrep=paint;
+  paint();
+})();
 $('#theme').addEventListener('click',function(){
   document.body.classList.toggle('gmt');
   document.documentElement.classList.toggle('gmt');
