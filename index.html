@@ -580,14 +580,19 @@ function prepAt(iso){
   var d=new Date(iso); if(isNaN(d.getTime())) return '';
   return (d.getMonth()+1)+'/'+d.getDate()+' '+pad(d.getHours())+':'+pad(d.getMinutes());
 }
-/* 최상위 괄호 밖의 쉼표·줄바꿈·세미콜론으로만 나눈다 */
-function prepSplit(s){
+/* 최상위 괄호 밖에서만 나눈다 — 괄호 안의 설명('·'·',' 포함)은 자르지 않는다 */
+function prepSplitTop(s,mode){
   var out=[],buf='',dep=0;
   for(var i=0;i<s.length;i++){
     var ch=s.charAt(i);
-    if('([{（【'.indexOf(ch)>=0) dep++;
-    else if(dep>0 && ')]}）】'.indexOf(ch)>=0) dep--;
-    if(dep===0 && (ch===','||ch===';'||ch==='\n'||ch==='、')){ out.push(buf); buf=''; continue; }
+    if('([{（【'.indexOf(ch)>=0){ dep++; buf+=ch; continue; }
+    if(dep>0 && ')]}）】'.indexOf(ch)>=0){ dep--; buf+=ch; continue; }
+    var isSep=false;
+    if(dep===0){
+      if(mode==='dot') isSep=(ch==='·');
+      else isSep=(ch===','||ch===';'||ch==='\n'||ch==='、');
+    }
+    if(isSep){ out.push(buf); buf=''; continue; }
     buf+=ch;
   }
   out.push(buf);
@@ -598,10 +603,10 @@ function prepItemsOf(r){
   var raw=String((r&&r['보호자요청'])||'').replace(/\r/g,'').trim();
   if(!raw) return [];
   var list=[];
-  prepSplit(raw).forEach(function(p){
-    var seg=p.split(/\s*·\s*/);
-    /* ' · '는 제품명 사이에도 쓰여('M3 USF · LOWFAT 5kg'), 조각마다 괄호 설명이 붙은 경우만 나눈다 */
-    if(seg.length>1 && seg.every(function(x){ return x.indexOf('(')>=0; })) list=list.concat(seg);
+  prepSplitTop(raw,'all').forEach(function(p){
+    var seg=prepSplitTop(p,'dot');
+    /* ' · '는 제품명 사이에도 쓰여('M3 USF · LOWFAT 5kg'), 조각마다 괄호 설명으로 끝나는 경우만 나눈다 */
+    if(seg.length>1 && seg.every(function(x){ return /\)\s*$/.test(x); })) list=list.concat(seg);
     else list.push(p);
   });
   var items=[], seen={};
