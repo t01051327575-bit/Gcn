@@ -486,12 +486,19 @@ var LUMPIMG = {}; /* 혹 마킹 그림 파일명 — lumps/index.json */
 var LUMPV = '1125-1915'; /* 혹 그림 파일 캐시 버전(같은 파일명으로 교체해도 바로 반영) */
 var NEXT = {};   /* 앞으로의 예약(아이|보호자) — next.json */
 var GROOMROWS = [];  /* ✂️ 미용 체크 접수 — 시트 '미용' 탭 */
+function groomNorm(s){ return String(s||'').replace(/\([^)]*\)/g,'').replace(/[\/\s.]/g,'').toLowerCase(); }
 function groomFor(r){
-  var a=String((r&&r['아이'])||'').replace(/\s/g,'');
+  var a=groomNorm(r && r['아이']);
   if(!a || !GROOMROWS.length) return null;
-  var o=String((r&&r['보호자'])||'').replace(/[\/\s]/g,'');
+  var o=groomNorm(r && r['보호자']);
   var hit=[], hitG=[];
-  GROOMROWS.forEach(function(g){ if(String(g['아이']||'').replace(/\s/g,'')!==a) return; hit.push(g); if(o && String(g['보호자']||'').replace(/[\/\s]/g,'')===o) hitG.push(g); });
+  GROOMROWS.forEach(function(g){
+    var ga=groomNorm(g['아이']);
+    if(!ga) return;
+    if(ga!==a && ga.indexOf(a)!==0 && a.indexOf(ga)!==0) return;
+    hit.push(g);
+    if(o && groomNorm(g['보호자']) && (groomNorm(g['보호자'])===o || groomNorm(g['보호자']).indexOf(o)===0)) hitG.push(g);
+  });
   var list=hitG.length?hitG:hit;
   if(!list.length) return null;
   list.sort(function(x,y){ return String(y['접수시각']||'').localeCompare(String(x['접수시각']||'')); });
