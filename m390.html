@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>모바일 390px 확인용 (임시)</title>
+<meta name="robots" content="noindex">
+<style>
+body{margin:0;background:#CBD5E1;font-family:-apple-system,BlinkMacSystemFont,'Malgun Gothic',sans-serif}
+.note{font:800 13px/1.5 sans-serif;color:#1E293B;background:#E2E8F0;padding:8px 12px}
+.frame{width:390px;margin:0 auto;background:#fff;box-shadow:0 0 0 1px #94A3B8}
+iframe{width:390px;height:2000px;border:0;display:block;background:#F4F6F8}
+</style>
+</head>
+<body>
+<div class="note" id="note">390px</div>
+<div class="frame"><iframe id="fr" src="surgery.html" title="수술·마취 기록지 390px"></iframe></div>
+<script>
+var q=new URLSearchParams(location.search),p=q.get('p')||'tab1',v=q.get('v')||'m390';
+document.getElementById('fr').src='surgery.html?v='+encodeURIComponent(v)+'#'+p;
+document.getElementById('note').textContent='수술·마취 기록지 · 폭 390px · '+p;
+</script>
+</body>
+</html>
