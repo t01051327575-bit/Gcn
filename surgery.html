@@ -230,6 +230,7 @@ details.more summary{font-size:.84em;font-weight:900;color:#475569;cursor:pointe
   .rt td::before{content:attr(data-l);flex:0 0 70px;color:var(--mut);font-weight:800;font-size:.86em}
   .rt td.act{justify-content:flex-end;padding-top:5px}
   .rt td.act::before{content:'';flex:0 0 0}
+  .rt td:empty{display:none}
   .tscroll{overflow:visible}
 }
 @media print{
@@ -379,7 +380,7 @@ details.more summary{font-size:.84em;font-weight:900;color:#475569;cursor:pointe
         <div class="in">
           <label class="f"><span>체중 (kg)</span><input type="number" id="cw" readonly></label>
           <label class="f"><span>mg/kg</span><input type="number" inputmode="decimal" step="0.001" id="cmd" placeholder="0.0"></label>
-          <label class="f"><span>농도 (mg/ml)</span><input type="number" inputmode="decimal" step="0.01" id="cc" placeholder="선택"></label>
+          <label class="f"><span>농도 (mg/ml)</span><input type="number" inputmode="decimal" step="0.01" id="cc" placeholder="예: 10"></label>
         </div>
         <div class="out" id="cout">mg/kg를 넣으면 계산합니다.</div>
         <div class="note">계산 결과는 참고값입니다. 실제 용량 결정과 투여는 담당 수의사가 합니다.</div>
