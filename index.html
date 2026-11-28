@@ -1024,6 +1024,15 @@ function revisitBannerEl(){
     /* 예약이 이미 잡혔으면(앞으로의 예약) 알림에서 뺀다 */
     var nm=String(o['아이']||''), ow=String(o['보호자']||'');
     var has=false;
+    /* 이 병원 예약 시트에 앞으로의 진료 건이 이미 있으면 알림에서 뺀다 */
+    var pn=groomNorm(nm);
+    (S.data||[]).forEach(function(x){
+      var xa=groomNorm(x['아이']);
+      if(!xa) return;
+      if(!(xa===pn || xa.indexOf(pn)===0 || pn.indexOf(xa)===0)) return;
+      if(String(x['구분']||'')==='X') return;
+      if(String(x['날짜']||'').slice(0,10)>=today) has=true;
+    });
     (NEXT[nm+'|'+ow]||[]).forEach(function(a){ if(String(a[0]||'')>=today) has=true; });
     if(!has && typeof nextList==='function'){
       try{ (nextList(nm,ow)||[]).forEach(function(a){ if(String(a[0]||'')>=today) has=true; }); }catch(e){}
