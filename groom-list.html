@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>미용 명단 · 굿모닝펫</title>
+<meta name="theme-color" content="#fff8e6">
+<meta name="robots" content="noindex">
+<style>
+:root{--ink:#1f2d38;--sub:#5b7286;--line:#e2e8ee;--amber:#b45309;--amber-soft:#fff8e6;--amber-line:#f0dfae;--blue:#2f7fb8;--ok:#12694a;--bad:#b0243f}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{background:#f6f8fa;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;font-size:16px;line-height:1.5;-webkit-text-size-adjust:100%}
+.wrap{max-width:720px;margin:0 auto;padding:14px 12px 40px}
+header{padding:6px 2px 10px}
+.clinic{font-size:13px;color:var(--sub);font-weight:700;letter-spacing:.2px}
+h1{font-size:22px;margin:4px 0 2px;letter-spacing:-.3px}
+.note{font-size:13.5px;color:var(--sub)}
+.tabs{display:flex;gap:6px;margin:12px 0 8px;flex-wrap:wrap}
+.tab{flex:1 1 auto;min-width:74px;padding:9px 10px;border-radius:12px;border:1px solid var(--line);background:#fff;font-size:14.5px;font-weight:700;color:#3d5a72;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px}
+.tab .n{font-size:12px;font-weight:800;color:#8a99a6}
+.tab.on{background:var(--amber-soft);border-color:var(--amber-line);color:var(--amber)}
+.tab.on .n{color:var(--amber)}
+.tools{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 12px}
+.btn{padding:8px 12px;border-radius:11px;border:1px solid var(--line);background:#fff;font:inherit;font-size:13.5px;font-weight:700;color:#33526b;cursor:pointer}
+.btn.on{background:#eef4ff;border-color:#cfdcf5;color:#2b4b8a}
+.btn.copy{background:var(--amber-soft);border-color:var(--amber-line);color:var(--amber)}
+.btn:active{filter:brightness(.97)}
+.day{margin:16px 0 6px;display:flex;align-items:baseline;gap:8px}
+.day h2{font-size:17px;margin:0}
+.day .cnt{font-size:13px;font-weight:800;color:var(--sub)}
+.row{display:flex;align-items:center;gap:9px;padding:10px 11px;background:#fff;border:1px solid var(--line);border-radius:12px;margin:6px 0;text-decoration:none;color:inherit}
+.row:active{background:#fafcfe}
+.row .t{font-variant-numeric:tabular-nums;font-weight:800;font-size:15px;color:#2b4b8a;min-width:46px}
+.row .who{flex:1;min-width:0}
+.row .nm{font-weight:800;font-size:16px;word-break:keep-all}
+.row .ow{font-size:13px;color:var(--sub);margin-left:4px;font-weight:600}
+.row .kind{font-size:12px;color:#7a6a3a;background:#fffaf0;border:1px solid #f0e2bd;border-radius:999px;padding:1px 8px;margin-left:6px;white-space:nowrap}
+.row .lump{font-size:12.5px;font-weight:800;color:#b0243f;background:#fdeaee;border:1px solid #f3cfdb;border-radius:999px;padding:2px 8px;white-space:nowrap}
+.row .arrow{color:#b6c3ce;font-weight:900}
+.tagrow{display:flex;gap:5px;flex-wrap:wrap;margin-top:3px}
+.memo{font-size:12.5px;color:#6b7a88;margin-top:3px;white-space:pre-wrap;word-break:break-word;max-height:3.4em;overflow:hidden}
+.empty{padding:26px 8px;text-align:center;color:#8a99a6;font-size:14.5px}
+.err{background:#fdeaee;border:1px solid #f3cfdb;color:#8c1f34;border-radius:12px;padding:12px;font-size:14px}
+.foot{margin-top:20px;font-size:12.5px;color:#8a99a6;line-height:1.6}
+.legend{font-size:12.5px;color:#8a99a6;margin:2px 0 0}
+.banner{background:var(--amber-soft);border:1px solid var(--amber-line);border-radius:12px;padding:9px 11px;font-size:13.5px;color:#7a5a1a;margin:8px 0 0}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#1f2d38;color:#fff;padding:9px 14px;border-radius:999px;font-size:13.5px;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:.94}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="clinic">굿모닝펫동물병원 · 미용실</div>
+    <h1>✂️ 미용 명단</h1>
+    <div class="note">날짜를 고르고 <b>아이 이름</b>을 누르면 그 아이의 혹 위치·미용 소견이 바로 열립니다.</div>
+  </header>
+
+  <div class="tabs" id="tabs"></div>
+  <div class="tools">
+    <button class="btn" id="lumpOnly" type="button">🩺 혹 추가된 아이만</button>
+    <button class="btn copy" id="copyBtn" type="button">📋 이 날짜 명단 링크 복사</button>
+    <button class="btn" id="reload" type="button">↻ 새로고침</button>
+  </div>
+  <div id="msg"></div>
+  <div id="list"></div>
+  <div class="foot" id="foot"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+var SHEET_ID='1qBrHBcGRy0LDrCrj11HS5bZr3a-T1J32nFGZOF09dG8';
+var GCN='https://t01051327575-bit.github.io/Gcn/';
+var S={date:null, lumpOnly:false, lump:{}, idx:{}, rows:[], loadedAt:null, err:null, list:[]};
+var TODAY=new Date();
+function pad(n){return String(n).padStart(2,'0');}
+function iso(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+function addDays(d,n){var x=new Date(d.getTime()); x.setDate(x.getDate()+n); return x;}
+var WK=['일','월','화','수','목','금','토'];
+function fmtMD(s){var a=String(s||'').split('-'); if(a.length<3) return s; var d=new Date(+a[0],+a[1]-1,+a[2]); return (+a[1])+'/'+(+a[2])+'('+WK[d.getDay()]+')';}
+function norm(s){return String(s||'').replace(/\([^)]*\)/g,'').replace(/[\/\s.]/g,'').toLowerCase();}
+function toast(t){var e=document.getElementById('toast'); e.textContent=t; e.classList.add('on'); clearTimeout(window.__tt); window.__tt=setTimeout(function(){e.classList.remove('on');},1900);}
+
+/* ---- 데이터: next.json + 예약 시트 ---- */
+function fetchJson(u){return fetch(u,{cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error('응답 '+r.status); return r.json(); });}
+function fetchSheet(tab){
+  var url='https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:json&headers=1&sheet='+encodeURIComponent(tab);
+  return fetch(url,{cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error('시트 응답 '+r.status); return r.text(); })
+  .then(function(t){
+    var i=t.indexOf('{'), j=t.lastIndexOf('}'); if(i<0) throw new Error('시트 형식');
+    var d=JSON.parse(t.slice(i,j+1));
+    var cols=((d.table&&d.table.cols)||[]).map(function(c){return (c.label||'').trim();});
+    return ((d.table&&d.table.rows)||[]).map(function(r){
+      var o={}; (r.c||[]).forEach(function(cell,k){ o[cols[k]||('c'+k)]=cell?(cell.f!=null?cell.f:(cell.v!=null?cell.v:'')):''; });
+      return o;
+    });
+  });
+}
+function isGroom(txt){ return /미용/.test(String(txt||'')); }
+
+function load(){
+  document.getElementById('msg').innerHTML='<div class="note">불러오는 중…</div>';
+  Promise.all([
+    fetchJson(GCN+'next.json?t='+Date.now()).catch(function(e){return null;}),
+    fetchSheet('예약').catch(function(e){return null;}),
+    fetchJson(GCN+'lump.json?t='+Date.now()).catch(function(e){return {};}),
+    fetchJson(GCN+'lumps/index.json?t='+Date.now()).catch(function(e){return {};})
+  ]).then(function(res){
+    var NEXT=res[0]||{}, APPT=res[1]||[];
+    S.lump=res[2]||{}; S.idx=res[3]||{};
+    var out=[], seen={};
+    function push(x){
+      var k=x.date+'|'+x.time+'|'+x.pet+'|'+x.guardian;
+      if(seen[k]) return; seen[k]=1; out.push(x);
+    }
+    Object.keys(NEXT).forEach(function(k){
+      var i=k.lastIndexOf('|'); var pet=i<0?k:k.slice(0,i), own=i<0?'':k.slice(i+1);
+      (NEXT[k]||[]).forEach(function(a){
+        var date=String(a[0]||'').slice(0,10), time=String(a[1]||''), memo=String(a[2]||''), tag=String(a[4]||''), kind=String(a[5]||'');
+        if(!/^\d{4}-\d{2}-\d{2}$/.test(date)) return;
+        if(isGroom(tag)||isGroom(memo)||isGroom(kind)) push({date:date,time:time,pet:pet,guardian:own,kind:kind,memo:memo,tag:tag,src:'next'});
+      });
+    });
+    APPT.forEach(function(r){
+      var date=String(r['날짜']||'').slice(0,10);
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(date)) return;
+      var kind=String(r['구분']||'');
+      if(kind==='X') return;
+      var txt=[kind,r['진료내용'],r['미용③'],r['준비①'],r['보호자요청']].join(' ');
+      if(!isGroom(kind) && !/위생미용|미용\s*예약|◆\s*미용|◇\s*미용/.test(String(r['진료내용']||'')+String(r['미용③']||''))) return;
+      push({date:date,time:String(r['시각']||''),pet:String(r['아이']||''),guardian:String(r['보호자']||''),kind:kind,memo:String(r['진료내용']||''),tag:kind,src:'sheet'});
+    });
+    var t=iso(TODAY);
+    out=out.filter(function(x){ return x.date>=t; });
+    out.sort(function(a,b){ return a.date.localeCompare(b.date)||a.time.localeCompare(b.time); });
+    S.rows=out; S.err=null; S.loadedAt=new Date();
+    render();
+  }).catch(function(e){
+    S.err=e.message; render();
+  });
+}
+function lumpOf(pet,own){
+  var a=norm(pet), o=norm(own), hit=null, hitG=null;
+  Object.keys(S.lump).forEach(function(k){
+    var i=k.lastIndexOf('|'); var kp=norm(i<0?k:k.slice(0,i)), ko=norm(i<0?'':k.slice(i+1));
+    if(!kp) return;
+    if(kp!==a && kp.indexOf(a)!==0 && a.indexOf(kp)!==0) return;
+    hit=S.lump[k];
+    if(o && ko && (ko===o||ko.indexOf(o)===0||o.indexOf(ko)===0)) hitG=S.lump[k];
+  });
+  return hitG||hit;
+}
+function idxOf(pet,own){
+  var a=norm(pet), o=norm(own), hit=null, hitG=null;
+  Object.keys(S.idx).forEach(function(k){
+    var i=k.lastIndexOf('|'); var kp=norm(i<0?k:k.slice(0,i)), ko=norm(i<0?'':k.slice(i+1));
+    if(!kp) return;
+    if(kp!==a && kp.indexOf(a)!==0 && a.indexOf(kp)!==0) return;
+    hit=S.idx[k];
+    if(o && ko && (ko===o||ko.indexOf(o)===0||o.indexOf(ko)===0)) hitG=S.idx[k];
+  });
+  return hitG||hit;
+}
+function lumpNew(x){
+  var L=lumpOf(x.pet,x.guardian), I=idxOf(x.pet,x.guardian);
+  if(!L && !I) return false;
+  var lim=iso(addDays(TODAY,-30));
+  if(I && I.new) return true;
+  if(L && String(L.last||'')>=lim) return true;
+  if(I && String(I.newD||'')>=lim) return true;
+  return false;
+}
+function hasLump(x){ return !!(lumpOf(x.pet,x.guardian)||idxOf(x.pet,x.guardian)); }
+
+function dateList(){
+  var base=iso(TODAY);
+  var days=[base, iso(addDays(TODAY,1)), iso(addDays(TODAY,2))];
+  /* 이번 주: 오늘부터 이번 주 일요일까지 */
+  var end=new Date(TODAY.getTime()); end.setDate(end.getDate()+(7-end.getDay())%7);
+  var wk=[]; for(var d=new Date(TODAY.getTime()); iso(d)<=iso(end); d=addDays(d,1)){ wk.push(iso(d)); }
+  var out=[];
+  days.forEach(function(d){ if(out.indexOf(d)<0) out.push(d); });
+  wk.forEach(function(d){ if(out.indexOf(d)<0) out.push(d); });
+  return out;
+}
+function counts(){
+  var c={};
+  S.rows.forEach(function(x){ c[x.date]=(c[x.date]||0)+1; });
+  return c;
+}
+function render(){
+  var tabs=document.getElementById('tabs');
+  var cnt=counts();
+  tabs.innerHTML='';
+  var dates=dateList();
+  if(!S.date) S.date=iso(addDays(TODAY,1));
+  function tab(label,d){
+    var b=document.createElement('button');
+    b.type='button'; b.className='tab'+(S.date===d?' on':'');
+    b.innerHTML=label+'<span class="n">'+(cnt[d]||0)+'건</span>';
+    b.addEventListener('click',function(){ S.date=d; render(); });
+    tabs.appendChild(b);
+  }
+  tab('오늘',dates[0]); tab('내일',dates[1]); tab('모레',dates[2]);
+  var wkEnd=new Date(TODAY.getTime()); wkEnd.setDate(wkEnd.getDate()+(7-wkEnd.getDay())%7);
+  var wkCount=0; Object.keys(cnt).forEach(function(d){ if(d>=iso(TODAY)&&d<=iso(wkEnd)) wkCount+=cnt[d]; });
+  var wb=document.createElement('button');
+  wb.type='button'; wb.className='tab'+(dates.indexOf(S.date)>=3?' on':'');
+  wb.innerHTML='이번 주<span class="n">'+wkCount+'건</span>';
+  wb.addEventListener('click',function(){ S.date='__week'; render(); });
+  tabs.appendChild(wb);
+
+  document.getElementById('lumpOnly').classList.toggle('on',S.lumpOnly);
+  var list=document.getElementById('list');
+  list.innerHTML='';
+  if(S.err){
+    document.getElementById('msg').innerHTML='<div class="err">예약 데이터를 불러오지 못했습니다 — '+S.err+
+      (S.loadedAt?('<br>마지막 갱신: '+S.loadedAt.toLocaleString('ko-KR')):'')+'<br>잠시 뒤 [↻ 새로고침]을 눌러 주세요.</div>';
+    return;
+  }
+  document.getElementById('msg').innerHTML='';
+
+  var days = S.date==='__week' ? dates.slice(3) : [S.date];
+  var any=false;
+  days.forEach(function(d){
+    var rows=S.rows.filter(function(x){return x.date===d;});
+    if(S.lumpOnly) rows=rows.filter(function(x){return lumpNew(x);});
+    if(!rows.length) return;
+    any=true;
+    var head=document.createElement('div');
+    head.className='day';
+    var h2=document.createElement('h2');
+    h2.textContent=fmtMD(d);
+    var c=document.createElement('span'); c.className='cnt'; c.textContent=rows.length+'건';
+    head.appendChild(h2); head.appendChild(c);
+    list.appendChild(head);
+    rows.forEach(function(x){
+      var has=hasLump(x);
+      var a=document.createElement('a');
+      a.className='row';
+      a.href=GCN+'index.html?q='+encodeURIComponent(x.pet);
+      a.target='_blank'; a.rel='noopener noreferrer';
+      var t=document.createElement('span'); t.className='t'; t.textContent=x.time||'--:--';
+      var who=document.createElement('span'); who.className='who';
+      var nm=document.createElement('span'); nm.className='nm'; nm.textContent=x.pet;
+      var ow=document.createElement('span'); ow.className='ow'; ow.textContent=x.guardian?('('+x.guardian+')'):'';
+      who.appendChild(nm); who.appendChild(ow);
+      if(/미용/.test(x.kind)&&x.kind!=='비대기'){ var k=document.createElement('span'); k.className='kind'; k.textContent=x.kind; who.appendChild(k); }
+      else if(/위생미용/.test(x.memo)){ var k2=document.createElement('span'); k2.className='kind'; k2.textContent='위생미용'; who.appendChild(k2); }
+      if(x.memo){
+        var m=document.createElement('div'); m.className='memo'; m.textContent=x.memo;
+        who.appendChild(m);
+      }
+      a.appendChild(t); a.appendChild(who);
+      if(has){
+        var lg=document.createElement('span'); lg.className='lump'; lg.textContent='🩺 혹';
+        a.appendChild(lg);
+      }
+      var ar=document.createElement('span'); ar.className='arrow'; ar.textContent='›';
+      a.appendChild(ar);
+      list.appendChild(a);
+    });
+  });
+  if(!any){
+    var e=document.createElement('div'); e.className='empty';
+    e.textContent = S.lumpOnly ? '이 날짜에 혹이 새로 생긴 아이가 없습니다.' : '이 날짜에 미용 예약이 없습니다.';
+    list.appendChild(e);
+  }
+  document.getElementById('foot').innerHTML=
+    '· 데이터: 예약 시트(구분·내용에 ‘미용’) + 앞으로의 예약(next.json) · 취소(X)·지난 날짜는 뺍니다.<br>'+
+    '· 아이 이름을 누르면 GCN 검색이 새 탭으로 열려 그 아이 카드와 혹 위치 그림을 봅니다.<br>'+
+    '· 불러온 시각: '+(S.loadedAt?S.loadedAt.toLocaleString('ko-KR'):'-');
+}
+document.getElementById('lumpOnly').addEventListener('click',function(){ S.lumpOnly=!S.lumpOnly; render(); });
+document.getElementById('reload').addEventListener('click',load);
+document.getElementById('copyBtn').addEventListener('click',function(){
+  var d=(S.date&&S.date!=='__week')?S.date:iso(addDays(TODAY,1));
+  var url=location.origin+location.pathname+'?d='+d;
+  var done=function(){ toast('링크를 복사했습니다 — '+fmtMD(d)+' 명단'); };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(url).then(done).catch(function(){ window.prompt('이 링크를 복사하세요',url); });
+  } else { window.prompt('이 링크를 복사하세요',url); }
+});
+(function(){
+  try{
+    var p=new URLSearchParams(location.search);
+    var d=(p.get('d')||p.get('date')||'').trim();
+    if(/^\d{4}-\d{2}-\d{2}$/.test(d)) S.date=d;
+  }catch(e){}
+})();
+load();
+</script>
+</body>
+</html>

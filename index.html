@@ -510,9 +510,551 @@ function groomFor(r){
   if(!list.length) return null;
   list.sort(function(x,y){ return String(y['접수시각']||'').localeCompare(String(x['접수시각']||'')); });
   var g=list[0];
+  g.__list=list;
   g.__count=list.length;
+  g.__all=groomListFor(r);
   return g;
 }
+/* ================= ✂️ 미용 소견 — 회차 펼쳐 보기 · 소견 이력(append-only) =================
+   - 미용사(미용 체크)와 원장님이 남긴 소견은 시트 `미용소견` 탭에 줄로만 쌓인다(덮어쓰기 없음).
+   - 회차 정보는 `미용` 탭, 사진·영상은 그 회차 폴더(드라이브)에 있다.
+   - 아이 매칭은 기존 groomNorm(괄호·공백·슬래시 무시) 규칙 + 보호자 이름 보정. */
+var GROOMOPS = [];   /* 시트 '미용소견' 탭 */
+var GROOM_API = 'https://script.google.com/macros/s/AKfycbwogzgIJoyeF6H19M4nb8q3woW3I_XHxLo6i9KSj6CA33IL5R8QfRN2UFWQNXQ3mICj/exec';
+var GROOM_ITEMS = [
+  ['A1','머리·얼굴'],['A2','눈'],['A3','귀(양쪽)'],['A4','코'],['A5','입·치아·잇몸'],['A6','목'],
+  ['A7','등'],['A8','배'],['A9','앞다리·발'],['A10','뒷다리·발'],['A11','발바닥·발톱·항문 주변'],['A12','피부 전체']
+];
+var GROOM_DRAFT = 'gcn_groom_draft_v1';
+function groomPartLabel(code){
+  var c=String(code||'').toUpperCase();
+  for(var i=0;i<GROOM_ITEMS.length;i++){ if(GROOM_ITEMS[i][0]===c) return GROOM_ITEMS[i][1]; }
+  return '';
+}
+function groomPartKey(s){ return String(s||'').replace(/\([^)]*\)/g,'').replace(/\s/g,'').toLowerCase(); }
+function groomParts(g){
+  return String((g&&g['이상 항목'])||'').split(/\s*·\s*/).map(function(x){return x.trim();}).filter(Boolean);
+}
+function groomMedia(g){
+  var out=[];
+  ['사진 링크','영상 링크'].forEach(function(col){
+    String((g&&g[col])||'').split(/\s+/).forEach(function(u){
+      var m=String(u).match(/\/d\/([-\w]{20,})/);
+      if(!m) return;
+      out.push({id:m[1], url:String(u), video:col==='영상 링크'});
+    });
+  });
+  return out;
+}
+function groomMatch(rows, r){
+  var a=groomNorm(r&&r['아이']);
+  if(!a) return [];
+  var o=groomNorm(r&&r['보호자']);
+  var hit=[], hitG=[];
+  (rows||[]).forEach(function(g){
+    var ga=groomNorm(g['아이']);
+    if(!ga) return;
+    if(ga!==a && ga.indexOf(a)!==0 && a.indexOf(ga)!==0) return;
+    hit.push(g);
+    var go=groomNorm(g['보호자']);
+    if(o && go && (go===o || go.indexOf(o)===0 || o.indexOf(go)===0)) hitG.push(g);
+  });
+  return hitG.length?hitG:hit;
+}
+function groomListFor(r){
+  var list=groomMatch(GROOMROWS, r);
+  list.sort(function(x,y){ return String(y['접수시각']||'').localeCompare(String(x['접수시각']||'')); });
+  return list;
+}
+function groomOpsFor(r){
+  var list=groomMatch(GROOMOPS, r);
+  list.sort(function(x,y){ return String(y['시각']||'').localeCompare(String(x['시각']||'')); });
+  return list;
+}
+function groomOpsOfRound(ops, id){
+  return (ops||[]).filter(function(o){ return String(o['접수ID']||'')===String(id||''); });
+}
+function groomFmt(ts){
+  var s=String(ts||'').slice(0,10);
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(s)) return String(ts||'');
+  var d=parseISO(s);
+  return (+s.slice(5,7))+'/'+(+s.slice(8,10))+'('+wk(d)+')';
+}
+function groomNow(){
+  var d=new Date();
+  return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+' '+pad(d.getHours())+':'+pad(d.getMinutes());
+}
+function groomPost(obj){
+  return fetch(GROOM_API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(obj)})
+    .then(function(r){ return r.text(); })
+    .then(function(t){
+      var j=null;
+      try{ j=JSON.parse(t); }catch(e){ throw new Error('서버 응답을 읽지 못했습니다'); }
+      if(!j || j.ok===false) throw new Error((j&&j.error)||'저장하지 못했습니다');
+      return j;
+    });
+}
+
+/* --- 사진: 썸네일을 시도하고, 안 되면(드라이브 비공개) '사진 N장' 버튼만 남긴다 --- */
+function groomThumbs(g, max){
+  var list=groomMedia(g).filter(function(m){return !m.video;});
+  if(!list.length) return null;
+  var wrap=el('div');
+  wrap.style.cssText='display:flex;gap:5px;flex-wrap:wrap;margin:5px 0 2px';
+  list.slice(0,max||3).forEach(function(p){
+    var a=el('a'); a.href=p.url; a.target='_blank'; a.rel='noopener noreferrer';
+    a.style.cssText='display:block;line-height:0';
+    var im=document.createElement('img');
+    im.src='https://drive.google.com/thumbnail?id='+p.id+'&sz=w200';
+    im.alt='미용 사진'; im.loading='lazy';
+    im.style.cssText='width:72px;height:54px;object-fit:cover;border-radius:6px;border:1px solid #e6d6a8;background:#fff';
+    im.addEventListener('error',function(){ a.style.display='none'; });
+    a.appendChild(im); wrap.appendChild(a);
+  });
+  return wrap;
+}
+function groomFolderLink(g,label){
+  var f=String((g&&g['폴더 링크'])||'');
+  if(!f) return null;
+  var a=el('a',null,label||'폴더 열기');
+  a.href=f; a.target='_blank'; a.rel='noopener noreferrer';
+  a.style.cssText='margin-left:6px;white-space:nowrap';
+  return a;
+}
+function groomMediaLine(g, withThumbs){
+  var ph=Number((g&&g['사진 수'])||0), vi=Number((g&&g['영상 수'])||0);
+  var line=el('div');
+  line.style.cssText='font-size:14px;color:#6b5a2e';
+  var parts=[];
+  if(ph) parts.push('📷 사진 '+ph+'장');
+  if(vi) parts.push('🎥 영상 '+vi+'개');
+  line.appendChild(document.createTextNode(parts.length?parts.join(' · '):'📷 사진 없음'));
+  var fl=groomFolderLink(g, parts.length?'사진·영상 폴더':'폴더');
+  if(fl) line.appendChild(fl);
+  var out=el('div');
+  if(withThumbs){ var th=groomThumbs(g); if(th) out.appendChild(th); }
+  out.appendChild(line);
+  return out;
+}
+
+/* --- 회차 한 줄(지난 기록 펼침) --- */
+function groomRoundLine(g, r, ops){
+  var li=el('div');
+  li.style.cssText='padding:6px 0;border-top:1px dashed #ecdcb0';
+  var bad=Number(g['이상 수']||0);
+  var head=el('div');
+  head.style.cssText='font-weight:600';
+  head.appendChild(document.createTextNode(groomFmt(g['미용일'])+' · '));
+  var src=String(g['출처']||'');
+  var bd=el('span',null, (src==='원내'?'🏠 원내':'🏪 외부'));
+  bd.style.cssText='display:inline-block;padding:1px 6px;border-radius:999px;font-size:12px;font-weight:700;margin-right:4px;'+
+    (src==='원내'?'background:#e6f6ee;color:#12694a;border:1px solid #bfe4d4':'background:#fff1e2;color:#8a4b12;border:1px solid #f0d3ae');
+  head.appendChild(bd);
+  head.appendChild(document.createTextNode(' '+(bad?('이상 '+bad+'곳 — '+(g['이상 항목']||'')):'이상 없음')));
+  li.appendChild(head);
+  var sub=el('div');
+  sub.style.cssText='font-size:13.5px;color:#6b5a2e;margin-top:2px';
+  var shop=[String(g['미용실']||''), String(g['미용사']||'')].filter(Boolean).join(' · ');
+  if(shop) sub.appendChild(document.createTextNode(shop));
+  var ph=Number(g['사진 수']||0), vi=Number(g['영상 수']||0);
+  if(ph||vi){
+    sub.appendChild(document.createTextNode((shop?' · ':'')+(ph?('📷 '+ph):'')+(vi?((ph?' · ':'')+'🎥 '+vi):'')));
+  }
+  var fl=groomFolderLink(g,'폴더 열기');
+  if(fl) sub.appendChild(fl);
+  li.appendChild(sub);
+  if(String(g['메모']||'')) li.appendChild(el('div','', '메모: '+g['메모']));
+  if(String(g['혹 부위 확인']||'')==='예'){
+    var lc=el('span',null,'🩺 혹 부위 확인함');
+    lc.style.cssText='display:inline-block;margin-top:3px;padding:1px 7px;border-radius:999px;font-size:12px;background:#eef4ff;color:#2b4b8a;border:1px solid #cfdcf5';
+    li.appendChild(lc);
+  }
+  if(String(g['병원 전달']||'')==='예') li.appendChild(el('div','', '★ 병원에 꼭 전달한다고 표시'));
+  var mine=groomOpsOfRound(ops, g['접수ID']).filter(function(o){return o['종류']!=='재진처리';});
+  mine.forEach(function(o){
+    var d=el('div');
+    d.style.cssText='margin-top:3px;padding-left:8px;border-left:3px solid '+(o['작성자']==='원장님'?'#c9892a':'#8bb6d9')+';font-size:13.5px';
+    d.appendChild(document.createTextNode(groomFmt(o['시각'])+' '+(o['작성자']||'')+' '+(o['항목코드']?o['항목코드']+' ':'')+(o['부위']?o['부위']+' — ':'')+o['소견']));
+    li.appendChild(d);
+  });
+  return li;
+}
+
+/* --- 부위별 사진 비교: 같은 부위가 여러 회차에 나오면 나란히 --- */
+function groomPartCompare(rounds){
+  if(!rounds || rounds.length<2) return null;
+  var byPart={}, order=[];
+  rounds.slice().reverse().forEach(function(g){
+    groomParts(g).forEach(function(p){
+      var k=groomPartKey(p);
+      if(!k) return;
+      if(!byPart[k]){ byPart[k]=[]; order.push(k); }
+      byPart[k].push({g:g, name:p});
+    });
+  });
+  var rows=order.map(function(k){return byPart[k];}).filter(function(a){return a.length>1;});
+  if(!rows.length) return null;
+  var box=el('div');
+  box.style.cssText='margin-top:8px;padding:7px 8px;background:#fffdf6;border:1px dashed #e6d6a8;border-radius:8px';
+  box.appendChild(el('b',null,'🔍 부위별 사진 비교 '));
+  box.appendChild(el('span',null,'— 같은 부위를 회차끼리 모았습니다'));
+  rows.forEach(function(list){
+    var line=el('div');
+    line.style.cssText='margin-top:4px;font-size:13.5px';
+    line.appendChild(el('b',null,list[0].name+' '));
+    list.forEach(function(it,i){
+      if(i) line.appendChild(document.createTextNode(' · '));
+      var ph=Number(it.g['사진 수']||0), vi=Number(it.g['영상 수']||0);
+      var med=groomMedia(it.g);
+      var lab=groomFmt(it.g['미용일'])+(ph?(' 사진 '+(med.length>1&&!med[0].video?'':'')):' 사진 없음');
+      if(med.length){
+        var a=el('a',null,groomFmt(it.g['미용일'])+' 사진');
+        a.href=med[0].url; a.target='_blank'; a.rel='noopener noreferrer';
+        line.appendChild(a);
+      } else if(String(it.g['폴더 링크']||'')){
+        var a2=el('a',null,groomFmt(it.g['미용일'])+' 폴더');
+        a2.href=it.g['폴더 링크']; a2.target='_blank'; a2.rel='noopener noreferrer';
+        line.appendChild(a2);
+      } else {
+        line.appendChild(document.createTextNode(groomFmt(it.g['미용일'])+' 사진 없음'));
+      }
+    });
+    box.appendChild(line);
+  });
+  return box;
+}
+
+/* --- 원장님 소견 입력(원장님 뷰에서만) --- */
+function groomCommentEditor(r, round, ops){
+  var id=String(round['접수ID']||'');
+  var wrap=el('div');
+  wrap.style.cssText='margin-top:7px;padding:8px;background:#fffdf6;border:1px solid #ecdcb0;border-radius:8px';
+  var saved=null;
+  try{ saved=JSON.parse(localStorage.getItem(GROOM_DRAFT+'|'+id)||'null'); }catch(e){}
+  var cur={code:(saved&&saved.code)||'', part:(saved&&saved.part)||''};
+  var chips=el('div');
+  chips.style.cssText='display:flex;gap:4px;flex-wrap:wrap;margin-bottom:5px';
+  function paintChips(){
+    chips.innerHTML='';
+    GROOM_ITEMS.forEach(function(it){
+      var on=cur.code===it[0];
+      var b=el('button',null,it[0]);
+      b.type='button';
+      b.title=it[1];
+      b.style.cssText='font-size:12px;padding:2px 7px;border-radius:999px;cursor:pointer;'+
+        (on?'background:#2f7fb8;color:#fff;border:1px solid #2f7fb8':'background:#fff;color:#3d5a72;border:1px solid #cfdbe6');
+      b.addEventListener('click',function(){
+        cur.code=on?'':it[0]; cur.part=on?'':it[1]; paintChips(); paintHint();
+      });
+      chips.appendChild(b);
+    });
+    var free=el('button',null,'자유');
+    free.type='button';
+    free.style.cssText='font-size:12px;padding:2px 7px;border-radius:999px;cursor:pointer;'+
+      (cur.code===''?'background:#6b7f90;color:#fff;border:1px solid #6b7f90':'background:#fff;color:#3d5a72;border:1px solid #cfdbe6');
+    free.addEventListener('click',function(){ cur.code=''; cur.part=''; paintChips(); paintHint(); });
+    chips.appendChild(free);
+  }
+  var hint=el('div');
+  hint.style.cssText='font-size:12.5px;color:#6b5a2e;margin-bottom:4px';
+  function paintHint(){
+    hint.textContent=cur.code ? (cur.code+' '+cur.part+' 소견으로 저장됩니다') : '자유 소견으로 저장됩니다 (항목 코드 없이)';
+  }
+  paintChips(); paintHint();
+  wrap.appendChild(chips);
+  var ta=document.createElement('textarea');
+  ta.rows=2;
+  ta.placeholder='예: 오른쪽 귀지 정체, 세정 필요';
+  ta.value=(saved&&saved.text)||'';
+  ta.style.cssText='width:100%;box-sizing:border-box;font-size:14px;padding:6px 8px;border:1px solid #e0cd9f;border-radius:6px;resize:vertical;font-family:inherit';
+  wrap.appendChild(hint);
+  wrap.appendChild(ta);
+  var bar=el('div');
+  bar.style.cssText='display:flex;gap:6px;align-items:center;margin-top:5px;flex-wrap:wrap';
+  var rv=document.createElement('label');
+  rv.style.cssText='font-size:13px;display:flex;align-items:center;gap:4px;cursor:pointer';
+  var rcb=document.createElement('input'); rcb.type='checkbox';
+  rv.appendChild(rcb); rv.appendChild(document.createTextNode('🔁 재진 필요'));
+  var save=el('button','btn b-green','소견 저장');
+  save.type='button';
+  save.style.cssText='margin-left:auto;font-size:13.5px;padding:4px 12px';
+  var msg=el('div');
+  msg.style.cssText='font-size:12.5px;margin-top:4px;color:#6b7f90';
+  function draft(){
+    try{ localStorage.setItem(GROOM_DRAFT+'|'+id, JSON.stringify({code:cur.code,part:cur.part,text:ta.value})); }catch(e){}
+  }
+  ta.addEventListener('input',draft);
+  save.addEventListener('click',function(){
+    var text=String(ta.value||'').trim();
+    if(!text){ msg.textContent='소견 내용을 적어 주세요. (적은 내용은 이 화면에 그대로 남습니다)'; msg.style.color='#c0392b'; return; }
+    save.disabled=true; save.textContent='저장 중…'; msg.style.color='#6b7f90'; msg.textContent='';
+    var jobs=[groomPost({action:'comment', id:id, code:cur.code, part:cur.part, text:text, author:'원장님'})];
+    if(rcb.checked){
+      jobs.push(groomPost({action:'revisit', id:id, code:cur.code, part:cur.part,
+        text:'재진 필요'+(cur.part?(' — '+cur.part+' 재확인'):'')}));
+    }
+    Promise.all(jobs).then(function(res){
+      var at=(res[0]&&res[0].at)||groomNow();
+      GROOMOPS.push({'시각':at,'접수ID':id,'미용일':round['미용일'],'아이':r['아이'],'보호자':r['보호자'],
+        '작성자':'원장님','항목코드':cur.code,'부위':(cur.part||groomPartLabel(cur.code)),'소견':text,'종류':'소견'});
+      if(rcb.checked){
+        GROOMOPS.push({'시각':at,'접수ID':id,'미용일':round['미용일'],'아이':r['아이'],'보호자':r['보호자'],
+          '작성자':'원장님','항목코드':cur.code,'부위':(cur.part||groomPartLabel(cur.code)),
+          '소견':'재진 필요'+(cur.part?(' — '+cur.part+' 재확인'):''),'종류':'재진'});
+      }
+      try{ localStorage.removeItem(GROOM_DRAFT+'|'+id); }catch(e){}
+      ta.value=''; rcb.checked=false;
+      msg.style.color='#12694a'; msg.textContent='저장했습니다 · '+groomFmt(at)+' (이력에 쌓입니다)';
+      save.disabled=false; save.textContent='소견 저장';
+      render();
+    }).catch(function(err){
+      save.disabled=false; save.textContent='소견 저장';
+      msg.style.color='#c0392b';
+      msg.textContent='저장하지 못했습니다: '+err.message+' — 위 내용은 남아 있으니 다시 눌러 주세요.';
+      draft();
+    });
+  });
+  bar.appendChild(rv); bar.appendChild(save);
+  wrap.appendChild(bar);
+  wrap.appendChild(msg);
+  return wrap;
+}
+
+/* --- ✂️ 미용 체크 회차 박스 (진료 예약이 있는 그 날 미용 체크가 있을 때) --- */
+function groomBoxEl(r){
+  var gr=groomFor(r);
+  if(!gr) return null;
+  var all=gr.__all||[gr];
+  var ops=groomOpsFor(r);
+  var box=el('div','dept');
+  box.style.cssText='background:#fff8e6;border:1px solid #f0dfae;border-radius:10px;padding:8px 10px;margin:6px 0;font-size:15px;overflow-wrap:anywhere';
+  var bad=Number(gr['이상 수']||0);
+  var head=el('div');
+  head.appendChild(el('b',null,'✂️ 미용 체크'));
+  head.appendChild(document.createTextNode(' '+groomFmt(gr['미용일'])+' · '));
+  var src=String(gr['출처']||'');
+  var bd=el('span',null,(src==='원내'?'🏠 원내':'🏪 외부'));
+  bd.style.cssText='display:inline-block;padding:1px 7px;border-radius:999px;font-size:12.5px;font-weight:700;margin-right:4px;'+
+    (src==='원내'?'background:#e6f6ee;color:#12694a;border:1px solid #bfe4d4':'background:#fff1e2;color:#8a4b12;border:1px solid #f0d3ae');
+  head.appendChild(bd);
+  head.appendChild(document.createTextNode(' '+(bad?('이상 '+bad+'곳 — '+(gr['이상 항목']||'')):'이상 없음 (12곳 확인)')));
+  if(gr['미용실']) head.appendChild(document.createTextNode(' · '+gr['미용실']+(gr['미용사']?'('+gr['미용사']+')':'')));
+  box.appendChild(head);
+  if(String(gr['병원 전달']||'')==='예') box.appendChild(el('div','','★ 병원에 꼭 전달한다고 표시했습니다'));
+  if(String(gr['메모']||'')) box.appendChild(el('div','','메모: '+gr['메모']));
+  if(String(gr['혹 부위 확인']||'')==='예'){
+    var lc=el('span',null,'🩺 혹 부위 확인함');
+    lc.style.cssText='display:inline-block;margin-top:4px;padding:1px 7px;border-radius:999px;font-size:12px;background:#eef4ff;color:#2b4b8a;border:1px solid #cfdcf5';
+    box.appendChild(lc);
+  }
+  box.appendChild(groomMediaLine(gr, true));
+  var rOps=groomOpsOfRound(ops, gr['접수ID']).filter(function(o){return o['종류']!=='재진처리';});
+  rOps.forEach(function(o){
+    var d=el('div');
+    d.style.cssText='margin-top:4px;padding-left:8px;border-left:3px solid '+(o['작성자']==='원장님'?'#c9892a':'#8bb6d9');
+    d.appendChild(el('b',null,'🩺 '+(o['작성자']||'')+' '));
+    d.appendChild(document.createTextNode(groomFmt(o['시각'])+' '+(o['항목코드']?o['항목코드']+' ':'')+(o['부위']?o['부위']+' — ':'')+o['소견']));
+    box.appendChild(d);
+  });
+  if(S.view==='doc') box.appendChild(groomCommentEditor(r, gr, ops));
+  else if(!rOps.length) box.appendChild(el('div','','· 원장님 소견은 아직 없습니다 (원장님 뷰에서 적을 수 있습니다)'));
+  if(all.length>1){
+    box.appendChild(accBox({key:'grpast|'+gr['접수ID'], cls:'amber', title:'🗂 지난 기록 '+(all.length-1)+'회 보기', count:(all.length-1)+'회',
+      def:!!S.qopen,
+      body:function(){
+        var d=el('div');
+        all.slice(1).forEach(function(g){ d.appendChild(groomRoundLine(g, r, ops)); });
+        var cmp=groomPartCompare(all);
+        if(cmp) d.appendChild(cmp);
+        return d;
+      }}));
+  } else {
+    var cmp2=groomPartCompare(all);
+    if(cmp2) box.appendChild(cmp2);
+  }
+  return box;
+}
+
+/* --- ✂️ 미용 소견 이력 (미용 예약이 없는 날에도 그 아이 카드에 붙는 줄) --- */
+function groomOpinionEl(r){
+  var ops=groomOpsFor(r);
+  if(!ops.length) return null;
+  var list=ops.filter(function(o){return o['종류']!=='재진처리';});
+  if(!list.length) return null;
+  var byCode={}, order=[];
+  list.forEach(function(o){
+    var c=String(o['항목코드']||'').toUpperCase();
+    var key=c||('@'+String(o['접수ID']||''));
+    if(!byCode[key]){ byCode[key]=[]; }
+    byCode[key].push(o);
+  });
+  var groups=Object.keys(byCode).map(function(k){return byCode[k];});
+  groups.forEach(function(g){
+    g.sort(function(a,b){return String(a['시각']||'').localeCompare(String(b['시각']||''));});
+  });
+  /* 바뀐 항목 먼저, 그다음 최신순 */
+  groups.sort(function(a,b){
+    var ca=a.length>1?1:0, cb=b.length>1?1:0;
+    if(ca!==cb) return cb-ca;
+    return String(b[b.length-1]['시각']).localeCompare(String(a[a.length-1]['시각']));
+  });
+  var box=el('div','dept');
+  box.style.cssText='background:#f6fbff;border:1px solid #cfe3f2;border-radius:10px;padding:7px 10px;margin:6px 0;font-size:14.5px;overflow-wrap:anywhere';
+  var head=el('div');
+  head.appendChild(el('b',null,'✂️ 미용 소견'));
+  var latest=list[list.length-1];
+  head.appendChild(document.createTextNode(' · 최근 '+groomFmt(latest['시각'])+
+    (latest['작성자']?(' '+latest['작성자']):'')+
+    (latest['항목코드']?(' '+latest['항목코드']):'')+(latest['부위']?(' '+latest['부위']):'')));
+  box.appendChild(head);
+  groups.slice(0,4).forEach(function(g){
+    var line=el('div');
+    line.style.cssText='margin-top:3px';
+    var code=String(g[0]['항목코드']||'');
+    var part=String(g[0]['부위']||'');
+    if(code||part) line.appendChild(el('b',null,(code?code+' ':'')+(part||'')));
+    if(g.length>1){
+      var prev=g[g.length-2], last=g[g.length-1];
+      line.appendChild(document.createTextNode(' '+groomFmt(prev['시각'])+' "'+clipText(prev['소견'],40)+'" → '+
+        groomFmt(last['시각'])+' "'+clipText(last['소견'],40)+'" '));
+      var same=groomPartKey(prev['소견'])===groomPartKey(last['소견']);
+      var tag=el('span',null,same?'그대로':'변동');
+      tag.style.cssText='display:inline-block;padding:0 6px;border-radius:999px;font-size:11.5px;font-weight:700;'+
+        (same?'background:#eef2f5;color:#5b7286;border:1px solid #dfe7ee':'background:#fdeaee;color:#b0243f;border:1px solid #f3cfdb');
+      line.appendChild(tag);
+    } else {
+      line.appendChild(document.createTextNode(' '+groomFmt(g[0]['시각'])+' "'+clipText(g[0]['소견'],60)+'"'));
+      if(g[0]['종류']==='재진'){
+        line.appendChild(document.createTextNode(' '));
+        var rv=el('span',null,'재진 필요');
+        rv.style.cssText='display:inline-block;padding:0 6px;border-radius:999px;font-size:11.5px;font-weight:700;background:#fff3e0;color:#8a4b12;border:1px solid #f0d3ae';
+        line.appendChild(rv);
+      }
+    }
+    box.appendChild(line);
+  });
+  /* 이력 전체 보기 — 시간 역순 + 그 회차 사진 */
+  var rounds=groomListFor(r);
+  var roundById={};
+  rounds.forEach(function(g){ roundById[String(g['접수ID']||'')]=g; });
+  box.appendChild(accBox({key:'grop|'+(r['아이']||'')+'|'+(r['보호자']||''), cls:'blue',
+    title:'📚 소견 이력 전체 보기', count:list.length+'건', def:!!S.qopen,
+    body:function(){
+      var d=el('div');
+      list.slice().reverse().forEach(function(o){
+        var row=el('div');
+        row.style.cssText='padding:4px 0;border-top:1px dashed #dbe7f1';
+        row.appendChild(el('b',null,groomFmt(o['시각'])+' '+(o['작성자']||'')+' '));
+        row.appendChild(document.createTextNode((o['항목코드']?o['항목코드']+' ':'')+(o['부위']?o['부위']+' — ':'')+o['소견']));
+        if(o['종류']==='재진'){
+          var tg=el('span',null,' 재진');
+          tg.style.cssText='padding:0 6px;border-radius:999px;font-size:11.5px;background:#fff3e0;color:#8a4b12;border:1px solid #f0d3ae';
+          row.appendChild(tg);
+        }
+        var g=roundById[String(o['접수ID']||'')];
+        if(g){
+          var med=groomMedia(g);
+          if(med.length){
+            var a=el('a',null,' · 사진 '+med.length+'장 보기');
+            a.href=med[0].url; a.target='_blank'; a.rel='noopener noreferrer';
+            row.appendChild(a);
+          } else {
+            var fl=groomFolderLink(g,' · 폴더');
+            if(fl){ fl.style.marginLeft='2px'; row.appendChild(fl); }
+          }
+        }
+        d.appendChild(row);
+      });
+      var cmp=groomPartCompare(rounds);
+      if(cmp) d.appendChild(cmp);
+      return d;
+    }}));
+  return box;
+}
+
+/* --- 진료 화면(✍️ 코멘트 모달) 위에 붙는 미용 소견 --- */
+function groomOpinionModalEl(r){
+  var ops=groomOpsFor(r);
+  if(!ops.length) return null;
+  var box=el('div');
+  box.style.cssText='background:#f6fbff;border:1px solid #cfe3f2;border-radius:10px;padding:8px 10px;margin:6px 0 10px;font-size:14.5px';
+  box.appendChild(el('b',null,'✂️ 미용 소견 (미용실·원장님 기록)'));
+  var list=ops.filter(function(o){return o['종류']!=='재진처리';}).slice().reverse();
+  list.slice(0,6).forEach(function(o){
+    var row=el('div');
+    row.style.cssText='margin-top:3px';
+    row.appendChild(el('b',null,groomFmt(o['시각'])+' '+(o['작성자']||'')+' '));
+    row.appendChild(document.createTextNode((o['항목코드']?o['항목코드']+' ':'')+(o['부위']?o['부위']+' — ':'')+o['소견']));
+    if(o['종류']==='재진'){
+      var tg=el('span',null,' 재진');
+      tg.style.cssText='padding:0 6px;border-radius:999px;font-size:11.5px;background:#fff3e0;color:#8a4b12;border:1px solid #f0d3ae';
+      row.appendChild(tg);
+    }
+    box.appendChild(row);
+  });
+  if(list.length>6) box.appendChild(el('div','','· 그 밖 '+ (list.length-6) +'건은 카드의 [소견 이력 전체 보기]에서 볼 수 있습니다'));
+  return box;
+}
+
+/* --- 원무과 뷰: 재진 필요 알림 (읽기·예약 잡기 전 확인용) --- */
+function revisitBannerEl(){
+  if(!GROOMOPS.length) return null;
+  var today=iso(TODAY);
+  var latest={};
+  GROOMOPS.forEach(function(o){
+    var k=String(o['아이']||'')+'|'+String(o['보호자']||'');
+    if(!latest[k] || String(o['시각']||'')>String(latest[k]['시각']||'')) latest[k]=o;
+  });
+  var rows=[];
+  Object.keys(latest).forEach(function(k){
+    var o=latest[k];
+    if(o['종류']!=='재진') return;
+    /* 예약이 이미 잡혔으면(앞으로의 예약) 알림에서 뺀다 */
+    var nm=String(o['아이']||''), ow=String(o['보호자']||'');
+    var has=false;
+    (NEXT[nm+'|'+ow]||[]).forEach(function(a){ if(String(a[0]||'')>=today) has=true; });
+    if(!has && typeof nextList==='function'){
+      try{ (nextList(nm,ow)||[]).forEach(function(a){ if(String(a[0]||'')>=today) has=true; }); }catch(e){}
+    }
+    if(has) return;
+    /* 원무과가 처리 표시를 남겼으면 뺀다 */
+    var done=GROOMOPS.some(function(x){
+      return x['종류']==='재진처리' && x['아이']===o['아이'] && x['보호자']===o['보호자'] && String(x['시각']||'')>=String(o['시각']||'');
+    });
+    if(done) return;
+    rows.push(o);
+  });
+  if(!rows.length) return null;
+  rows.sort(function(a,b){return String(b['시각']).localeCompare(String(a['시각']));});
+  var box=el('div');
+  box.style.cssText='background:#fff4ec;border:1px solid #f0d3ae;border-radius:12px;padding:10px 12px;margin:10px 0;font-size:15px';
+  box.appendChild(el('b',null,'🔁 재진 필요 — 원무과 확인 후 예약'));
+  rows.slice(0,8).forEach(function(o){
+    var li=el('div');
+    li.style.marginTop='4px';
+    li.appendChild(document.createTextNode('· '+o['아이']+'('+o['보호자']+') — '+
+      (o['부위']?o['부위']+' 재확인':'재확인')+' (원장님 '+groomFmt(o['시각'])+' 지시)'));
+    var b=el('button','btn b-gray','예약 잡음');
+    b.type='button';
+    b.style.cssText='margin-left:8px;font-size:12.5px;padding:2px 8px';
+    b.addEventListener('click',function(){
+      b.disabled=true; b.textContent='기록 중…';
+      groomPost({action:'revisitdone', id:String(o['접수ID']||''), code:String(o['항목코드']||''),
+        part:String(o['부위']||''), text:'재진 예약 잡음'})
+        .then(function(){
+          GROOMOPS.push({'시각':groomNow(),'접수ID':o['접수ID'],'미용일':o['미용일'],'아이':o['아이'],'보호자':o['보호자'],
+            '작성자':'원무과','항목코드':o['항목코드'],'부위':o['부위'],'소견':'재진 예약 잡음','종류':'재진처리'});
+          render();
+        })
+        .catch(function(err){ b.disabled=false; b.textContent='예약 잡음'; alert('기록하지 못했습니다: '+err.message); });
+    });
+    li.appendChild(b);
+    box.appendChild(li);
+  });
+  box.appendChild(el('div','','· 예약은 원무과가 확인하고 잡습니다. 예약이 잡히면 이 알림은 사라지고 카드에 소견 사슬이 붙습니다.'));
+  return box;
+}
+
 /* 혹 그림 조회 — 문의 탭 보호자 표기('이원정/박건주')와 lumps/index.json 키('이원정 박건주')의 슬래시·공백 차이 보정 */
 function lumpGet(r){
   var a=(r&&r['아이'])||'', o=String((r&&r['보호자'])||'');
@@ -758,7 +1300,8 @@ function load(){
     fetch('lump.json?v=1124-1555',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};}),
     fetch('lumps/index.json?v=1125-1915',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};}),
     fetch('next.json?v=1125-2115',{cache:'no-store'}).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};}),
-    fetchSheet(TAB_GROOM).catch(function(){return [];})])
+    fetchSheet(TAB_GROOM).catch(function(){return [];}),
+    fetchSheet('미용소견').catch(function(){return [];})])
   .then(function(res){
     var allRows = res[0].filter(function(r){return r['아이']||r['날짜'];}).map(function(r){
       r['날짜']=String(r['날짜']||'').slice(0,10);
@@ -778,6 +1321,7 @@ function load(){
     LUMPIMG = res[4] || {};
     NEXT = res[5] || {};
     GROOMROWS = (res[6]||[]).filter(function(r){ return r['아이']; });
+    GROOMOPS = (res[7]||[]).filter(function(r){ return r['아이']; });
     if(!S.date) S.date = iso(TODAY);
     render();
   }).catch(function(e){
@@ -1306,45 +1850,15 @@ function cardEl(r){
     String(r['배지']).split('|').forEach(function(t){var b=badgeEl(t); if(b) bw.appendChild(b);});
     if(bw.childNodes.length) c.appendChild(bw);
   }
+  var gop=groomOpinionEl(r);
+  if(gop) c.appendChild(gop);
   if(r['진료내용']){
     var memo=el('div','memo',r['진료내용']);
     c.appendChild(memo);
   }
   /* ✂️ 미용 체크 — 미용사가 보낸 12곳 체크 결과(GBN 접수) */
-  var gr=groomFor(r);
-  if(gr){
-    var gbox=el('div','dept');
-    gbox.style.cssText='background:#fff8e6;border:1px solid #f0dfae;border-radius:10px;padding:8px 10px;margin:6px 0;font-size:15px';
-    var gbad=Number(gr['이상 수']||0);
-    var gsrc=String(gr['출처']||'');
-    var gshop=String(gr['미용실']||'');
-    var ghead=el('div');
-    ghead.appendChild(el('b',null,'✂️ 미용 체크'));
-    var gbadge=el('span',null, gsrc==='원내' ? '🏠 원내 미용' : ('🏪 외부 미용'+(gshop?' · '+gshop:'')));
-    gbadge.style.cssText='display:inline-block;margin:0 6px;padding:2px 9px;border-radius:999px;font-size:13px;font-weight:800;'+
-      'line-height:1.5;white-space:normal;word-break:keep-all;'+
-      (gsrc==='원내' ? 'background:#e6f6ee;color:#178a5b;border:1px solid #a9d8c1' : 'background:#fff0e2;color:#b45309;border:1px solid #f0c79a');
-    ghead.appendChild(gbadge);
-    ghead.appendChild(document.createTextNode(String(gr['미용일']||'').slice(5).replace('-','/')+
-      ' · '+(gbad?('이상 '+gbad+'곳 — '+(gr['이상 항목']||'')):'이상 없음 (12곳 확인)')+
-      (gr['미용사']?' · 미용사 '+gr['미용사']:'')+
-      (gr.__count>1?' · 기록 '+gr.__count+'회':'')));
-    gbox.appendChild(ghead);
-    if(String(gr['병원 전달']||'')==='예') gbox.appendChild(el('div',null,'★ 병원에 꼭 전달한다고 표시했습니다'));
-    if(gr['메모']) gbox.appendChild(el('div',null,'메모: '+gr['메모']));
-    var gph=Number(gr['사진 수']||0), gvi=Number(gr['영상 수']||0);
-    var gline=el('div');
-    gline.appendChild(document.createTextNode(gph||gvi ? ('📷 사진 '+gph+'장'+(gvi?' · 🎥 영상 '+gvi+'개':'')) : '📷 사진 없음'));
-    var gf=String(gr['폴더 링크']||'');
-    if(gf){
-      var ga2=el('a',null,' 사진·영상 열기');
-      ga2.href=gf; ga2.target='_blank'; ga2.rel='noopener noreferrer';
-      ga2.style.marginLeft='6px';
-      gline.appendChild(ga2);
-    }
-    gbox.appendChild(gline);
-    c.appendChild(gbox);
-  }
+  var gbx=groomBoxEl(r);
+  if(gbx) c.appendChild(gbx);
   /* 🩺 ② 혹·이전 이상: 기존 혹 부위·소견 / 신규 GHN 혹 / 이전 이상 소견을 접지 않고 한눈에 */
   var hp=hokPrev(r), hn=hokNew(r), gl=ghLink(r), lu=lumpOf(r), cr=critItems(r);
   if(S.view==='doc' || S.view==='all'){
@@ -2048,6 +2562,10 @@ function render(){
     wsum.appendChild(back);
     out.appendChild(wsum);
   }
+  if(S.view==='desk' || S.view==='all'){
+    var rb=revisitBannerEl();
+    if(rb) out.appendChild(rb);
+  }
   if(S.day==='today'||S.day==='tomorrow'||S.day==='all'){
     var d=dates[0];
     var box=inquiryBox(d);
@@ -2263,6 +2781,8 @@ function openModal(kind,r){
   body.innerHTML='';
   body.appendChild(el('h3',null,title+' · '+r['아이']+' ('+r['보호자']+')'));
   body.appendChild(el('div','sub',(r['날짜']?r['날짜']+' ':'')+(r['시각']?r['시각']+' · ':'')+(r['구분']||'')));
+  var gom=groomOpinionModalEl(r);
+  if(gom) body.appendChild(gom);
   $('#mask').classList.add('show');
   if(kind==='일정'){
     var same=S.data.filter(function(x){return x['아이']===r['아이']&&x['보호자']===r['보호자'];})
@@ -2352,6 +2872,20 @@ $('#theme').addEventListener('click',function(){
   document.documentElement.classList.toggle('gmt');
   this.classList.toggle('on');
 });
+/* ==== 🔗 주소 파라미터: ?q=아이이름 / ?q=보호자이름 (+ &date=YYYY-MM-DD) ====
+   미용 선생님·원무과가 링크 하나로 그 아이를 바로 열 수 있게 한다. */
+(function(){
+  try{
+    var p=new URLSearchParams(location.search);
+    var q=(p.get('q')||p.get('pet')||'').trim();
+    var d=(p.get('date')||'').trim();
+    if(q){
+      S.q=q; S.qopen=true;
+      var inp=document.getElementById('q'); if(inp) inp.value=q;
+    }
+    if(/^\d{4}-\d{2}-\d{2}$/.test(d)){ S.date=d; S.day='all'; }
+  }catch(e){}
+})();
 load();
 
 /* ==== 3종 카톡(GTN) 바로가기 — 검색창에 적힌 이름을 함께 넘긴다 (없으면 그대로 열림) ==== */

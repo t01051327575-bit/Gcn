@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>혹 위치 확인 · 굿모닝펫</title>
+<meta name="theme-color" content="#fdeaee">
+<meta name="robots" content="noindex">
+<style>
+:root{--ink:#1f2d38;--sub:#5b7286;--line:#e6ecf1;--red:#b0243f;--red-soft:#fdeaee}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:#f6f8fa;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;font-size:17px;line-height:1.55;-webkit-text-size-adjust:100%}
+.wrap{max-width:640px;margin:0 auto;padding:16px 14px 40px}
+.clinic{font-size:13px;color:var(--sub);font-weight:700}
+h1{font-size:23px;margin:6px 0 4px;letter-spacing:-.3px}
+.warn{margin:12px 0;padding:14px 16px;background:var(--red-soft);border:1px solid #f3cfdb;border-radius:14px;color:#7a1626}
+.warn b{font-size:19px;display:block;margin-bottom:2px}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;margin:12px 0}
+.card h2{font-size:16px;margin:0 0 8px}
+.pet{font-size:22px;font-weight:900;color:var(--red)}
+.row{display:flex;gap:8px;font-size:15.5px;margin:5px 0}
+.row .k{flex:0 0 74px;color:var(--sub);font-weight:700;font-size:14px}
+.row .v{flex:1;min-width:0;word-break:keep-all;white-space:pre-wrap}
+.fig{margin:8px 0}
+.fig img{width:100%;border-radius:12px;border:1px solid var(--line);background:#fff;display:block}
+.fig .lab{font-size:13.5px;color:var(--sub);margin-bottom:4px;font-weight:700}
+.empty{padding:24px 8px;text-align:center;color:#8a99a6}
+.foot{margin-top:16px;font-size:12.5px;color:#8a99a6;line-height:1.6}
+.btn{display:inline-block;padding:10px 14px;border-radius:12px;background:#fff3e0;border:1px solid #f0d3ae;color:#8a4b12;font-weight:800;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="clinic">굿모닝펫동물병원</div>
+  <h1>🩺 혹 위치 확인</h1>
+  <div id="app"><div class="empty">불러오는 중…</div></div>
+  <div class="foot">
+    · 이 화면은 그 아이의 <b>혹 위치와 주의사항만</b> 보여 줍니다. 보호자 연락처·차트번호·다른 아이 정보는 나오지 않습니다.<br>
+    · 병원이 링크를 끄면 바로 열리지 않습니다.
+  </div>
+</div>
+<script>
+var API='https://script.google.com/macros/s/AKfycbwogzgIJoyeF6H19M4nb8q3woW3I_XHxLo6i9KSj6CA33IL5R8QfRN2UFWQNXQ3mICj/exec';
+var SITE='https://t01051327575-bit.github.io/Gcn/';
+function el(t,c,x){var e=document.createElement(t); if(c)e.className=c; if(x!=null)e.textContent=x; return e;}
+function fail(msg){
+  var box=document.getElementById('app');
+  box.innerHTML='';
+  var w=el('div','empty',msg||'링크를 찾을 수 없습니다.');
+  box.appendChild(w);
+  box.appendChild(el('div','foot','병원에 새 링크를 요청해 주세요.'));
+}
+(function(){
+  var t='';
+  try{ t=(new URLSearchParams(location.search).get('t')||'').trim(); }catch(e){}
+  if(!t){ fail('링크 주소에 확인 코드가 없습니다.'); return; }
+  fetch(API+'?action=petlump&t='+encodeURIComponent(t),{cache:'no-store'})
+    .then(function(r){ return r.text(); })
+    .then(function(txt){
+      var j=null; try{ j=JSON.parse(txt); }catch(e){}
+      if(!j){ fail('링크를 읽지 못했습니다.'); return; }
+      if(j.ok===false){ fail(j.error||'이 링크는 중지되었거나 찾을 수 없습니다.'); return; }
+      Promise.all([
+        fetch(SITE+'lump.json',{cache:'no-store'}).then(function(r){return r.json();}).catch(function(){return {};}),
+        fetch(SITE+'lumps/index.json',{cache:'no-store'}).then(function(r){return r.json();}).catch(function(){return {};})
+      ]).then(function(res){ paint(j, res[0]||{}, res[1]||{}); });
+    }).catch(function(e){
+      fail('링크를 불러오지 못했습니다 — '+e.message);
+    });
+})();
+function normNm(s){ return String(s||'').replace(/\([^)]*\)/g,'').replace(/[\/\s.]/g,'').toLowerCase(); }
+function hashStr(s){ var h=5381; for(var i=0;i<s.length;i++){ h=((h<<5)+h+s.charCodeAt(i))|0; } return (h>>>0).toString(36); }
+function pick(obj, key){
+  if(!obj) return null;
+  var hit=null;
+  Object.keys(obj).forEach(function(k){ if(hashStr(normNm(k))===key) hit=obj[k]; });
+  return hit;
+}
+function paint(j, lumps, idx){
+  var L=pick(lumps, j.key), I=pick(idx, j.key);
+  var box=document.getElementById('app');
+  box.innerHTML='';
+  var head=el('div','card');
+  head.appendChild(el('div','','아이'));
+  head.appendChild(el('div','pet', j.pet||''));
+  box.appendChild(head);
+  if(!L && !I){
+    var c0=el('div','card');
+    c0.appendChild(el('h2',null,'등록된 혹 기록이 없습니다'));
+    c0.appendChild(el('div','','이발기·가위 사용 전에 몸 전체를 한 번 확인해 주세요. 새로 생긴 혹이 보이면 병원에 알려 주세요.'));
+    box.appendChild(c0);
+    return;
+  }
+  var w=el('div','warn');
+  w.appendChild(el('b',null,'✂️ 이발기 주의'));
+  w.appendChild(el('div','','아래 부위에 혹이 있습니다. 이발기·가위를 대기 전에 눈으로 확인하고, 혹 위를 밀지 마세요.'));
+  box.appendChild(w);
+  var c=el('div','card');
+  c.appendChild(el('h2',null,'혹 위치·소견'));
+  if(L && L.n){ var r1=el('div','row'); r1.appendChild(el('span','k','개수')); r1.appendChild(el('span','v', L.n+'곳')); c.appendChild(r1); }
+  if(L && L.last){ var r2=el('div','row'); r2.appendChild(el('span','k','최근 확인')); r2.appendChild(el('span','v', String(L.last))); c.appendChild(r2); }
+  if(L && L.marks){ var r3=el('div','row'); r3.appendChild(el('span','k','부위')); r3.appendChild(el('span','v', String(L.marks))); c.appendChild(r3); }
+  if(L && L.op){ var r4=el('div','row'); r4.appendChild(el('span','k','수술 이력')); r4.appendChild(el('span','v', String(L.op).slice(0,300))); c.appendChild(r4); }
+  box.appendChild(c);
+  var imgs=[];
+  if(I){
+    [['old','oldL','oldD'],['new','newL','newD'],['paper','paperL','paperD']].forEach(function(k){
+      if(I[k[0]]) imgs.push({file:I[k[0]], label:I[k[1]]||'위치 표시', date:I[k[2]]||''});
+    });
+    if(Array.isArray(I.extra)){
+      I.extra.forEach(function(x){ (x.files||[]).forEach(function(f){ imgs.push({file:f, label:x.label||'위치 표시', date:x.d||''}); }); });
+    }
+  }
+  imgs=imgs.slice(0,6);
+  if(imgs.length){
+    var figc=el('div','card');
+    figc.appendChild(el('h2',null,'혹 위치 그림'));
+    imgs.forEach(function(im){
+      var f=el('div','fig');
+      f.appendChild(el('div','lab',im.label+(im.date?(' · '+im.date):'')));
+      var a=document.createElement('a'); a.href=SITE+'lumps/'+im.file; a.target='_blank'; a.rel='noopener noreferrer';
+      var img=document.createElement('img'); img.src=SITE+'lumps/'+im.file; img.alt='혹 위치 그림'; img.loading='lazy';
+      img.addEventListener('error',function(){ f.style.display='none'; });
+      a.appendChild(img); f.appendChild(a);
+      figc.appendChild(f);
+    });
+    figc.appendChild(el('div','foot','그림을 누르면 크게 열립니다.'));
+    box.appendChild(figc);
+  }
+}
+</script>
+</body>
+</html>
