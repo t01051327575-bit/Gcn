@@ -371,6 +371,10 @@ function cardHtml(p){
       }).join('')+'</div>':'')+
       (r?recBody(p,r):'')+
       (p.lastCmt?'<details class="cmt"><summary>✍️ 최근 진료 코멘트 '+(p.lastCmt.d?fmt(p.lastCmt.d):'')+'</summary><p>'+esc2(p.lastCmt.t)+'</p><span class="how cmt">GCN 코멘트 탭</span></details>':'')+
+      (p.groom&&p.groom.length?'<details class="cmt"><summary>✂️ 미용 소견 '+p.groom.length+'건 · 최근 '+(p.groom[p.groom.length-1].d?fmt(p.groom[p.groom.length-1].d):'')+'</summary>'+
+        p.groom.slice(-5).reverse().map(function(o){
+          return '<p>'+esc(o.at?md(o.at):'')+' '+(o.who?esc(o.who)+' ':'')+(o.code?esc(o.code)+' ':'')+(o.part?esc(o.part)+' — ':'')+esc2(o.t)+'</p>';
+        }).join('')+'<span class="how cmt">GCN 미용소견 탭 · 미용실·원장님 기록</span></details>':'')+
       (p.memo?'<p class="marks">📋 '+esc(p.memo)+'</p>':'')+
       (r&&r.src?'<span class="how'+(r.kind==='inq'?' inq':r.kind==='cmt'?' cmt':'')+'">'+esc(r.src)+'</span>':'')+
     '</div></article>';
@@ -398,7 +402,8 @@ function matchQ(p,q){
   if(!q) return true;
   var hay=(p.pet+' '+p.g+' '+(p.breed||'')+' '+(p.memo||'')+' '+(p.marks0||'')+' '+
     p.recs.map(function(r){return (r.d||'')+' '+(r.label||'')+' '+(r.marks||'')+' '+(r.notes||[]).map(function(n){return (n.d||'')+' '+(n.t||'')}).join(' ')}).join(' ')+' '+
-    nxList(p).map(function(n){return (n.d||'')+' '+(n.tm||'')+' '+(n.f||n.t||'')}).join(' ')).replace(/\s+/g,'');
+    nxList(p).map(function(n){return (n.d||'')+' '+(n.tm||'')+' '+(n.f||n.t||'')}).join(' ')+' '+
+    (p.groom||[]).map(function(o){return (o.part||'')+' '+(o.code||'')+' '+(o.t||'')}).join(' ')).replace(/\s+/g,'');
   return hay.toLowerCase().indexOf(q)>=0;
 }
 function render(){
@@ -556,9 +561,9 @@ function load(){
   });
 }
 function loadLive(){
-  Promise.all([gviz('예약').catch(function(){return null}),gviz('문의').catch(function(){return null}),gviz('코멘트').catch(function(){return null})])
+  Promise.all([gviz('예약').catch(function(){return null}),gviz('문의').catch(function(){return null}),gviz('코멘트').catch(function(){return null}),gviz('미용소견').catch(function(){return null})])
   .then(function(res){
-    var ap=res[0],inq=res[1],cm=res[2];
+    var ap=res[0],inq=res[1],cm=res[2],gop=res[3];
     var touched=false;
     /* 1) 예약 — 다음 예약(오늘 이후)을 시트 실시간 값으로 교체 */
     if(ap&&ap.length){
@@ -608,10 +613,28 @@ function loadLive(){
       });
       Object.keys(best).forEach(function(k){ BY[k].lastCmt=best[k]; });
     }
+    /* 4) 미용소견 — 미용실·원장님이 남긴 부위 소견을 그 아이 기록에 이어 붙인다(덮어쓰지 않음) */
+    if(gop&&gop.length){
+      gop.forEach(function(r){
+        var pet=r['아이']||'', g=r['보호자']||''; if(!pet) return;
+        if(String(r['종류']||'').trim()==='재진처리') return;
+        var p=BY[keyOf(pet,g)]; if(!p) return;
+        (p.groom=p.groom||[]).push({
+          d:String(r['시각']||'').slice(0,10), at:String(r['시각']||''),
+          who:String(r['작성자']||''), code:String(r['항목코드']||''), part:String(r['부위']||''),
+          t:String(r['소견']||'')
+        });
+        touched=true; LIVE.gop=(LIVE.gop||0)+1;
+      });
+      P.forEach(function(p){
+        if(!p.groom) return;
+        p.groom.sort(function(a,b){return String(a.at).localeCompare(String(b.at));});
+      });
+    }
     LIVE.ok=true;
     P.forEach(function(p){p.recs.sort(function(a,b){return String(b.d||'0000').localeCompare(String(a.d||'0000'))})});
     if(touched) render(); else $('loadstate').textContent='';
-    $('loadstate').textContent='실시간 반영 · 예약 '+LIVE.appts+'건 · 문의 '+LIVE.inq+'건 · 코멘트 '+LIVE.cmt+'건';
+    $('loadstate').textContent='실시간 반영 · 예약 '+LIVE.appts+'건 · 문의 '+LIVE.inq+'건 · 코멘트 '+LIVE.cmt+'건 · 미용 소견 '+(LIVE.gop||0)+'건';
   }).catch(function(){
     $('loadstate').textContent='실시간 시트는 불러오지 못했습니다(기본 기록은 표시).';
   });
