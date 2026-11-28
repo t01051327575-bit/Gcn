@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>수술·마취 기록지 · GCN</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#F4F6F8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1E293B; --mut:#64748B; --line:#E2E8F0; --bg:#F4F6F8; --card:#FFFFFF;
+  --green:#0F766E; --green2:#14B8A6; --green-soft:#E6F4F1; --pink:#D84A7A; --pink-soft:#FCE7EF;
+  --purple:#6D28D9; --purple-soft:#F1EBFF; --amber:#B45309; --amber-soft:#FEF3E2;
+  --red:#B91C1C; --red-soft:#FEE2E2;
+  --scale:1;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,'Malgun Gothic',sans-serif;
+  font-size:calc(15px * var(--scale));line-height:1.55;-webkit-text-size-adjust:100%}
+body.size-l{--scale:1.1}
+body.size-xl{--scale:1.24}
+a{color:var(--green)}
+.wrap{max-width:1180px;margin:0 auto;padding:12px 12px 70px}
+/* 상단 */
+.top{position:sticky;top:0;z-index:40;background:rgba(244,246,248,.97);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);padding:8px 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.top .brand{font-weight:900;letter-spacing:-.2px}
+.top .brand small{color:var(--mut);font-weight:700}
+.top .sp{flex:1}
+.btn{border:1.5px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;padding:7px 13px;
+  font:700 .9em 'Noto Sans KR';cursor:pointer;white-space:nowrap;text-decoration:none;display:inline-flex;align-items:center;gap:4px;min-height:38px}
+.btn:hover{border-color:var(--green2)}
+.btn.on{background:var(--green);border-color:var(--green);color:#fff}
+.btn.back{background:#fff;border-color:#CBD5E1}
+.btn.save{background:var(--green);border-color:var(--green);color:#fff}
+.btn.print{background:#fff;border-color:var(--green);color:var(--green)}
+.ver{font-size:.78em;color:var(--mut);font-weight:700}
+/* 헤더 */
+.hero{padding:10px 2px 2px}
+.hero h1{margin:0;font-size:1.5em;font-weight:900;letter-spacing:-.5px}
+.hero p{margin:2px 0 0;color:var(--mut);font-weight:700;font-size:.9em}
+.warn{margin:10px 0 0;padding:9px 12px;border-radius:10px;border:1.5px solid #FCD9A8;background:var(--amber-soft);color:#7C2D12;
+  font-size:.86em;font-weight:800;line-height:1.5}
+.warn b{color:#9A3412}
+.secret{margin:8px 0 0;padding:8px 12px;border-radius:10px;border:1.5px solid #E9A3AD;background:#FDECEE;color:#8A2433;
+  font-size:.84em;font-weight:800;line-height:1.5}
+/* 요약 */
+.sum{margin:10px 0 0;display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:#fff;border:1px solid var(--line);
+  border-radius:14px;padding:9px 12px;font-size:.9em;font-weight:800;color:#334155}
+.sum b{color:var(--green);font-weight:900}
+.sum .chip{background:var(--green-soft);color:#0B5F57;border-radius:999px;padding:2px 9px;font-size:.88em}
+.sum .chip.pink{background:var(--pink-soft);color:#9D174D}
+.sum .state{margin-left:auto;font-size:.86em;color:var(--mut);font-weight:800}
+.sum .state.ok{color:#0B5F57}
+/* 탭 */
+.tabs{display:flex;gap:6px;overflow-x:auto;margin:12px 0 4px;padding:3px 0 6px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{flex:0 0 auto;font:800 .88em 'Noto Sans KR';border:1.5px solid var(--line);background:#fff;color:#334155;
+  border-radius:999px;padding:9px 14px;cursor:pointer;white-space:nowrap;min-height:42px}
+.tabs button[aria-selected="true"]{background:var(--green);border-color:var(--green);color:#fff}
+.pane{display:none}
+.pane.on{display:block}
+/* 카드·폼 */
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;margin:10px 0;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.card h2{margin:0 0 4px;font-size:1.06em;font-weight:900;letter-spacing:-.2px}
+.card h2 .n{display:inline-flex;width:1.35em;height:1.35em;align-items:center;justify-content:center;border-radius:50%;
+  background:var(--green-soft);color:#0B5F57;font-size:.85em;margin-right:5px}
+.hint{margin:2px 0 10px;color:var(--mut);font-size:.86em;font-weight:700;line-height:1.5}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:9px}
+.f{display:flex;flex-direction:column;gap:4px;min-width:0}
+.f.wide{grid-column:1/-1}
+.f>span{font-size:.82em;font-weight:900;color:#475569}
+.f input,.f select,.f textarea{border:1.5px solid var(--line);border-radius:11px;padding:9px 11px;font:700 .98em 'Noto Sans KR';
+  color:var(--ink);background:#fff;outline:none;min-width:0;min-height:44px}
+.f textarea{min-height:56px;resize:vertical;line-height:1.5}
+.f input:focus,.f select:focus,.f textarea:focus{border-color:var(--green2)}
+.f input[type=number]{font-variant-numeric:tabular-nums}
+.box{border:1.5px dashed #BFDBFE;background:#F5FAFF;border-radius:12px;padding:8px 11px;font-size:.88em;font-weight:800;color:#1E3A8A;min-height:44px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.box.warnbox{border-color:#FCD9A8;background:var(--amber-soft);color:#7C2D12}
+.box b{font-size:1.05em}
+.box .sm{font-weight:700;color:#475569}
+/* 혹 번호 */
+.nums{display:grid;grid-template-columns:repeat(auto-fit,minmax(58px,1fr));gap:8px;margin:4px 0 10px}
+.nums button{font:900 1.05em 'Noto Sans KR';border:2px solid var(--line);background:#fff;color:#334155;border-radius:14px;
+  padding:12px 0;cursor:pointer;min-height:52px;font-variant-numeric:tabular-nums}
+.nums button[aria-pressed="true"]{background:var(--pink);border-color:var(--pink);color:#fff;box-shadow:0 2px 6px rgba(216,74,122,.32)}
+.sel{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:.9em;font-weight:800;color:#334155;margin:0 0 8px}
+.sel .tagx{background:var(--pink-soft);color:#9D174D;border-radius:999px;padding:3px 10px}
+.chkrow{display:flex;gap:8px;flex-wrap:wrap;margin:2px 0 10px}
+.chkrow label{display:inline-flex;align-items:center;gap:7px;border:1.5px solid var(--line);border-radius:11px;padding:9px 12px;
+  font-weight:800;font-size:.9em;background:#fff;cursor:pointer;min-height:44px}
+.chkrow input{width:19px;height:19px;accent-color:var(--green)}
+/* 혹 기록 결과 */
+.lhead{display:flex;gap:7px;align-items:baseline;flex-wrap:wrap;font-size:.92em;font-weight:800;color:#334155}
+.lhead .pet{font-size:1.1em;font-weight:900;color:var(--ink)}
+.lhead .bg{background:var(--green-soft);color:#0B5F57;border-radius:999px;padding:1px 8px;font-size:.84em}
+.lcard{border:1px solid var(--line);border-radius:13px;padding:10px 11px;margin:9px 0;background:#FCFDFE}
+.lmeta{margin:6px 0;font-size:.86em;font-weight:700;color:#334155;line-height:1.5;white-space:pre-wrap;word-break:keep-all}
+.lmeta b{color:#0B5F57}
+.lop{font-size:.84em;color:#475569;margin:4px 0;white-space:pre-wrap;word-break:keep-all}
+details.more{border:1px dashed var(--line);border-radius:10px;padding:5px 9px;margin:6px 0}
+details.more summary{font-size:.84em;font-weight:900;color:#475569;cursor:pointer}
+.lthumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px;margin-top:6px}
+.lthumbs figure{margin:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;cursor:zoom-in}
+.lthumbs img{display:block;width:100%;height:86px;object-fit:cover;background:#fff}
+.lthumbs figcaption{font-size:.68em;font-weight:800;color:#475569;padding:3px 5px;line-height:1.3;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+/* 표 */
+.tscroll{overflow-x:auto;margin:6px 0 2px;-webkit-overflow-scrolling:touch}
+.rt{width:100%;border-collapse:collapse;font-size:.86em;min-width:720px}
+.rt th,.rt td{border-bottom:1px solid var(--line);padding:6px 6px;text-align:left;vertical-align:middle;word-break:keep-all}
+.rt th{background:#F8FAFC;font-weight:900;color:#475569;font-size:.9em;white-space:nowrap;position:sticky;top:0}
+.rt td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.rt tr.gap td{background:#FFFBEB}
+.rt .gapb{display:inline-block;margin-left:4px;background:#FDE68A;color:#92400E;border-radius:999px;padding:0 6px;font-size:.8em;font-weight:900;white-space:nowrap}
+.rt .del{border:1.5px solid #FECACA;background:#FEF2F2;color:#B91C1C;border-radius:8px;padding:3px 8px;font:800 .82em 'Noto Sans KR';cursor:pointer;min-height:30px}
+.rt .edit{border:1.5px solid var(--line);background:#fff;color:#334155;border-radius:8px;padding:3px 8px;font:800 .82em 'Noto Sans KR';cursor:pointer;min-height:30px;margin-right:4px}
+.tnote{font-size:.8em;font-weight:700;color:var(--mut);margin:4px 0 0}
+.empty{text-align:center;color:var(--mut);padding:22px 10px;border:2px dashed var(--line);border-radius:14px;font-weight:700;font-size:.9em}
+/* 입력줄 */
+.addbox{border:1.5px solid var(--green2);border-radius:14px;padding:10px;background:#F7FFFD;margin:4px 0 10px}
+.addbox .grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:8px}
+.addbox .f>span{font-size:.76em}
+.addbox .f input,.addbox .f select{padding:8px 9px;font-size:.94em;min-height:42px}
+.addbox .rowend{display:flex;gap:8px;margin-top:9px;flex-wrap:wrap}
+.big{border:0;background:var(--green);color:#fff;border-radius:12px;padding:12px 18px;font:900 1em 'Noto Sans KR';cursor:pointer;min-height:46px}
+.big.ghost{background:#fff;color:var(--green);border:1.5px solid var(--green)}
+.big.pink{background:var(--pink)}
+.mini{border:1.5px solid var(--line);background:#fff;color:#334155;border-radius:10px;padding:7px 11px;font:800 .86em 'Noto Sans KR';cursor:pointer;min-height:36px}
+/* 계산 보조 */
+.calc{border:1.5px solid #DDD6FE;background:var(--purple-soft);border-radius:12px;padding:10px;margin:8px 0 0}
+.calc .lbl{font-size:.84em;font-weight:900;color:#5B21B6;margin-bottom:6px}
+.calc .in{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px}
+.calc .out{margin-top:8px;font-size:.9em;font-weight:900;color:#4C1D95;font-variant-numeric:tabular-nums}
+.calc .note{font-size:.76em;font-weight:700;color:#6D28D9;margin-top:5px;line-height:1.45}
+/* 동의서 */
+.chk{display:flex;flex-direction:column;gap:0;border:1px solid var(--line);border-radius:13px;overflow:hidden;margin:0 0 10px}
+.chk label{display:flex;gap:10px;align-items:flex-start;padding:11px 12px;border-bottom:1px solid var(--line);cursor:pointer;background:#fff;min-height:46px}
+.chk label:last-child{border-bottom:0}
+.chk input{width:21px;height:21px;margin-top:2px;accent-color:var(--pink);flex:0 0 auto}
+.chk .t{font-weight:900;font-size:.94em}
+.chk .d{font-size:.8em;font-weight:700;color:var(--mut);line-height:1.45}
+.signs{display:grid;grid-template-columns:1fr;gap:10px;margin-top:4px}
+.sigbox{border:1.5px solid var(--line);border-radius:13px;padding:9px;background:#fff}
+.sigbox .lbl{font-size:.84em;font-weight:900;color:#475569;margin-bottom:4px;display:flex;justify-content:space-between;align-items:center;gap:6px}
+.sigbox canvas{display:block;width:100%;height:120px;border:1px dashed #CBD5E1;border-radius:10px;background:#FCFDFE;touch-action:none}
+.ctext{border:1px solid var(--line);border-radius:12px;padding:11px 12px;background:#FCFDFE;font-size:.88em;font-weight:700;line-height:1.6;color:#334155}
+.ctext b{color:#0B5F57}
+/* 지난 기록 */
+.slist{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.sitem{display:flex;gap:8px;align-items:center;flex-wrap:wrap;border:1px solid var(--line);border-radius:12px;padding:10px 11px;background:#fff}
+.sitem .m{flex:1 1 200px;min-width:0}
+.sitem .d{font-size:.84em;font-weight:900;color:#0B5F57;font-variant-numeric:tabular-nums}
+.sitem .p{font-size:1em;font-weight:900}
+.sitem .s{font-size:.82em;font-weight:700;color:var(--mut);word-break:keep-all}
+.foot{margin-top:22px;color:var(--mut);font-size:.8em;line-height:1.7;font-weight:600}
+.foot b{color:var(--ink)}
+.foot .who{display:block;margin-top:8px;font-size:1.05em;font-weight:900;color:var(--green);letter-spacing:-.2px}
+/* 미리보기 */
+#pv{position:fixed;inset:0;z-index:9000;background:rgba(15,23,42,.55);display:none;overflow:auto;padding:0 0 30px}
+#pv.on{display:block}
+#pv .bar{position:sticky;top:0;z-index:2;display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;
+  background:#0F172A;color:#E2E8F0;padding:9px 12px;font-weight:800;font-size:.88em}
+#pv .bar button{border:0;border-radius:999px;padding:9px 16px;font:900 .92em 'Noto Sans KR';cursor:pointer;min-height:40px}
+#pv .bar .go{background:#14B8A6;color:#04231F}
+#pv .bar .close{background:#fff;color:#0F172A}
+.sheet{background:#fff;color:#111;width:100%;max-width:820px;margin:14px auto;padding:26px 24px;border-radius:6px;
+  box-shadow:0 8px 30px rgba(2,6,23,.35);font-size:10pt;line-height:1.45}
+.sheet *{box-sizing:border-box}
+.sh-head{display:flex;align-items:flex-end;justify-content:space-between;gap:8px;border-bottom:2px solid #111;padding-bottom:5px;margin-bottom:9px;flex-wrap:wrap}
+.sh-h1{font-size:12pt;font-weight:900}
+.sh-h1 span{font-size:8pt;font-weight:700;color:#555;margin-left:5px}
+.sh-t{font-size:14pt;font-weight:900;letter-spacing:-.5px}
+.sh-d{font-size:7.5pt;color:#555;font-weight:700}
+.sh-sec{margin:0 0 9px}
+.sh-sec h3{margin:0 0 4px;font-size:9.5pt;font-weight:900;border-left:4px solid #0F766E;padding-left:6px}
+.sh-sec h3.c2{border-color:#D84A7A}
+.sheet table{width:100%;border-collapse:collapse;table-layout:fixed}
+.sheet th,.sheet td{border:1px solid #999;padding:3px 5px;font-size:8.3pt;vertical-align:top;word-break:break-all}
+.sheet th{background:#F1F5F9;font-weight:900;text-align:left;white-space:nowrap}
+.sheet td.k{background:#F8FAFC;font-weight:900;width:19%}
+.sheet .memo{border:1px solid #999;border-top:0;padding:4px 6px;font-size:8.3pt;white-space:pre-wrap;min-height:20px}
+.sheet .sigrow{display:flex;gap:14px;margin-top:8px;flex-wrap:wrap}
+.sheet .sigcell{flex:1 1 240px;border:1px solid #999;padding:5px 7px}
+.sheet .sigcell .l{font-size:8pt;font-weight:900;color:#333}
+.sheet .sigcell .ln{border-bottom:1px solid #333;height:46px;margin-top:3px;display:flex;align-items:flex-end;justify-content:center}
+.sheet .sigcell img{max-height:44px;max-width:100%}
+.sheet .sigcell .cap{font-size:7.3pt;color:#555;margin-top:2px}
+.sh-foot{margin-top:10px;padding-top:5px;border-top:1px solid #bbb;font-size:7.6pt;color:#444;font-weight:800;
+  display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.sh-foot .who{font-weight:900;color:#0F766E}
+.pbreak{page-break-before:always;break-before:page;height:0}
+.ck{font-family:'Noto Sans KR',sans-serif}
+/* 토스트 */
+#toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%) translateY(20px);background:#0F172A;color:#fff;
+  padding:10px 16px;border-radius:999px;font-weight:800;font-size:.9em;opacity:0;pointer-events:none;transition:.22s;z-index:9500;max-width:90vw;text-align:center}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+#lz{position:fixed;inset:0;background:rgba(3,25,18,.94);display:none;z-index:9600;padding:12px;align-items:center;justify-content:center}
+#lz.on{display:flex}
+#lz img{max-width:100%;max-height:88vh;border-radius:10px;background:#fff}
+#lz button{position:absolute;top:12px;right:12px;border:0;border-radius:999px;padding:9px 15px;font:900 .9em 'Noto Sans KR';cursor:pointer}
+@media(max-width:640px){
+  .wrap{padding:10px 10px 60px}
+  .hero h1{font-size:1.26em}
+  .card{padding:12px;border-radius:14px}
+  .grid2{grid-template-columns:1fr 1fr}
+  .f.wide{grid-column:1/-1}
+  .signs{grid-template-columns:1fr}
+  .sheet{max-width:none;padding:16px 13px;font-size:9pt}
+  .rt{min-width:0}
+  .rt thead{display:none}
+  .rt,.rt tbody,.rt tr,.rt td{display:block;width:auto}
+  .rt tr{border:1px solid var(--line);border-radius:12px;padding:7px 9px;margin:0 0 8px;background:#fff}
+  .rt td{border:0;padding:2px 0;display:flex;gap:8px;font-size:.92em}
+  .rt td::before{content:attr(data-l);flex:0 0 70px;color:var(--mut);font-weight:800;font-size:.86em}
+  .rt td.act{justify-content:flex-end;padding-top:5px}
+  .rt td.act::before{content:'';flex:0 0 0}
+  .tscroll{overflow:visible}
+}
+@media print{
+  @page{size:A4;margin:11mm 10mm}
+  html,body{background:#fff !important}
+  body>*{display:none !important}
+  #pv{position:static !important;display:block !important;background:#fff !important;padding:0 !important;overflow:visible !important}
+  #pv .bar{display:none !important}
+  .sheet{max-width:none;margin:0;padding:0;box-shadow:none;border-radius:0;font-size:10pt}
+  .pbreak{page-break-before:always;break-before:page}
+  .sh-sec{page-break-inside:avoid}
+  .sheet table{page-break-inside:auto}
+  .sheet tr{page-break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<div class="top">
+  <a class="btn back" href="index.html">← GCN 메인</a>
+  <div class="brand">🔪 수술·마취 기록지 <small>· GCN</small></div>
+  <span class="ver" id="ver">저장 위치: 이 기기 브라우저</span>
+  <span class="sp"></span>
+  <button class="btn" id="btnPv">🖨 인쇄 / PDF</button>
+  <button class="btn save" id="btnSave">💾 저장</button>
+  <button class="btn" id="btnNew">＋ 새 기록</button>
+  <button class="btn" id="btnFsz">가+ 크게</button>
+</div>
+
+<div class="wrap">
+  <div class="hero">
+    <h1>수술·마취 기록지 + 수술 동의서</h1>
+    <p>수술 전 기본정보 · 혹 번호 · 마취 약물 · 5분 간격 생체징후 · 보호자 동의서를 한 건으로 기록하고 A4로 인쇄합니다.</p>
+  </div>
+  <div class="warn">📝 <b>기록·문서 작성을 돕는 서식입니다.</b> 마취 용량·마취 깊이·수술 진행에 대한 판단과 결정은 담당 수의사가 합니다. 계산 보조는 입력한 숫자만 계산합니다.</div>
+  <div class="secret">🔒 원내 대외비 — 환자·보호자 정보가 들어 있습니다. 외부 공유·화면 캡처 유포 금지. 저장은 이 기기 브라우저(localStorage)에만 됩니다.</div>
+
+  <div class="sum">
+    <span id="sumPet"><b>환자 미입력</b></span>
+    <span id="sumWeight" class="chip">체중 - kg</span>
+    <span id="sumSurg">수술명 미입력</span>
+    <span id="sumLump" class="chip pink">제거 부위 미선택</span>
+    <span class="state" id="savedState">아직 저장 안 함</span>
+  </div>
+
+  <div class="tabs" role="tablist" id="tabs">
+    <button role="tab" data-tab="1" aria-selected="true">① 수술 전</button>
+    <button role="tab" data-tab="2" aria-selected="false">② 혹·부위</button>
+    <button role="tab" data-tab="3" aria-selected="false">③ 마취·약물</button>
+    <button role="tab" data-tab="4" aria-selected="false">④ 생체징후</button>
+    <button role="tab" data-tab="5" aria-selected="false">⑤ 동의서</button>
+    <button role="tab" data-tab="6" aria-selected="false">🗂 지난 기록</button>
+  </div>
+
+  <!-- ① 수술 전 -->
+  <section class="pane on" id="p1" role="tabpanel">
+    <div class="card">
+      <h2><span class="n">1</span>수술 전 기본정보</h2>
+      <p class="hint">마취를 시작할 때 이름·몸무게·오늘 하는 수술을 먼저 적습니다.</p>
+      <div class="grid2">
+        <label class="f"><span>날짜</span><input type="date" data-k="info.date"></label>
+        <label class="f"><span>시작 시각</span><input type="time" data-k="info.time"></label>
+        <label class="f"><span>종료 시각</span><input type="time" data-k="info.end"></label>
+        <label class="f"><span>체중 (kg)</span><input type="number" inputmode="decimal" step="0.1" min="0" data-k="info.weight" placeholder="0.0"></label>
+        <label class="f"><span>환자 이름</span><input type="text" data-k="info.pet" placeholder="아이 이름" autocomplete="off"></label>
+        <label class="f"><span>보호자</span><input type="text" data-k="info.guardian" placeholder="보호자 성함" autocomplete="off"></label>
+        <label class="f"><span>품종</span><input type="text" data-k="info.breed" placeholder="예: 말티즈"></label>
+        <label class="f"><span>나이</span><input type="text" data-k="info.age" placeholder="예: 8년 3개월"></label>
+        <label class="f"><span>성별</span><select data-k="info.sex">
+          <option value="">선택</option><option>암컷</option><option>수컷</option><option>중성화 암컷</option><option>중성화 수컷</option>
+        </select></label>
+        <label class="f"><span>ASA 등급</span><select data-k="info.asa">
+          <option value="">선택</option><option>미정</option><option>ASA I</option><option>ASA II</option><option>ASA III</option><option>ASA IV</option><option>ASA V</option>
+        </select></label>
+        <label class="f wide"><span>수술명</span><input type="text" data-k="info.surgery" placeholder="예: 피지선종 1번·3번 제거"></label>
+        <label class="f"><span>마취 전 혈액검사</span><select data-k="info.blood">
+          <option value="">선택</option><option>실시 — 결과 정상</option><option>실시 — 결과 확인 중</option><option>미실시</option><option>해당 없음</option>
+        </select></label>
+        <label class="f"><span>마지막 공복 시각</span><input type="datetime-local" data-k="info.fast"></label>
+        <div class="f wide"><div class="box" id="fastBox">마지막 공복 시각을 넣으면 금식 시간을 계산합니다.</div></div>
+        <label class="f"><span>담당 수의사</span><input type="text" data-k="info.vet" placeholder="예: 장봉환"></label>
+        <label class="f"><span>보조 인원</span><input type="text" data-k="info.assist" placeholder="이름 · 역할"></label>
+        <label class="f wide"><span>수술 전 메모</span><textarea data-k="info.memo" rows="2" placeholder="보호자 요청, 주의사항 등"></textarea></label>
+      </div>
+    </div>
+  </section>
+
+  <!-- ② 혹·부위 -->
+  <section class="pane" id="p2" role="tabpanel">
+    <div class="card">
+      <h2><span class="n">2</span>오늘 제거할 혹</h2>
+      <p class="hint">번호는 <b>혹 위치 표시도(그림)에 적힌 번호</b>를 그대로 따릅니다. 그림에 번호가 없으면 아래 ‘그 외 부위’에 적어 주세요.</p>
+      <div class="nums" id="nums"></div>
+      <div class="sel" id="selSum">선택한 번호 없음</div>
+      <div class="chkrow">
+        <label><input type="checkbox" data-ck="cyto"> 세포검사 의뢰</label>
+        <label><input type="checkbox" data-ck="histo"> 조직검사 의뢰</label>
+      </div>
+      <label class="f"><span>그 외 부위 · 자유 입력</span><textarea data-k="lumps.extra" rows="2" placeholder="예: 왼쪽 옆구리 신규 1곳, 꼬리 1곳"></textarea></label>
+      <div class="f wide" style="margin-top:8px"><div class="box" id="refBox">참조한 혹 기록 없음 — 아래에서 그 아이 혹 기록을 불러올 수 있습니다.</div></div>
+    </div>
+
+    <div class="card">
+      <h2>혹 기록에서 확인</h2>
+      <p class="hint">혹 기록 모음(lumps.html)의 그 아이 기록을 불러와 위치 표시도·소견을 함께 봅니다. 읽기만 하며, 불러온 내용은 이 기록에 저장되지 않습니다(참조 표시만 남습니다).</p>
+      <div class="grid2">
+        <label class="f wide"><span>아이 이름 · 보호자 성함</span>
+          <div style="display:flex;gap:8px">
+            <input type="text" id="lq" placeholder="아이 이름 또는 보호자 성함" autocomplete="off" style="flex:1 1 auto">
+            <button class="big" id="lgo" style="flex:0 0 auto">🔎 찾기</button>
+          </div>
+        </label>
+      </div>
+      <div id="lres"></div>
+    </div>
+  </section>
+
+  <!-- ③ 마취·약물 -->
+  <section class="pane" id="p3" role="tabpanel">
+    <div class="card">
+      <h2><span class="n">3</span>마취 · 약물 기록</h2>
+      <p class="hint">전처치 → 유도 → 유지(흡입 %·산소 L/min) → 수술 중 진통(CRI ml/hr) → 회복 순서로 한 줄씩 쌓입니다.</p>
+      <div class="addbox">
+        <div class="grid3">
+          <label class="f"><span>시각</span><input type="time" id="d_t"></label>
+          <label class="f"><span>구분</span><select id="d_phase"></select></label>
+          <label class="f"><span>약명</span><input type="text" id="d_name" list="drugList" placeholder="약 이름" autocomplete="off"></label>
+          <label class="f"><span>용량 (mg)</span><input type="number" inputmode="decimal" step="0.01" id="d_mg" placeholder="mg"></label>
+          <label class="f"><span>용량 (ml)</span><input type="number" inputmode="decimal" step="0.01" id="d_ml" placeholder="ml"></label>
+          <label class="f"><span>경로</span><select id="d_route"></select></label>
+          <label class="f"><span>흡입제 (%)</span><input type="number" inputmode="decimal" step="0.1" id="d_inh" placeholder="%"></label>
+          <label class="f"><span>산소 (L/min)</span><input type="number" inputmode="decimal" step="0.1" id="d_o2" placeholder="L/min"></label>
+          <label class="f"><span>투여자</span><input type="text" id="d_agent" placeholder="이름" autocomplete="off"></label>
+          <label class="f" style="grid-column:1/-1"><span>비고</span><input type="text" id="d_note" placeholder="예: CRI 2 ml/hr, 반응 확인"></label>
+        </div>
+        <div class="rowend">
+          <button class="big" id="dadd">＋ 약물 추가</button>
+          <button class="mini" id="dcancel" style="display:none">수정 취소</button>
+        </div>
+      </div>
+      <datalist id="drugList"></datalist>
+
+      <div class="calc">
+        <div class="lbl">🧮 용량 계산 보조 (입력한 숫자만 계산)</div>
+        <div class="in">
+          <label class="f"><span>체중 (kg)</span><input type="number" id="cw" readonly></label>
+          <label class="f"><span>mg/kg</span><input type="number" inputmode="decimal" step="0.001" id="cmd" placeholder="0.0"></label>
+          <label class="f"><span>농도 (mg/ml)</span><input type="number" inputmode="decimal" step="0.01" id="cc" placeholder="선택"></label>
+        </div>
+        <div class="out" id="cout">mg/kg를 넣으면 계산합니다.</div>
+        <div class="note">계산 결과는 참고값입니다. 실제 용량 결정과 투여는 담당 수의사가 합니다.</div>
+        <div class="rowend"><button class="mini" id="cput">계산값을 위 입력칸에 넣기</button></div>
+      </div>
+
+      <div class="tscroll">
+        <table class="rt" id="dt">
+          <thead><tr><th>시각</th><th>구분</th><th>약명</th><th>mg</th><th>ml</th><th>경로</th><th>흡입제 %</th><th>O₂ L/min</th><th>투여자</th><th>비고</th><th></th></tr></thead>
+          <tbody id="dbody"></tbody>
+        </table>
+      </div>
+      <p class="tnote" id="dsum">기록 0건</p>
+    </div>
+  </section>
+
+  <!-- ④ 생체징후 -->
+  <section class="pane" id="p4" role="tabpanel">
+    <div class="card">
+      <h2><span class="n">4</span>생체징후 (5분 간격)</h2>
+      <p class="hint">시각은 ‘5분 뒤 시각’ 버튼으로 자동으로 채웁니다. 앞 기록과 5분 넘게 벌어지면 표에서 표시합니다.</p>
+      <div class="addbox">
+        <div class="grid3">
+          <label class="f"><span>시각</span><input type="time" id="v_t"></label>
+          <label class="f"><span>HR (회/분)</span><input type="number" inputmode="numeric" id="v_hr"></label>
+          <label class="f"><span>RR (회/분)</span><input type="number" inputmode="numeric" id="v_rr"></label>
+          <label class="f"><span>SpO₂ (%)</span><input type="number" inputmode="numeric" id="v_spo2"></label>
+          <label class="f"><span>체온 (℃)</span><input type="number" inputmode="decimal" step="0.1" id="v_temp"></label>
+          <label class="f"><span>ETCO₂ (mmHg)</span><input type="number" inputmode="numeric" id="v_etco2"></label>
+          <label class="f"><span>반사</span><select id="v_reflex"><option value="">선택</option><option>있음</option><option>부분</option><option>없음</option></select></label>
+          <label class="f"><span>마취 깊이</span><select id="v_depth"><option value="">선택</option><option>얕음</option><option>적정</option><option>깊음</option></select></label>
+          <label class="f" style="grid-column:1/-1"><span>비고</span><input type="text" id="v_note" placeholder="예: 자발호흡 확인"></label>
+        </div>
+        <div class="rowend">
+          <button class="big" id="vadd5">＋ 5분 뒤 시각</button>
+          <button class="big ghost" id="vaddnow">지금 시각</button>
+          <button class="big" id="vadd">＋ 기록 추가</button>
+          <button class="mini" id="vcancel" style="display:none">수정 취소</button>
+        </div>
+      </div>
+      <div class="tscroll">
+        <table class="rt" id="vt">
+          <thead><tr><th>시각</th><th>HR</th><th>RR</th><th>SpO₂ %</th><th>체온 ℃</th><th>ETCO₂</th><th>반사</th><th>깊이</th><th>비고</th><th></th></tr></thead>
+          <tbody id="vbody"></tbody>
+        </table>
+      </div>
+      <p class="tnote" id="vsum">기록 0회</p>
+    </div>
+  </section>
+
+  <!-- ⑤ 동의서 -->
+  <section class="pane" id="p5" role="tabpanel">
+    <div class="card">
+      <h2><span class="n">5</span>수술·마취 동의서</h2>
+      <p class="hint">보호자에게 설명한 항목을 체크하고, 보호자·수의사 서명을 받습니다. 인쇄하면 A4 두 번째 장에 동의서만 나옵니다.</p>
+      <div class="chk" id="consentList"></div>
+      <label class="f"><span>그 외 설명 · 특이사항</span><textarea data-k="consent.memo" rows="2" placeholder="보호자가 따로 물은 내용, 추가 설명 등"></textarea></label>
+      <div class="grid2" style="margin-top:9px">
+        <label class="f"><span>보호자 이름</span><input type="text" data-k="consent.gname" placeholder="보호자 성함"></label>
+        <label class="f"><span>보호자 연락처</span><input type="tel" inputmode="tel" data-k="consent.phone" placeholder="010-0000-0000"></label>
+        <label class="f"><span>수의사 이름</span><input type="text" data-k="consent.vetname" placeholder="예: 장봉환"></label>
+        <label class="f"><span>동의 날짜</span><input type="date" data-k="consent.date"></label>
+      </div>
+      <div class="signs">
+        <div class="sigbox">
+          <div class="lbl"><span>보호자 서명</span><button class="mini" data-clearsig="g">지우기</button></div>
+          <canvas id="sig_g" aria-label="보호자 서명란"></canvas>
+        </div>
+        <div class="sigbox">
+          <div class="lbl"><span>수의사 서명</span><button class="mini" data-clearsig="v">지우기</button></div>
+          <canvas id="sig_v" aria-label="수의사 서명란"></canvas>
+        </div>
+      </div>
+      <div class="ctext" style="margin-top:10px">
+        보호자님께 위 항목을 설명하였습니다. 위 내용을 충분히 설명 듣고 이해하였으며, <b id="ctPet">환자</b>의 수술 및 마취 시행에 동의합니다.
+      </div>
+    </div>
+  </section>
+
+  <!-- ⑥ 지난 기록 -->
+  <section class="pane" id="p6" role="tabpanel">
+    <div class="card">
+      <h2><span class="n">6</span>저장된 기록</h2>
+      <p class="hint">이 브라우저에 저장된 기록입니다. 다른 기기로 옮기거나 보관하려면 JSON으로 내보내세요.</p>
+      <div class="rowend" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+        <button class="mini" id="expAll">⬇ 전체 JSON 내보내기</button>
+        <button class="mini" id="expOne">⬇ 이 기록만 내보내기</button>
+        <button class="mini" id="newHere">＋ 새 기록</button>
+      </div>
+      <div class="slist" id="savedList"></div>
+    </div>
+  </section>
+
+  <div class="foot">
+    <b>사용 안내</b> · ① 수술 전 → ② 혹·부위 → ③ 마취·약물 → ④ 생체징후 → ⑤ 동의서 순서로 적고 💾 저장을 누릅니다. 저장하지 않아도 입력 중인 내용은 이 브라우저에 임시 보관되어, 창을 닫았다 열어도 이어집니다.<br>
+    · 번호(1~10)는 혹 위치 표시도 그림에 적힌 번호를 그대로 따릅니다. 그림이 없으면 ‘그 외 부위’에 적습니다.<br>
+    · 생체징후 표의 ⚠ 표시는 앞 기록과 5분 넘게 벌어진 구간을 알려 주는 표시입니다.<br>
+    · 인쇄는 A4 1~2장(1장: 기본정보·혹·약물·생체징후 / 2장: 동의서)으로 나옵니다. 브라우저 인쇄 창에서 ‘PDF로 저장’을 고르면 PDF가 됩니다.<br>
+    <span class="who">진심경영멘토 유희진 · 경영부원장</span>
+  </div>
+</div>
+
+<div id="pv" role="dialog" aria-modal="true" aria-label="인쇄 미리보기">
+  <div class="bar">
+    <span>인쇄 미리보기 (A4)</span>
+    <button class="go" id="pvPrint">🖨 인쇄 · PDF 저장</button>
+    <button class="close" id="pvClose">닫기 ✕</button>
+  </div>
+  <div id="sheetHost"></div>
+</div>
+
+<div id="lz" aria-label="혹 위치 그림 크게 보기"><button id="lzx">닫기 ✕</button><img id="lzi" alt="혹 위치 그림"></div>
+<div id="toast" role="status"></div>
+
+<script>
+(function(){
+'use strict';
+var $=function(id){return document.getElementById(id)};
+function pad2(n){return (n<10?'0':'')+n}
+function todayISO(d){d=d||new Date();return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate())}
+function nowHM(d){d=d||new Date();return pad2(d.getHours())+':'+pad2(d.getMinutes())}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function nl2br(s){return esc(s).replace(/\n/g,'<br>')}
+function hm(t){if(!t)return null;var p=String(t).split(':');if(p.length<2)return null;var h=+p[0],m=+p[1];if(isNaN(h)||isNaN(m))return null;return h*60+m}
+function hmS(m){if(m==null||isNaN(m))return '';m=Math.round(m);return pad2(Math.floor(m/60)%24)+':'+pad2(m%60)}
+function durText(m){if(m==null||isNaN(m))return '';var neg=m<0;m=Math.abs(Math.round(m));var h=Math.floor(m/60),mm=m%60;return (neg?'-':'')+h+'시간'+(mm?' '+mm+'분':'')}
+function dtText(s){if(!s)return '';return String(s).replace('T',' ').slice(0,16)}
+function num(v){var n=parseFloat(v);return isNaN(n)?null:n}
+function r3(n){return (Math.round(n*1000)/1000).toString()}
+
+var PHASES=['전처치','유도','유지(흡입)','유지(주사)','수술 중 진통(CRI)','회복','기타'];
+var ROUTES=['IV','IM','SC','흡입','CRI','PO','기타'];
+var DRUGS=['부토판(부토파놀)','조레틸(틸레타민·졸라제팜)','미다졸람','프로포폴','이소플루란','세보플루란','펜타닐','리도카인','페노바비탈','아트로핀','멜록시캄','케타민','도부타민'];
+var CONSENT=[
+ ['anes','마취 위험','마취 중 저혈압·저체온·호흡 저하 등 마취에 따르는 위험'],
+ ['bleed','출혈','수술 중·후 출혈, 지혈이 늦어질 가능성'],
+ ['inf','감염','수술 부위 감염, 상처 벌어짐 가능성'],
+ ['pain','통증','수술 후 통증과 그에 따른 처치 필요성'],
+ ['prog','예후·재발','검사 결과에 따른 예후와 재발 가능성'],
+ ['cost','예상 비용','예상 비용과 추가 처치 시 비용 발생 안내'],
+ ['path','조직검사 결과','제거 조직의 세포검사·조직검사 결과 안내 (해당 시)']
+];
+var LS_REC='gcn_surgery_records_v1', LS_CUR='gcn_surgery_current_v1';
+var CUR=null, RECS=[], EDIT_D=null, EDIT_V=null, LUMPS=null, TAB=1;
+
+/* ---------- 상태 ---------- */
+function blank(){
+  return {id:'',created:'',updated:'',
+    info:{date:todayISO(),time:nowHM(),end:'',pet:'',guardian:'',breed:'',age:'',sex:'',weight:'',surgery:'',asa:'',fast:'',blood:'',vet:'',assist:'',memo:''},
+    lumps:{nums:[],extra:'',cyto:false,histo:false,ref:''},
+    drugs:[],vitals:[],
+    consent:{items:{},memo:'',gname:'',phone:'',vetname:'',date:todayISO(),gsig:'',vsig:''}};
+}
+function getP(o,p){var a=String(p).split('.'),c=o;for(var i=0;i<a.length;i++){if(c==null)return '';c=c[a[i]]}return c==null?'':c}
+function setP(o,p,v){var a=String(p).split('.'),c=o;for(var i=0;i<a.length-1;i++){if(c[a[i]]==null)c[a[i]]={};c=c[a[i]]}c[a[a.length-1]]=v}
+function normalizeOld(r){
+  r=r||{};
+  var b=blank();
+  ['info','lumps','consent'].forEach(function(k){
+    if(r[k]&&typeof r[k]==='object'){for(var p in r[k]){if(Object.prototype.hasOwnProperty.call(r[k],p))b[k][p]=r[k][p]}}
+  });
+  b.id=r.id||''; b.created=r.created||''; b.updated=r.updated||'';
+  b.drugs=Array.isArray(r.drugs)?r.drugs:[];
+  b.vitals=Array.isArray(r.vitals)?r.vitals:[];
+  if(!Array.isArray(b.lumps.nums))b.lumps.nums=[];
+  return b;
+}
+function keyOfRec(r){return (r.info.pet||'')+'|'+(r.info.date||'')+'|'+(r.info.surgery||'')}
+
+/* ---------- 저장 ---------- */
+var saveT=null;
+function queueSave(){
+  CUR.updated=new Date().toISOString();
+  clearTimeout(saveT);
+  saveT=setTimeout(function(){
+    try{localStorage.setItem(LS_CUR,JSON.stringify(CUR));setState('임시 저장됨 · '+nowHM())}catch(e){}
+  },400);
+}
+function setState(t,ok){var e=$('savedState');e.textContent=t;e.className='state'+(ok?' ok':'')}
+function loadLocal(){
+  var cur=null,recs=null;
+  try{cur=JSON.parse(localStorage.getItem(LS_CUR)||'null')}catch(e){}
+  try{recs=JSON.parse(localStorage.getItem(LS_REC)||'[]')}catch(e){}
+  RECS=(Array.isArray(recs)?recs:[]).map(normalizeOld);
+  CUR=cur?normalizeOld(cur):blank();
+}
+function toast(t){var el=$('toast');el.textContent=t;el.classList.add('on');clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove('on')},2200)}
+function saveRecord(){
+  var C=CUR;
+  if(!(C.info.pet||'').trim()){toast('환자 이름을 먼저 적어 주세요');toastTab(1);return}
+  if(!C.id)C.id='s'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+  if(!C.created)C.created=new Date().toISOString();
+  C.updated=new Date().toISOString();
+  var hit=-1;
+  for(var i=0;i<RECS.length;i++){if(RECS[i].id===C.id){hit=i;break}}
+  var copy=JSON.parse(JSON.stringify(C));
+  if(hit>=0)RECS[hit]=copy; else RECS.unshift(copy);
+  try{
+    localStorage.setItem(LS_REC,JSON.stringify(RECS));
+    localStorage.setItem(LS_CUR,JSON.stringify(C));
+    setState('저장됨 · '+nowHM()+' · 지난 기록 '+RECS.length+'건',true);
+    toast('저장했습니다 · 지난 기록 '+RECS.length+'건');
+  }catch(e){toast('이 브라우저에 저장하지 못했습니다 — 공간 확인')}
+  renderSaved();
+}
+
+/* ---------- 탭 ---------- */
+function goto(t){
+  TAB=+t;
+  var bs=$('tabs').children;
+  for(var i=0;i<bs.length;i++)bs[i].setAttribute('aria-selected',String(+bs[i].getAttribute('data-tab')===TAB));
+  for(var k=1;k<=6;k++)$('p'+k).classList.toggle('on',k===TAB);
+  if(TAB===5){drawSig('g');drawSig('v')}
+  try{history.replaceState(null,'','#tab'+TAB)}catch(e){}
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function toastTab(t){goto(t)}
+$('tabs').addEventListener('click',function(e){var b=e.target.closest('button[data-tab]');if(b)goto(b.getAttribute('data-tab'))});
+
+/* ---------- 입력 바인딩 ---------- */
+document.addEventListener('input',function(e){
+  var el=e.target, k=el.getAttribute&&el.getAttribute('data-k');
+  if(!k)return;
+  var v=el.type==='number'?el.value:(el.value==null?'':el.value);
+  setP(CUR,k,v);
+  if(k==='info.weight'){updWeight();updSum()}
+  if(k==='info.fast'||k==='info.date'||k==='info.time')updFast();
+  if(k==='info.pet'||k==='info.surgery'){updSum();$('ctPet').textContent=CUR.info.pet||'환자'}
+  if(k==='consent.gname'){$('ctPet').textContent=CUR.info.pet||'환자'}
+  queueSave();
+});
+document.addEventListener('change',function(e){
+  var el=e.target,k=el.getAttribute&&el.getAttribute('data-k');
+  if(k){setP(CUR,k,el.value);updFast();updWeight();updSum();queueSave();return}
+  var ck=el.getAttribute&&el.getAttribute('data-ck');
+  if(ck){CUR.lumps[ck]=!!el.checked;updSum();queueSave()}
+});
+function fill(){
+  var els=document.querySelectorAll('[data-k]');
+  for(var i=0;i<els.length;i++){
+    var el=els[i],v=getP(CUR,el.getAttribute('data-k'));
+    if(el.type==='checkbox')el.checked=!!v; else el.value=(v==null?'':v);
+  }
+  var cks=document.querySelectorAll('[data-ck]');
+  for(var j=0;j<cks.length;j++)cks[j].checked=!!CUR.lumps[cks[j].getAttribute('data-ck')];
+  renderConsent();renderNums();renderDrugs();renderVitals();renderSaved();updFast();updWeight();updSum();updCalc();
+  $('ctPet').textContent=CUR.info.pet||'환자';
+  drawSig('g');drawSig('v');
+}
+
+/* ---------- 요약 ---------- */
+function updSum(){
+  var i=CUR.info,L=CUR.lumps;
+  $('sumPet').innerHTML=i.pet?('<b>'+esc(i.pet)+'</b>'+(i.guardian?' · '+esc(i.guardian)+' 보호자님':'')):'<b>환자 미입력</b>';
+  $('sumWeight').textContent='체중 '+(i.weight?i.weight+' kg':'- kg');
+  $('sumSurg').textContent=i.surgery||'수술명 미입력';
+  var parts=[];
+  if(L.nums&&L.nums.length)parts.push(L.nums.slice().sort(function(a,b){return a-b}).join('·')+'번');
+  if((L.extra||'').trim())parts.push('그 외');
+  $('sumLump').textContent=parts.length?('제거 ' + parts.join(' + ')):'제거 부위 미선택';
+}
+function updWeight(){var w=num(CUR.info.weight);$('cw').value=w==null?'':w;updCalc()}
+function updFast(){
+  var i=CUR.info, box=$('fastBox');
+  var f=i.fast?String(i.fast):'';
+  if(!f){box.className='box';box.innerHTML='마지막 공복 시각을 넣으면 금식 시간을 계산합니다.';return}
+  var start=null;
+  if(i.date&&i.time)start=new Date(i.date+'T'+(i.time.length===5?i.time:i.time));
+  var fast=new Date(f);
+  if(isNaN(fast.getTime())||!start||isNaN(start.getTime())){box.className='box';box.innerHTML='금식 시간을 계산하려면 날짜·시작 시각을 함께 넣어 주세요.';return}
+  var mins=(start.getTime()-fast.getTime())/60000;
+  var neg=mins<0;
+  box.className='box'+(neg?' warnbox':'');
+  box.innerHTML='🍽 금식 <b>'+durText(mins)+'</b> <span class="sm">('+esc(dtText(f))+' → '+esc(i.date+' '+i.time)+')'+(neg?' — 시작 시각보다 늦습니다. 시각을 확인해 주세요.':'')+'</span>';
+}
+
+/* ---------- 혹 번호 ---------- */
+function renderNums(){
+  var box=$('nums'),h='';
+  for(var n=1;n<=10;n++){
+    var on=CUR.lumps.nums.indexOf(n)>=0;
+    h+='<button type="button" data-num="'+n+'" aria-pressed="'+on+'">'+n+'번</button>';
+  }
+  box.innerHTML=h;
+  var sel=CUR.lumps.nums.slice().sort(function(a,b){return a-b});
+  $('selSum').innerHTML=sel.length?('<span>오늘 제거:</span>'+sel.map(function(n){return '<span class="tagx">'+n+'번</span>'}).join('')):'선택한 번호 없음';
+  var ref=(CUR.lumps.ref||'').trim();
+  $('refBox').className='box'+(ref?'':'');
+  $('refBox').innerHTML=ref?('📎 참조한 혹 기록 — '+esc(ref)):'참조한 혹 기록 없음 — 아래에서 그 아이 혹 기록을 불러올 수 있습니다.';
+}
+$('nums').addEventListener('click',function(e){
+  var b=e.target.closest('button[data-num]');if(!b)return;
+  var n=+b.getAttribute('data-num'),a=CUR.lumps.nums,i=a.indexOf(n);
+  if(i>=0)a.splice(i,1);else{a.push(n);a.sort(function(x,y){return x-y})}
+  renderNums();updSum();queueSave();
+});
+
+/* ---------- 혹 기록 불러오기 ---------- */
+function normName(s){return String(s==null?'':s).normalize('NFKC').replace(/[\s\/|·ㆍ.,()\[\]]/g,'').toLowerCase()}
+function loadLumpData(){
+  if(LUMPS)return Promise.resolve(LUMPS);
+  function j(u){return fetch(u,{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).catch(function(){return null})}
+  return Promise.all([j('lumps/data.json'),j('lumps/index.json'),j('lump.json')]).then(function(a){
+    LUMPS={data:a[0],idx:a[1]||{},lump:a[2]||{}};return LUMPS;
+  });
+}
+function candList(L,q){
+  var nq=normName(q), map={}, order=[];
+  function add(pet,g){
+    var k=normName(pet)+'|'+normName(g);
+    if(!map[k]){map[k]={pet:pet||'',g:g||'',recs:[],ov:null,info:null};order.push(k)}
+    return map[k];
+  }
+  var ps=(L.data&&L.data.patients)||[];
+  ps.forEach(function(p){var c=add(p.pet,p.g||'');c.recs=p.recs||[];});
+  Object.keys(L.idx).forEach(function(k){var a=k.split('|');var c=add(a[0],a.slice(1).join('|'));c.ov=L.idx[k]||null;});
+  Object.keys(L.lump).forEach(function(k){var a=k.split('|');var c=add(a[0],a.slice(1).join('|'));c.info=L.lump[k]||null;});
+  var out=order.map(function(k){return map[k]}).filter(function(c){
+    return normName(c.pet).indexOf(nq)>=0||normName(c.g).indexOf(nq)>=0;
+  });
+  out.sort(function(a,b){return String(lastDate(b)).localeCompare(String(lastDate(a)))});
+  if(!q)return [];
+  return out.slice(0,6);
+}
+function lastDate(c){
+  var d='';
+  (c.recs||[]).forEach(function(r){if(r.d&&r.d>d)d=r.d});
+  var ov=c.ov||{};
+  ['oldD','paperD','newD','chatD','d'].forEach(function(k){if(ov[k]&&String(ov[k])>d)d=String(ov[k])});
+  if(c.info&&c.info.last&&String(c.info.last)>d)d=String(c.info.last);
+  return d;
+}
+function candImgs(c){
+  var arr=[],seen={},out=[];
+  (c.recs||[]).forEach(function(r){if(r.img)arr.push({f:'lumps/'+r.img,l:r.label||'혹 위치 표시도',d:r.d||''})});
+  var ov=c.ov||{};
+  if(ov.old)arr.push({f:'lumps/'+ov.old,l:ov.oldL||'기존 혹 위치 표시도',d:ov.oldD||''});
+  if(ov.paper)arr.push({f:'lumps/'+ov.paper,l:ov.paperL||'보호자 종이 표시도',d:ov.paperD||''});
+  if(ov.new)arr.push({f:'lumps/'+ov.new,l:ov.newL||'GHN 혹 표시',d:ov.newD||''});
+  if(Array.isArray(ov.extra))ov.extra.forEach(function(x){(x.files||[]).forEach(function(f){arr.push({f:'lumps/'+f,l:x.label||'추가 기록',d:x.d||''})})});
+  if(Array.isArray(ov.chat))ov.chat.forEach(function(f){arr.push({f:'lumps/'+f,l:'보호자 카톡 사진',d:ov.chatD||''})});
+  arr.sort(function(a,b){return String(b.d).localeCompare(String(a.d))});
+  arr.forEach(function(a){if(seen[a.f])return;seen[a.f]=1;out.push(a)});
+  return out.slice(0,9);
+}
+function doSearch(){
+  var q=($('lq').value||'').trim();
+  if(!q){toast('아이 이름을 적어 주세요');return}
+  $('lres').innerHTML='<div class="hint">혹 기록을 불러오는 중…</div>';
+  loadLumpData().then(function(L){
+    var list=candList(L,q);
+    if(!list.length){
+      $('lres').innerHTML='<div class="empty">‘'+esc(q)+'’ 로 찾은 혹 기록이 없습니다.<br>이름을 다시 확인하거나, 그림이 없으면 ②의 ‘그 외 부위’에 적어 주세요.</div>';
+      return;
+    }
+    var h='';
+    list.forEach(function(c,i){
+      var imgs=candImgs(c), info=c.info||{};
+      h+='<div class="lcard">';
+      h+='<div class="lhead"><span class="pet">'+esc(c.pet)+'</span>'+(c.g?'<span>'+esc(c.g)+' 보호자님</span>':'')+
+         (info.n?'<span class="bg">'+esc(info.n)+'곳</span>':'')+
+         (lastDate(c)?'<span class="bg">최근 '+esc(String(lastDate(c)).slice(0,10))+'</span>':'')+'</div>';
+      if(info.marks||c.recs&&c.recs[0]&&c.recs[0].marks)h+='<div class="lmeta">📍 <b>부위</b> · '+esc(info.marks||(c.recs[0]&&c.recs[0].marks)||'')+'</div>';
+      if(c.recs&&c.recs[0]&&c.recs[0].notes&&c.recs[0].notes.length){
+        var nt=c.recs[0].notes.filter(function(x){return (x.t||'').trim()}).map(function(x){return x.t}).join('\n');
+        if(nt)h+='<details class="more"><summary>최근 소견 ('+esc(String(c.recs[0].d||'').slice(0,10))+')</summary><div class="lop">'+nl2br(nt)+'</div></details>';
+      }
+      if(info.op)h+='<details class="more"><summary>수술 이력</summary><div class="lop">'+nl2br(String(info.op).slice(0,600))+'</div></details>';
+      if(imgs.length){
+        h+='<div class="lthumbs">'+imgs.map(function(m){
+          return '<figure data-img="'+esc(m.f)+'"><img src="'+encodeURI(m.f)+'" loading="lazy" alt="'+esc(c.pet)+' 혹 위치 그림"><figcaption>'+esc((m.l||'위치 표시')+(m.d?' · '+String(m.d).slice(5,10):''))+'</figcaption></figure>';
+        }).join('')+'</div>';
+      }else{
+        h+='<div class="hint">등록된 위치 그림이 없습니다.</div>';
+      }
+      h+='<div style="margin-top:7px"><button class="mini" data-refid="'+i+'">📎 이 혹 기록을 참조로 표시</button></div>';
+      h+='</div>';
+    });
+    $('lres').innerHTML=h;
+    $('lres')._list=list;
+  }).catch(function(){
+    $('lres').innerHTML='<div class="empty">혹 기록을 불러오지 못했습니다. 잠시 뒤 다시 시도해 주세요.</div>';
+  });
+}
+$('lgo').addEventListener('click',doSearch);
+$('lq').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();doSearch()}});
+$('lres').addEventListener('click',function(e){
+  var f=e.target.closest('figure[data-img]');
+  if(f){$('lzi').src=f.getAttribute('data-img');$('lz').classList.add('on');return}
+  var b=e.target.closest('button[data-refid]');
+  if(b){
+    var list=$('lres')._list||[],c=list[+b.getAttribute('data-refid')];
+    if(!c)return;
+    CUR.lumps.ref=c.pet+(c.g?' · '+c.g+' 보호자님':'')+(lastDate(c)?' · 최근 '+String(lastDate(c)).slice(0,10):'');
+    if(!CUR.info.pet)CUR.info.pet=c.pet;
+    if(!CUR.info.guardian)CUR.info.guardian=c.g||'';
+    var els=document.querySelectorAll('[data-k="info.pet"],[data-k="info.guardian"]');
+    for(var i=0;i<els.length;i++)els[i].value=getP(CUR,els[i].getAttribute('data-k'));
+    renderNums();updSum();queueSave();toast('참조로 표시했습니다');
+  }
+});
+$('lzx').addEventListener('click',function(){$('lz').classList.remove('on')});
+$('lz').addEventListener('click',function(e){if(e.target===$('lz'))$('lz').classList.remove('on')});
+
+/* ---------- 약물 ---------- */
+function initSelects(){
+  $('d_phase').innerHTML=PHASES.map(function(p){return '<option>'+esc(p)+'</option>'}).join('');
+  $('d_route').innerHTML='<option value="">선택</option>'+ROUTES.map(function(p){return '<option>'+esc(p)+'</option>'}).join('');
+  $('drugList').innerHTML=DRUGS.map(function(d){return '<option value="'+esc(d)+'">'}).join('');
+}
+function clearDrugForm(keep){
+  ['d_name','d_mg','d_ml','d_inh','d_o2','d_note'].forEach(function(k){$(k).value=''});
+  if(!keep){$('d_t').value=nowHM();$('d_phase').value=PHASES[0];$('d_route').value=''}
+}
+$('dadd').addEventListener('click',function(){
+  var r={t:$('d_t').value||nowHM(),phase:$('d_phase').value,name:($('d_name').value||'').trim(),
+    mg:$('d_mg').value,ml:$('d_ml').value,route:$('d_route').value,inh:$('d_inh').value,o2:$('d_o2').value,
+    agent:($('d_agent').value||'').trim(),note:($('d_note').value||'').trim()};
+  if(!r.name){toast('약명을 먼저 적어 주세요');$('d_name').focus();return}
+  if(EDIT_D!=null){CUR.drugs[EDIT_D]=r;EDIT_D=null;$('dadd').textContent='＋ 약물 추가';$('dcancel').style.display='none'}
+  else CUR.drugs.push(r);
+  renderDrugs();queueSave();clearDrugForm(true);$('d_t').value=r.t;
+  toast('약물 기록 '+(CUR.drugs.length)+'건');
+});
+$('dcancel').addEventListener('click',function(){EDIT_D=null;$('dadd').textContent='＋ 약물 추가';this.style.display='none';clearDrugForm(false)});
+function renderDrugs(){
+  var b=$('dbody');
+  if(!CUR.drugs.length){b.innerHTML='<tr><td colspan="11"><div class="empty">아직 약물 기록이 없습니다. 위에서 한 줄씩 추가합니다.</div></td></tr>'}
+  else{
+    b.innerHTML=CUR.drugs.map(function(d,i){
+      return '<tr><td class="num" data-l="시각">'+esc(d.t||'')+'</td>'+
+        '<td data-l="구분">'+esc(d.phase||'')+'</td>'+
+        '<td data-l="약명"><b>'+esc(d.name||'')+'</b></td>'+
+        '<td class="num" data-l="mg">'+esc(d.mg||'')+'</td>'+
+        '<td class="num" data-l="ml">'+esc(d.ml||'')+'</td>'+
+        '<td data-l="경로">'+esc(d.route||'')+'</td>'+
+        '<td class="num" data-l="흡입제 %">'+esc(d.inh||'')+'</td>'+
+        '<td class="num" data-l="O₂ L/min">'+esc(d.o2||'')+'</td>'+
+        '<td data-l="투여자">'+esc(d.agent||'')+'</td>'+
+        '<td data-l="비고">'+esc(d.note||'')+'</td>'+
+        '<td class="act"><button class="edit" data-edit="'+i+'">수정</button><button class="del" data-del="'+i+'">삭제</button></td></tr>';
+    }).join('');
+  }
+  $('dsum').textContent='기록 '+CUR.drugs.length+'건';
+}
+$('dbody').addEventListener('click',function(e){
+  var ed=e.target.closest('button[data-edit]'),dl=e.target.closest('button[data-del]');
+  if(ed){
+    var i=+ed.getAttribute('data-edit'),d=CUR.drugs[i];if(!d)return;
+    EDIT_D=i;
+    $('d_t').value=d.t||'';$('d_phase').value=d.phase||PHASES[0];$('d_name').value=d.name||'';
+    $('d_mg').value=d.mg||'';$('d_ml').value=d.ml||'';$('d_route').value=d.route||'';
+    $('d_inh').value=d.inh||'';$('d_o2').value=d.o2||'';$('d_agent').value=d.agent||'';$('d_note').value=d.note||'';
+    $('dadd').textContent='✔ 수정 저장';$('dcancel').style.display='inline-flex';
+    $('dadd').scrollIntoView({block:'center',behavior:'smooth'});
+    return;
+  }
+  if(dl){var j=+dl.getAttribute('data-del');CUR.drugs.splice(j,1);if(EDIT_D===j)EDIT_D=null;renderDrugs();queueSave()}
+});
+
+/* ---------- 계산 보조 ---------- */
+function updCalc(){
+  var w=num(CUR.info.weight),d=num($('cmd').value),c=num($('cc').value),out=$('cout');
+  $('cw').value=w==null?'':w;
+  if(w==null){out.textContent='① 수술 전에 체중을 넣으면 함께 계산합니다.';return}
+  if(d==null){out.textContent='체중 '+w+' kg · mg/kg를 넣으면 mg을 계산합니다.';return}
+  var mg=w*d;
+  if(c!=null&&c>0){out.innerHTML='체중 '+w+' kg × '+d+' mg/kg = <b>'+r3(mg)+' mg</b> · '+c+' mg/ml → <b>'+r3(mg/c)+' ml</b>';}
+  else out.innerHTML='체중 '+w+' kg × '+d+' mg/kg = <b>'+r3(mg)+' mg</b>';
+}
+$('cmd').addEventListener('input',updCalc);
+$('cc').addEventListener('input',updCalc);
+$('cput').addEventListener('click',function(){
+  var w=num(CUR.info.weight),d=num($('cmd').value),c=num($('cc').value);
+  if(w==null||d==null){toast('체중과 mg/kg를 먼저 넣어 주세요');return}
+  var mg=w*d;$('d_mg').value=r3(mg);
+  if(c!=null&&c>0)$('d_ml').value=r3(mg/c);
+  toast('계산값을 입력칸에 넣었습니다 — 확인 후 추가');
+});
+
+/* ---------- 생체징후 ---------- */
+function lastVitalMin(){
+  if(!CUR.vitals.length)return hm(CUR.info.time);
+  for(var i=CUR.vitals.length-1;i>=0;i--){var t=hm(CUR.vitals[i].t);if(t!=null)return t}
+  return hm(CUR.info.time);
+}
+$('vaddnow').addEventListener('click',function(){$('v_t').value=nowHM()});
+$('vadd5').addEventListener('click',function(){
+  var base=lastVitalMin();
+  if(base==null){$('v_t').value=nowHM();return}
+  $('v_t').value=hmS(base+5);
+});
+$('vadd').addEventListener('click',function(){
+  var r={t:$('v_t').value||nowHM(),hr:$('v_hr').value,rr:$('v_rr').value,spo2:$('v_spo2').value,temp:$('v_temp').value,
+    etco2:$('v_etco2').value,reflex:$('v_reflex').value,depth:$('v_depth').value,note:($('v_note').value||'').trim()};
+  if(!r.hr&&!r.rr&&!r.spo2&&!r.temp&&!r.etco2&&!r.reflex&&!r.depth&&!r.note){toast('측정값을 하나 이상 넣어 주세요');return}
+  if(EDIT_V!=null){CUR.vitals[EDIT_V]=r;EDIT_V=null;$('vadd').textContent='＋ 기록 추가';$('vcancel').style.display='none'}
+  else CUR.vitals.push(r);
+  ['v_hr','v_rr','v_spo2','v_temp','v_etco2','v_note'].forEach(function(k){$(k).value=''});
+  $('v_reflex').value='';$('v_depth').value='';
+  $('v_t').value='';
+  renderVitals();queueSave();toast('생체징후 '+CUR.vitals.length+'회');
+});
+$('vcancel').addEventListener('click',function(){EDIT_V=null;$('vadd').textContent='＋ 기록 추가';this.style.display='none'});
+function vitalGaps(){
+  var gaps=[],prev=hm(CUR.info.time);
+  CUR.vitals.forEach(function(v,i){
+    var t=hm(v.t);
+    if(t!=null&&prev!=null)gaps[i]=t-prev;
+    if(t!=null)prev=t;
+  });
+  return gaps;
+}
+function renderVitals(){
+  var b=$('vbody'),gaps=vitalGaps(),bad=0;
+  if(!CUR.vitals.length){b.innerHTML='<tr><td colspan="10"><div class="empty">아직 생체징후 기록이 없습니다. 마취 중 5분마다 한 줄씩 추가합니다.</div></td></tr>'}
+  else{
+    b.innerHTML=CUR.vitals.map(function(v,i){
+      var g=gaps[i],over=(g!=null&&g>5);
+      if(over)bad++;
+      return '<tr'+(over?' class="gap"':'')+'><td class="num" data-l="시각">'+esc(v.t||'')+(over?'<span class="gapb">간격 '+g+'분</span>':'')+'</td>'+
+        '<td class="num" data-l="HR">'+esc(v.hr||'')+'</td>'+
+        '<td class="num" data-l="RR">'+esc(v.rr||'')+'</td>'+
+        '<td class="num" data-l="SpO₂ %">'+esc(v.spo2||'')+'</td>'+
+        '<td class="num" data-l="체온 ℃">'+esc(v.temp||'')+'</td>'+
+        '<td class="num" data-l="ETCO₂">'+esc(v.etco2||'')+'</td>'+
+        '<td data-l="반사">'+esc(v.reflex||'')+'</td>'+
+        '<td data-l="깊이">'+esc(v.depth||'')+'</td>'+
+        '<td data-l="비고">'+esc(v.note||'')+'</td>'+
+        '<td class="act"><button class="edit" data-vedit="'+i+'">수정</button><button class="del" data-vdel="'+i+'">삭제</button></td></tr>';
+    }).join('');
+  }
+  $('vsum').textContent='기록 '+CUR.vitals.length+'회'+(bad?' · 5분 넘게 벌어진 구간 '+bad+'곳':(CUR.vitals.length?' · 5분 간격 유지':''));
+}
+$('vbody').addEventListener('click',function(e){
+  var ed=e.target.closest('button[data-vedit]'),dl=e.target.closest('button[data-vdel]');
+  if(ed){
+    var i=+ed.getAttribute('data-vedit'),v=CUR.vitals[i];if(!v)return;
+    EDIT_V=i;$('v_t').value=v.t||'';$('v_hr').value=v.hr||'';$('v_rr').value=v.rr||'';
+    $('v_spo2').value=v.spo2||'';$('v_temp').value=v.temp||'';$('v_etco2').value=v.etco2||'';
+    $('v_reflex').value=v.reflex||'';$('v_depth').value=v.depth||'';$('v_note').value=v.note||'';
+    $('vadd').textContent='✔ 수정 저장';$('vcancel').style.display='inline-flex';
+    $('vadd').scrollIntoView({block:'center',behavior:'smooth'});
+    return;
+  }
+  if(dl){var j=+dl.getAttribute('data-vdel');CUR.vitals.splice(j,1);if(EDIT_V===j)EDIT_V=null;renderVitals();queueSave()}
+});
+
+/* ---------- 동의서 ---------- */
+function renderConsent(){
+  $('consentList').innerHTML=CONSENT.map(function(c){
+    return '<label><input type="checkbox" data-cns="'+c[0]+'"><span><span class="t">'+esc(c[1])+'</span><br><span class="d">'+esc(c[2])+'</span></span></label>';
+  }).join('');
+  var bs=$('consentList').querySelectorAll('input[data-cns]');
+  for(var i=0;i<bs.length;i++)bs[i].checked=!!(CUR.consent.items&&CUR.consent.items[bs[i].getAttribute('data-cns')]);
+}
+$('consentList').addEventListener('change',function(e){
+  var c=e.target.getAttribute&&e.target.getAttribute('data-cns');
+  if(!c)return;
+  if(!CUR.consent.items)CUR.consent.items={};
+  CUR.consent.items[c]=e.target.checked;queueSave();
+});
+/* 서명 */
+var SIGCTX={};
+function drawSig(w){
+  var c=$('sig_'+w);if(!c)return;
+  var ctx=c.getContext('2d'),r=c.getBoundingClientRect();
+  var ratio=Math.min(window.devicePixelRatio||1,2.5);
+  c.width=Math.max(320,Math.round((r.width||320)*ratio));c.height=Math.round(100*ratio);
+  ctx.clearRect(0,0,c.width,c.height);
+  ctx.lineWidth=3.2*ratio;ctx.lineCap='round';ctx.strokeStyle='#12212e';
+  SIGCTX[w]=ctx;
+  var url=w==='g'?CUR.consent.gsig:CUR.consent.vsig;
+  if(url){var im=new Image();im.onload=function(){try{ctx.drawImage(im,0,0,c.width,c.height)}catch(e){}};im.src=url}
+}
+function bindSig(){
+  ['g','v'].forEach(function(w){
+    var c=$('sig_'+w);if(!c)return;
+    var drawing=false,last=null;
+    function pos(e){
+      var r=c.getBoundingClientRect();
+      return {x:(e.clientX-r.left)*(c.width/r.width),y:(e.clientY-r.top)*(c.height/r.height)};
+    }
+    c.addEventListener('pointerdown',function(e){
+      e.preventDefault();drawing=true;last=pos(e);
+      try{c.setPointerCapture(e.pointerId)}catch(err){}
+    });
+    c.addEventListener('pointermove',function(e){
+      if(!drawing)return;e.preventDefault();
+      var p=pos(e),ctx=SIGCTX[w]||c.getContext('2d');
+      ctx.beginPath();ctx.moveTo(last.x,last.y);ctx.lineTo(p.x,p.y);ctx.stroke();last=p;
+    });
+    function end(){
+      if(!drawing)return;drawing=false;
+      try{CUR.consent[w==='g'?'gsig':'vsig']=c.toDataURL('image/png');queueSave()}catch(e){}
+    }
+    c.addEventListener('pointerup',end);
+    c.addEventListener('pointercancel',end);
+    c.addEventListener('pointerleave',end);
+  });
+  var cs=document.querySelectorAll('[data-clearsig]');
+  for(var i=0;i<cs.length;i++){
+    cs[i].addEventListener('click',function(){
+      var w=this.getAttribute('data-clearsig');
+      if(w==='g')CUR.consent.gsig='';else CUR.consent.vsig='';
+      drawSig(w);queueSave();toast('서명을 지웠습니다');
+    });
+  }
+}
+
+/* ---------- 저장된 기록 ---------- */
+function fmtDate(s){if(!s)return '';return String(s).slice(0,10)}
+function renderSaved(){
+  var box=$('savedList');
+  var list=RECS.slice().sort(function(a,b){return String(b.info.date+b.info.time).localeCompare(String(a.info.date+a.info.time))});
+  if(!list.length){box.innerHTML='<div class="empty">저장된 기록이 없습니다. ①~⑤를 적고 💾 저장을 누르면 여기에 쌓입니다.</div>';return}
+  box.innerHTML=list.map(function(r,i){
+    var d=r.info;
+    return '<div class="sitem" data-id="'+esc(r.id)+'">'+
+      '<div class="m"><div class="d">'+esc(fmtDate(d.date))+(d.time?' '+esc(d.time):'')+'</div>'+
+      '<div class="p">'+esc(d.pet||'이름 없음')+(d.guardian?' <span style="font-weight:700;font-size:.82em;color:#64748B">· '+esc(d.guardian)+' 보호자님</span>':'')+'</div>'+
+      '<div class="s">'+esc(d.surgery||'수술명 없음')+(d.weight?' · '+esc(d.weight)+' kg':'')+
+        (r.lumps&&r.lumps.nums&&r.lumps.nums.length?' · 혹 '+r.lumps.nums.join('·')+'번':'')+'</div></div>'+
+      '<button class="mini" data-open="'+esc(r.id)+'">열기</button>'+
+      '<button class="mini" data-delrec="'+esc(r.id)+'">삭제</button></div>';
+  }).join('');
+}
+$('savedList').addEventListener('click',function(e){
+  var o=e.target.closest('button[data-open]'),d=e.target.closest('button[data-delrec]');
+  if(o){
+    var id=o.getAttribute('data-open');
+    for(var i=0;i<RECS.length;i++){
+      if(RECS[i].id===id){CUR=normalizeOld(JSON.parse(JSON.stringify(RECS[i])));fill();goto(1);toast('기록을 열었습니다');setState('저장된 기록 열림 · '+fmtDate(CUR.info.date));return}
+    }
+  }
+  if(d){
+    var id2=d.getAttribute('data-delrec');
+    if(d.getAttribute('data-armed')!=='1'){
+      d.setAttribute('data-armed','1');d.textContent='정말 삭제?';
+      setTimeout(function(){if(d&&d.parentNode){d.removeAttribute('data-armed');d.textContent='삭제'}},3000);
+      return;
+    }
+    for(var j=0;j<RECS.length;j++){
+      if(RECS[j].id===id2){
+        RECS.splice(j,1);
+        try{localStorage.setItem(LS_REC,JSON.stringify(RECS))}catch(err){}
+        if(CUR.id===id2){CUR=blank();fill();setState('기록 삭제됨')}
+        renderSaved();toast('기록을 지웠습니다');return;
+      }
+    }
+  }
+});
+$('btnSave').addEventListener('click',saveRecord);
+$('btnNew').addEventListener('click',newRecord);
+$('newHere').addEventListener('click',newRecord);
+var NEWARM=false;
+function newRecord(){
+  var filled=(CUR.info.pet||'').trim()||CUR.drugs.length||CUR.vitals.length;
+  if(filled&&!NEWARM){
+    NEWARM=true;$('btnNew').textContent='＋ 정말 새로?';
+    setTimeout(function(){NEWARM=false;$('btnNew').textContent='＋ 새 기록'},2600);
+    return;
+  }
+  NEWARM=false;$('btnNew').textContent='＋ 새 기록';
+  CUR=blank();EDIT_D=EDIT_V=null;
+  fill();$('lres').innerHTML='';$('lq').value='';
+  clearDrugForm(false);
+  setState('새 기록 · 아직 저장 안 함');
+  goto(1);toast('새 기록을 시작합니다');
+}
+/* 내보내기 */
+function download(name,obj){
+  var s=JSON.stringify(obj,null,2);
+  var b=new Blob([s],{type:'application/json;charset=utf-8'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(b);a.download=name;
+  document.body.appendChild(a);a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},1500);
+}
+$('expAll').addEventListener('click',function(){
+  if(!RECS.length){toast('내보낼 저장 기록이 없습니다');return}
+  download('수술기록_전체_'+todayISO()+'.json',{kind:'gcn-surgery',version:1,exported:new Date().toISOString(),records:RECS});
+  toast('전체 '+RECS.length+'건을 내보냈습니다');
+});
+$('expOne').addEventListener('click',function(){
+  download('수술기록_'+(CUR.info.pet||'기록')+'_'+(CUR.info.date||todayISO())+'.json',{kind:'gcn-surgery',version:1,exported:new Date().toISOString(),records:[CUR]});
+  toast('이 기록을 내보냈습니다');
+});
+
+/* ---------- 인쇄 ---------- */
+function infoPairs(i){
+  return [
+    ['날짜',i.date],['시작 시각',i.time],['종료 시각',i.end],['ASA 등급',i.asa],
+    ['환자 이름',i.pet],['보호자',i.guardian],['품종',i.breed],['나이',i.age],
+    ['성별',i.sex],['체중',i.weight?i.weight+' kg':''],['수술명',i.surgery],['마취 전 혈액검사',i.blood],
+    ['마지막 공복',dtText(i.fast)],['금식 시간',fastText()],['담당 수의사',i.vet],['보조 인원',i.assist]
+  ];
+}
+function fastText(){
+  var i=CUR.info;
+  if(!i.fast||!i.date||!i.time)return '';
+  var s=new Date(i.date+'T'+i.time),f=new Date(i.fast);
+  if(isNaN(s.getTime())||isNaN(f.getTime()))return '';
+  return durText((s.getTime()-f.getTime())/60000);
+}
+function buildSheet(){
+  var C=CUR,i=C.info,L=C.lumps,cs=C.consent,g=[];
+  g.push('<div class="sheet">');
+  g.push('<div class="sh-head"><div class="sh-h1">굿모닝펫동물병원<span>분당</span></div>'+
+    '<div class="sh-t">수술 · 마취 기록지</div><div class="sh-d">출력 '+esc(todayISO()+' '+nowHM())+'</div></div>');
+
+  /* 기본정보 */
+  var pairs=infoPairs(i),rows=[];
+  for(var k=0;k<pairs.length;k+=4){
+    var r='<tr>';
+    for(var q=0;q<4;q++){
+      var pr=pairs[k+q];
+      if(pr){r+='<td class="k">'+esc(pr[0])+'</td><td>'+esc(pr[1]||'')+'</td>';}
+      else r+='<td class="k"></td><td></td>';
+    }
+    r+='</tr>';rows.push(r);
+  }
+  g.push('<div class="sh-sec"><h3>1. 수술 전 기본정보</h3><table>'+rows.join('')+'</table>'+
+    '<div class="memo"><b>수술 전 메모</b> '+(i.memo?nl2br(i.memo):'—')+'</div></div>');
+
+  /* 혹·부위 */
+  var nums=(L.nums||[]).slice().sort(function(a,b){return a-b});
+  g.push('<div class="sh-sec"><h3>2. 수술 부위 · 제거 혹</h3><table>'+
+    '<tr><td class="k">혹 번호 (위치 표시도 기준)</td><td>'+(nums.length?nums.map(function(n){return '<b>'+n+'번</b>'}).join(' · '):'선택 없음')+
+    ' &nbsp; <span style="font-size:7.5pt;color:#555">세포검사 '+(L.cyto?'☑':'☐')+' · 조직검사 '+(L.histo?'☑':'☐')+'</span></td></tr>'+
+    '<tr><td class="k">그 외 부위</td><td>'+(L.extra?nl2br(L.extra):'—')+'</td></tr>'+
+    '<tr><td class="k">참조한 혹 기록</td><td>'+(L.ref?esc(L.ref):'—')+'</td></tr>'+
+    '</table></div>');
+
+  /* 약물 */
+  var ds=C.drugs||[];
+  g.push('<div class="sh-sec"><h3>3. 마취 · 약물 기록</h3><table>'+
+    '<tr><th style="width:8%">시각</th><th style="width:15%">구분</th><th style="width:21%">약명</th><th style="width:9%">mg</th><th style="width:9%">ml</th><th style="width:8%">경로</th><th style="width:8%">흡입 %</th><th style="width:8%">O₂</th><th style="width:9%">투여자</th><th>비고</th></tr>'+
+    (ds.length?ds.map(function(d){
+      return '<tr><td>'+esc(d.t||'')+'</td><td>'+esc(d.phase||'')+'</td><td>'+esc(d.name||'')+'</td><td>'+esc(d.mg||'')+'</td><td>'+esc(d.ml||'')+'</td><td>'+esc(d.route||'')+'</td><td>'+esc(d.inh||'')+'</td><td>'+esc(d.o2||'')+'</td><td>'+esc(d.agent||'')+'</td><td>'+esc(d.note||'')+'</td></tr>';
+    }).join(''):'<tr><td colspan="10" style="height:26px">기록 없음</td></tr>')+
+    '</table></div>');
+
+  /* 생체징후 */
+  var vs=C.vitals||[],gaps=vitalGaps();
+  g.push('<div class="sh-sec"><h3>4. 생체징후 (5분 간격)</h3><table>'+
+    '<tr><th style="width:11%">시각</th><th>HR</th><th>RR</th><th>SpO₂ %</th><th>체온 ℃</th><th>ETCO₂</th><th>반사</th><th>마취 깊이</th><th style="width:26%">비고</th></tr>'+
+    (vs.length?vs.map(function(v,ix){
+      var gp=gaps[ix],over=(gp!=null&&gp>5);
+      return '<tr><td>'+esc(v.t||'')+(over?' ⚠'+gp+'분':'')+'</td><td>'+esc(v.hr||'')+'</td><td>'+esc(v.rr||'')+'</td><td>'+esc(v.spo2||'')+'</td><td>'+esc(v.temp||'')+'</td><td>'+esc(v.etco2||'')+'</td><td>'+esc(v.reflex||'')+'</td><td>'+esc(v.depth||'')+'</td><td>'+esc(v.note||'')+'</td></tr>';
+    }).join(''):'<tr><td colspan="9" style="height:26px">기록 없음</td></tr>')+
+    '</table>'+(vs.length?'':'')+'</div>');
+
+  g.push('<div class="sh-foot"><span>굿모닝펫동물병원 · 수술·마취 기록지 · '+esc(i.pet||'환자')+' '+esc(i.date||'')+'</span><span class="who">진심경영멘토 유희진 · 경영부원장</span></div>');
+
+  /* 동의서 (2장) */
+  g.push('<div class="pbreak"></div>');
+  g.push('<div class="sh-head"><div class="sh-h1">굿모닝펫동물병원<span>분당</span></div><div class="sh-t" style="color:#B0243F">수술 · 마취 동의서</div><div class="sh-d">'+esc(cs.date||i.date||'')+'</div></div>');
+  g.push('<div class="sh-sec"><table>'+
+    '<tr><td class="k">환자 이름</td><td>'+esc(i.pet||'')+'</td><td class="k">보호자</td><td>'+esc(cs.gname||i.guardian||'')+'</td></tr>'+
+    '<tr><td class="k">품종·나이</td><td>'+esc((i.breed||'')+(i.age?' · '+i.age:''))+'</td><td class="k">체중</td><td>'+esc(i.weight?i.weight+' kg':'')+'</td></tr>'+
+    '<tr><td class="k">수술명</td><td colspan="3">'+esc(i.surgery||'')+'</td></tr>'+
+    '<tr><td class="k">마취</td><td colspan="3">'+esc(anesList())+'</td></tr>'+
+    '<tr><td class="k">보호자 연락처</td><td colspan="3">'+esc(cs.phone||'')+'</td></tr>'+
+    '</table></div>');
+  g.push('<div class="sh-sec"><h3 class="c2">설명한 항목</h3><table>'+
+    CONSENT.map(function(c){
+      var on=cs.items&&cs.items[c[0]];
+      return '<tr><td style="width:6%;text-align:center;font-size:12pt">'+(on?'☑':'☐')+'</td><td style="width:24%"><b>'+esc(c[1])+'</b></td><td>'+esc(c[2])+'</td></tr>';
+    }).join('')+
+    (cs.memo?'<tr><td></td><td><b>그 외 설명</b></td><td>'+nl2br(cs.memo)+'</td></tr>':'')+
+    '</table></div>');
+  g.push('<div class="sh-sec" style="font-size:8.6pt;line-height:1.6;border:1px solid #999;padding:6px 8px">'+
+    '보호자님께 위 항목을 설명하였습니다. 위 내용을 충분히 설명 듣고 이해하였으며, <b>'+esc(i.pet||'환자')+'</b>의 수술 및 마취 시행에 동의합니다.</div>');
+  g.push('<div class="sigrow">'+
+    '<div class="sigcell"><div class="l">보호자 서명</div><div class="ln">'+(cs.gsig?'<img src="'+cs.gsig+'" alt="보호자 서명">':'')+'</div>'+
+      '<div class="cap">'+esc(cs.gname||i.guardian||'')+' · '+esc(cs.date||i.date||'')+'</div></div>'+
+    '<div class="sigcell"><div class="l">수의사 서명</div><div class="ln">'+(cs.vsig?'<img src="'+cs.vsig+'" alt="수의사 서명">':'')+'</div>'+
+      '<div class="cap">'+esc(cs.vetname||i.vet||'')+' · '+esc(cs.date||i.date||'')+'</div></div>'+
+    '</div>');
+  g.push('<div class="sh-foot"><span>굿모닝펫동물병원 · 수술·마취 동의서 · '+esc(i.pet||'환자')+'</span><span class="who">진심경영멘토 유희진 · 경영부원장</span></div>');
+  g.push('</div>');
+  return g.join('');
+}
+function anesList(){
+  var out=[];
+  (CUR.drugs||[]).forEach(function(d){
+    if(d.phase&&(d.phase.indexOf('유도')===0||d.phase.indexOf('유지')===0)&&d.name&&out.indexOf(d.name)<0)out.push(d.name);
+  });
+  return out.join(', ');
+}
+function openPv(){
+  $('sheetHost').innerHTML=buildSheet();
+  $('pv').classList.add('on');
+  $('pv').scrollTop=0;
+}
+$('btnPv').addEventListener('click',openPv);
+$('pvPrint').addEventListener('click',function(){window.print()});
+$('pvClose').addEventListener('click',function(){$('pv').classList.remove('on')});
+window.addEventListener('beforeprint',function(){$('sheetHost').innerHTML=buildSheet()});
+$('pv').addEventListener('click',function(e){if(e.target===$('pv'))$('pv').classList.remove('on')});
+
+/* ---------- 기타 ---------- */
+$('btnFsz').addEventListener('click',function(){
+  var b=document.body;
+  if(!b.classList.contains('size-l')){b.classList.add('size-l');this.textContent='가++ 아주 크게'}
+  else if(!b.classList.contains('size-xl')){b.classList.add('size-xl');this.textContent='가- 기본'}
+  else{b.classList.remove('size-l','size-xl');this.textContent='가+ 크게'}
+});
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){$('pv').classList.remove('on');$('lz').classList.remove('on')}
+  if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();saveRecord()}
+});
+
+/* ---------- 시작 ---------- */
+loadLocal();
+initSelects();
+renderConsent();
+fill();
+clearDrugForm(false);
+bindSig();
+$('lq').value=CUR.info.pet||'';
+updCalc();
+setState(CUR.info.pet?'이어서 작성 중':'아직 저장 안 함');
+var m=/^#tab([1-6])$/.exec(location.hash||'');
+if(m)goto(+m[1]);
+})();
+</script>
+</body>
+</html>
