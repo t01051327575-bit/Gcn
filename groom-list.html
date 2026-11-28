@@ -250,7 +250,7 @@ function render(){
       else if(/위생미용/.test(x.memo)){ var k2=document.createElement('span'); k2.className='kind'; k2.textContent='위생미용'; who.appendChild(k2); }
       if(x.memo){
         var m=document.createElement('div'); m.className='memo';
-        var t0=String(x.memo).replace(/\s+/g,' ').replace(/^[비◆◇■●*]+\s*/,'');
+        var t0=String(x.memo).replace(/\s+/g,' ').replace(/^[비◆◇■●*]+[)\]]?\s*/,'').replace(/^\)\s*/,'');
         m.textContent=t0.length>52?t0.slice(0,52)+'…':t0;
         m.title=x.memo;
         who.appendChild(m);
