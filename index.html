@@ -568,7 +568,7 @@ function groomListFor(r){
 }
 function groomOpsFor(r){
   var list=groomMatch(GROOMOPS, r);
-  list.sort(function(x,y){ return String(y['시각']||'').localeCompare(String(x['시각']||'')); });
+  list.sort(function(x,y){ return String(x['시각']||'').localeCompare(String(y['시각']||'')); });
   return list;
 }
 function groomOpsOfRound(ops, id){
