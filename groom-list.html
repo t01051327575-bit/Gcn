@@ -39,7 +39,7 @@ h1{font-size:22px;margin:4px 0 2px;letter-spacing:-.3px}
 .row .lump{font-size:12.5px;font-weight:800;color:#b0243f;background:#fdeaee;border:1px solid #f3cfdb;border-radius:999px;padding:2px 8px;white-space:nowrap}
 .row .arrow{color:#b6c3ce;font-weight:900}
 .tagrow{display:flex;gap:5px;flex-wrap:wrap;margin-top:3px}
-.memo{font-size:12.5px;color:#6b7a88;margin-top:3px;white-space:pre-wrap;word-break:break-word;max-height:3.4em;overflow:hidden}
+.memo{font-size:12.5px;color:#6b7a88;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .empty{padding:26px 8px;text-align:center;color:#8a99a6;font-size:14.5px}
 .err{background:#fdeaee;border:1px solid #f3cfdb;color:#8c1f34;border-radius:12px;padding:12px;font-size:14px}
 .foot{margin-top:20px;font-size:12.5px;color:#8a99a6;line-height:1.6}
@@ -249,7 +249,10 @@ function render(){
       if(/미용/.test(x.kind)&&x.kind!=='비대기'){ var k=document.createElement('span'); k.className='kind'; k.textContent=x.kind; who.appendChild(k); }
       else if(/위생미용/.test(x.memo)){ var k2=document.createElement('span'); k2.className='kind'; k2.textContent='위생미용'; who.appendChild(k2); }
       if(x.memo){
-        var m=document.createElement('div'); m.className='memo'; m.textContent=x.memo;
+        var m=document.createElement('div'); m.className='memo';
+        var t0=String(x.memo).replace(/\s+/g,' ').replace(/^[비◆◇■●*]+\s*/,'');
+        m.textContent=t0.length>52?t0.slice(0,52)+'…':t0;
+        m.title=x.memo;
         who.appendChild(m);
       }
       a.appendChild(t); a.appendChild(who);
